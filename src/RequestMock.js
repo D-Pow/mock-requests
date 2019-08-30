@@ -1,3 +1,8 @@
+/**
+ * RequestMock will mock both XMLHttpRequest and fetch such that
+ * any requested URL will return the specified mock object instead
+ * of actually making an async request.
+ */
 const RequestMock = (function() {
     /**
      * @type {Object.<string, Object>} urlResponseMap - key (URL string) value (mock response) pairs for network mocks
