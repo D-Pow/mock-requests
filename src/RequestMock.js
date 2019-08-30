@@ -51,46 +51,64 @@ const RequestMock = (function() {
 
         XMLHttpRequest = function() {
             const xhr = new OriginalXHR();
+            const mockedValues = {
+                readyState: 4,
+                status: 200,
+                statusText: 'OK',
+                timeout: 0
+            };
+            xhr.getField = field => {
+                return xhr.isMocked ? mockedValues[field] : xhr[field];
+            };
 
             return {
                 ...xhr,
                 get readyState() {
-                    return 4;
+                    return xhr.getField('readyState');
                 },
                 set readyState(val) { xhr.readyState = val; },
                 get status() {
-                    return 200;
+                    return xhr.getField('status');
                 },
                 set status(val) { xhr.status = val; },
                 get statusText() {
-                    return 'OK';
+                    return xhr.getField('statusText');
                 },
                 set statusText(val) { xhr.statusText = val; },
                 get responseUrl() {
-                    return xhr.url;
+                    return xhr.isMocked ? xhr.url : xhr.responseUrl;
                 },
                 set responseUrl(val) { xhr.responseUrl = val; },
                 get response() {
-                    return urlResponseMap[xhr.url];
+                    return xhr.isMocked ? urlResponseMap[xhr.url] : xhr.response;
                 },
                 set response(val) { xhr.response = val; },
                 get responseText() {
-                    return JSON.stringify(urlResponseMap[xhr.url]);
+                    return xhr.isMocked ? JSON.stringify(urlResponseMap[xhr.url]) : xhr.responseText;
                 },
                 set responseText(val) { xhr.responseText = val; },
                 get timeout() {
-                    return 0;
+                    return xhr.getField('timeout');
                 },
                 set timeout(val) { xhr.timeout = val; },
                 open: function(method, url, ...args) {
-                    xhr.url = url; // store URL for later access
+                    xhr.url = url;
+
+                    if (Object.keys(urlResponseMap).includes(url)) {
+                        xhr.isMocked = true;
+                    }
+
                     xhr.open(method, url, ...args);
                 },
                 set onreadystatechange(fn) {
                     xhr.onreadystatechange = fn;
                 },
                 send: function() {
-                    xhr.onreadystatechange();
+                    if (xhr.isMocked) {
+                        xhr.onreadystatechange();
+                    } else {
+                        xhr.send();
+                    }
                 }
             };
         }
