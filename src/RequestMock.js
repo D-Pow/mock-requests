@@ -51,76 +51,27 @@ const RequestMock = (function() {
 
         XMLHttpRequest = function() {
             const xhr = new OriginalXHR();
-            const mockedValues = {
-                readyState: 4,
-                status: 200,
-                statusText: 'OK',
-                timeout: 0
-            };
-            const setValues = {
-                readyState: 0,
-                response: "",
-                responseText: "",
-                responseType: "",
-                responseURL: "",
-                responseXML: null,
-                status: 0,
-                statusText: "",
-                timeout: 0
-            };
-            xhr.getField = field => {
-                return xhr.isMocked ? mockedValues[field] : setValues[field];
-            };
 
             function mockXhrRequest() {
-                Object.defineProperties(xhr, {
-                    readyState: {
-                        get: () => xhr.getField('readyState'),
-                        set: function(val) {
-                            setValues.readyState = val;
-                        }
-                    },
-                    status: {
-                        get: () => xhr.getField('status'),
-                        set: function(val) {
-                            setValues.status = val;
-                        }
-                    },
-                    statusText: {
-                        get: () => xhr.getField('statusText'),
-                        set: function(val) {
-                            setValues.statusText = val;
-                        }
-                    },
-                    responseUrl: {
-                        get: () => xhr.isMocked ? xhr.url : setValues.responseUrl,
-                        set: function(val) {
-                            setValues.responseUrl = val;
-                        }
-                    },
-                    response: {
-                        get: () => {
-                            return xhr.isMocked ? urlResponseMap[xhr.url] : setValues.response;
-                        },
-                        set: function(val) {
-                            setValues.response = val;
-                        }
-                    },
-                    responseText: {
-                        get: () => {
-                            return xhr.isMocked ? JSON.stringify(urlResponseMap[xhr.url]) : setValues.responseText;
-                        },
-                        set: function(val) {
-                            setValues.responseText = val;
-                        }
-                    },
-                    timeout: {
-                        get: () => xhr.getField('timeout'),
-                        set: function(val) {
-                            setValues.timeout = val;
-                        }
-                    }
-                });
+                const mockedValues = {
+                    readyState: 4,
+                    response: urlResponseMap[xhr.url],
+                    responseText: JSON.stringify(urlResponseMap[xhr.url]),
+                    responseUrl: xhr.url,
+                    status: 200,
+                    statusText: 'OK',
+                    timeout: 0
+                };
+                const properties = Object.keys(mockedValues).reduce((definedProperties, key) => {
+                    definedProperties[key] = {
+                        get: () => mockedValues[key],
+                        set: val => mockedValues[key] = val
+                    };
+
+                    return definedProperties;
+                }, {});
+
+                Object.defineProperties(xhr, properties);
             }
 
             xhr.originalOpen = xhr.open;
