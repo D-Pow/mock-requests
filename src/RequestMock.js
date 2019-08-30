@@ -57,31 +57,31 @@ const RequestMock = (function() {
                 get readyState() {
                     return 4;
                 },
-                set readyState(val) {},
+                set readyState(val) { xhr.readyState = val; },
                 get status() {
                     return 200;
                 },
-                set status(val) {},
+                set status(val) { xhr.status = val; },
                 get statusText() {
                     return 'OK';
                 },
-                set statusText(val) {},
+                set statusText(val) { xhr.statusText = val; },
                 get responseUrl() {
                     return xhr.url;
                 },
-                set responseUrl(val) {},
+                set responseUrl(val) { xhr.responseUrl = val; },
                 get response() {
                     return urlResponseMap[xhr.url];
                 },
-                set response(val) {},
+                set response(val) { xhr.response = val; },
                 get responseText() {
                     return JSON.stringify(urlResponseMap[xhr.url]);
                 },
-                set responseText(val) {},
+                set responseText(val) { xhr.responseText = val; },
                 get timeout() {
                     return 0;
                 },
-                set timeout(val) {},
+                set timeout(val) { xhr.timeout = val; },
                 open: function(method, url, ...args) {
                     xhr.url = url; // store URL for later access
                     xhr.open(method, url, ...args);
