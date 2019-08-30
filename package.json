@@ -1,0 +1,31 @@
+{
+  "name": "request-mock",
+  "version": "1.0.0",
+  "description": "Mocks XMLHttpRequest and fetch requests with the specified response object",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "webpack --mode production",
+    "test": "jest tests"
+  },
+  "keywords": [
+    "request",
+    "HTTP",
+    "requests",
+    "XMLHttpRequest",
+    "fetch",
+    "mock",
+    "network"
+  ],
+  "author": "Devon Powell",
+  "license": "MIT",
+  "devDependencies": {
+    "@babel/core": "^7.5.5",
+    "@babel/plugin-proposal-object-rest-spread": "^7.5.5",
+    "@babel/preset-env": "^7.5.5",
+    "@babel/preset-react": "^7.0.0",
+    "babel-loader": "^8.0.6",
+    "jest": "^24.9.0",
+    "webpack": "^4.39.2",
+    "webpack-cli": "^3.3.7"
+  }
+}
