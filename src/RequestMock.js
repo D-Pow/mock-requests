@@ -57,62 +57,96 @@ const RequestMock = (function() {
                 statusText: 'OK',
                 timeout: 0
             };
+            const setValues = {
+                readyState: 0,
+                response: "",
+                responseText: "",
+                responseType: "",
+                responseURL: "",
+                responseXML: null,
+                status: 0,
+                statusText: "",
+                timeout: 0
+            };
             xhr.getField = field => {
-                return xhr.isMocked ? mockedValues[field] : xhr[field];
+                return xhr.isMocked ? mockedValues[field] : setValues[field];
             };
 
-            return {
-                ...xhr,
-                get readyState() {
-                    return xhr.getField('readyState');
-                },
-                set readyState(val) { xhr.readyState = val; },
-                get status() {
-                    return xhr.getField('status');
-                },
-                set status(val) { xhr.status = val; },
-                get statusText() {
-                    return xhr.getField('statusText');
-                },
-                set statusText(val) { xhr.statusText = val; },
-                get responseUrl() {
-                    return xhr.isMocked ? xhr.url : xhr.responseUrl;
-                },
-                set responseUrl(val) { xhr.responseUrl = val; },
-                get response() {
-                    return xhr.isMocked ? urlResponseMap[xhr.url] : xhr.response;
-                },
-                set response(val) { xhr.response = val; },
-                get responseText() {
-                    return xhr.isMocked ? JSON.stringify(urlResponseMap[xhr.url]) : xhr.responseText;
-                },
-                set responseText(val) { xhr.responseText = val; },
-                get timeout() {
-                    return xhr.getField('timeout');
-                },
-                set timeout(val) { xhr.timeout = val; },
-                open: function(method, url, ...args) {
-                    xhr.url = url;
-
-                    if (Object.keys(urlResponseMap).includes(url)) {
-                        xhr.isMocked = true;
+            function mockXhrRequest() {
+                Object.defineProperties(xhr, {
+                    readyState: {
+                        get: () => xhr.getField('readyState'),
+                        set: function(val) {
+                            setValues.readyState = val;
+                        }
+                    },
+                    status: {
+                        get: () => xhr.getField('status'),
+                        set: function(val) {
+                            setValues.status = val;
+                        }
+                    },
+                    statusText: {
+                        get: () => xhr.getField('statusText'),
+                        set: function(val) {
+                            setValues.statusText = val;
+                        }
+                    },
+                    responseUrl: {
+                        get: () => xhr.isMocked ? xhr.url : setValues.responseUrl,
+                        set: function(val) {
+                            setValues.responseUrl = val;
+                        }
+                    },
+                    response: {
+                        get: () => {
+                            return xhr.isMocked ? urlResponseMap[xhr.url] : setValues.response;
+                        },
+                        set: function(val) {
+                            setValues.response = val;
+                        }
+                    },
+                    responseText: {
+                        get: () => {
+                            return xhr.isMocked ? JSON.stringify(urlResponseMap[xhr.url]) : setValues.responseText;
+                        },
+                        set: function(val) {
+                            setValues.responseText = val;
+                        }
+                    },
+                    timeout: {
+                        get: () => xhr.getField('timeout'),
+                        set: function(val) {
+                            setValues.timeout = val;
+                        }
                     }
+                });
+            }
 
-                    xhr.open(method, url, ...args);
-                },
-                set onreadystatechange(fn) {
-                    xhr.onreadystatechange = fn;
-                },
-                send: function(requestBody) {
-                    xhr.requestBody = requestBody;
+            xhr.originalOpen = xhr.open;
+            xhr.open = function(method, url, ...args) {
+                xhr.url = url;
 
-                    if (xhr.isMocked) {
-                        xhr.onreadystatechange();
-                    } else {
-                        xhr.send(requestBody);
-                    }
+                if (Object.keys(urlResponseMap).includes(url)) {
+                    xhr.isMocked = true;
+                    mockXhrRequest();
+                }
+
+                xhr.originalOpen(method, url, ...args);
+            };
+
+            xhr.originalSend = xhr.send;
+            xhr.send = function(requestBody) {
+                xhr.requestBody = requestBody;
+
+                if (xhr.isMocked) {
+                    xhr.onreadystatechange();
+                } else {
+                    xhr.originalSend(requestBody);
                 }
             };
+
+            return xhr;
         }
     }
 
