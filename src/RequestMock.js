@@ -103,11 +103,13 @@ const RequestMock = (function() {
                 set onreadystatechange(fn) {
                     xhr.onreadystatechange = fn;
                 },
-                send: function() {
+                send: function(requestBody) {
+                    xhr.requestBody = requestBody;
+
                     if (xhr.isMocked) {
                         xhr.onreadystatechange();
                     } else {
-                        xhr.send();
+                        xhr.send(requestBody);
                     }
                 }
             };
