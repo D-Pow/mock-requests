@@ -105,8 +105,30 @@ const RequestMock = (function() {
         }
     }
 
+    function overwriteFetch() {
+        const originalFetch = fetch;
+
+        fetch = function(url, options) {
+            if (Object.keys(urlResponseMap).includes(url)) {
+                const responseBody = urlResponseMap[url];
+                const response = {
+                    json: () => Promise.resolve(responseBody),
+                    text: () => Promise.resolve(JSON.stringify(responseBody))
+                };
+
+                return Promise.resolve(response);
+            } else {
+                return originalFetch(url, options);
+            }
+        }
+    }
+
     if (XMLHttpRequest) {
         overwriteXmlHttpRequestObject();
+    }
+
+    if (fetch) {
+        overwriteFetch();
     }
 
     return {
