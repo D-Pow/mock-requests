@@ -37,6 +37,10 @@ const RequestMock = (function() {
         return urlResponseMap[url];
     }
 
+    function deleteMockUrlResponse(url) {
+        return delete urlResponseMap[url];
+    }
+
     /**
      * Overwrites the XMLHttpRequest function with a wrapper that
      * mocks the readyState, status, statusText, and various other
@@ -108,7 +112,8 @@ const RequestMock = (function() {
     return {
         configure,
         setMockUrlResponse,
-        getResponse
+        getResponse,
+        deleteMockUrlResponse
     };
 })();
 
