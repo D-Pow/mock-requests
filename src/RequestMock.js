@@ -5,6 +5,7 @@
  * @property {function} setMockUrlResponse
  * @property {function} getResponse
  * @property {function} deleteMockUrlResponse
+ * @property {function} clearAllMocks
  * @property {function} OriginalXHR
  * @property {function} originalFetch
  */
@@ -62,6 +63,13 @@ function requestMock() {
      */
     function deleteMockUrlResponse(url) {
         return delete urlResponseMap[url];
+    }
+
+    /**
+     * Deletes all entries in the RequestMock configuration
+     */
+    function clearAllMocks() {
+        urlResponseMap = {};
     }
 
     /**
@@ -159,6 +167,7 @@ function requestMock() {
         setMockUrlResponse,
         getResponse,
         deleteMockUrlResponse,
+        clearAllMocks,
         OriginalXHR,
         originalFetch
     };
