@@ -73,6 +73,15 @@ function requestMock() {
     }
 
     /**
+     * Gets the `responseText` for XHR or `res.text()` for fetch.
+     *
+     * @param {*} response
+     */
+    function castToString(response) {
+        return typeof response === typeof {} ? JSON.stringify(response) : `${response}`;
+    }
+
+    /**
      * Overwrites the XMLHttpRequest function with a wrapper that
      * mocks the readyState, status, statusText, and various other
      * fields that depend on the status of the request, and applies
@@ -88,10 +97,11 @@ function requestMock() {
             const xhr = new OriginalXHR();
 
             function mockXhrRequest() {
+                const mockedResponse = urlResponseMap[xhr.url];
                 const mockedValues = {
                     readyState: 4,
-                    response: urlResponseMap[xhr.url],
-                    responseText: JSON.stringify(urlResponseMap[xhr.url]),
+                    response: mockedResponse,
+                    responseText: castToString(mockedResponse),
                     responseUrl: xhr.url,
                     status: 200,
                     statusText: 'OK',
@@ -144,7 +154,7 @@ function requestMock() {
                 const responseBody = urlResponseMap[url];
                 const response = {
                     json: () => Promise.resolve(responseBody),
-                    text: () => Promise.resolve(JSON.stringify(responseBody))
+                    text: () => Promise.resolve(castToString(responseBody))
                 };
 
                 return Promise.resolve(response);
