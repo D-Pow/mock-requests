@@ -4,7 +4,7 @@ const mockUrl1 = 'https://example.com';
 const mockUrl2 = 'https://other.example/someApi';
 const mockUrl3 = '192.168.0.1';
 const mockUrl4 = 'http://google.com';
-const mockUrl5 = 'http://not.mocked/api';
+const notMockedUrl = 'http://not.mocked/api';
 
 const mockConfig1 = {
     [mockUrl1]: { data: 'myData' },
@@ -60,10 +60,22 @@ describe('RequestMock', () => {
     });
 
     it('should call fetch for URLs not mocked', async () => {
-        // TODO
+        const receivedRealFetchJson = await fetch(notMockedUrl).then(res => res.json());
+        const receivedRealFetchText = await fetch(notMockedUrl).then(res => res.text());
+
+        expect(typeof receivedRealFetchJson).toEqual(typeof {});
+        expect(typeof receivedRealFetchText).toEqual(typeof '');
+        expect(Object.keys(receivedRealFetchJson).length).not.toBe(0);
+        expect(receivedRealFetchText.length).not.toBe(0);
     });
 
     it('should call fetch/XMLHttpRequest for URLs not mocked', async () => {
-        // TODO
+        RequestMock.configure(mockConfig1);
+
+        const mockXHR = new XMLHttpRequest();
+        mockXHR.open('GET', notMockedUrl);
+        mockXHR.onreadystatechange = jest.fn();
+        mockXHR.send();
+        expect(mockXHR.onreadystatechange).not.toHaveBeenCalled();
     });
 });
