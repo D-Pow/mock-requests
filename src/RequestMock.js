@@ -35,7 +35,7 @@ const RequestMock = (function requestMock() {
      * @param  {Object.<string, Object>} apiUrlResponseConfig - Config object containing URL strings as keys and respective mock response objects as values
      */
     function configure(apiUrlResponseConfig = {}) {
-        urlResponseMap = apiUrlResponseConfig;
+        urlResponseMap = deepCopyObject(apiUrlResponseConfig);
     }
 
     /**
@@ -73,6 +73,16 @@ const RequestMock = (function requestMock() {
      */
     function clearAllMocks() {
         urlResponseMap = {};
+    }
+
+    /**
+     * Deep copies a JS object
+     *
+     * @param {Object} obj
+     * @returns {Object}
+     */
+    function deepCopyObject(obj) {
+        return JSON.parse(JSON.stringify(obj));
     }
 
     /**
