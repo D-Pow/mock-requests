@@ -1,4 +1,12 @@
 /**
+ * RequestMock will mock both XMLHttpRequest and fetch such that
+ * any requested URL will return the specified mock object instead
+ * of actually making an async request. URLs not configured will
+ * still trigger an async request.
+ *
+ * @module request-mock
+ */
+/**
  * @typedef {Object} RequestMock
  * @global
  * @property {function} configure
@@ -10,14 +18,9 @@
  * @property {function} originalFetch
  */
 /**
- * RequestMock will mock both XMLHttpRequest and fetch such that
- * any requested URL will return the specified mock object instead
- * of actually making an async request. URLs not configured will
- * still trigger an async request.
- *
- * @returns {RequestMock}
+ * @type {RequestMock}
  */
-function requestMock() {
+const RequestMock = (function requestMock() {
     /**
      * @type {Object.<string, Object>} urlResponseMap - key (URL string) value (mock response) pairs for network mocks
      */
@@ -181,8 +184,6 @@ function requestMock() {
         OriginalXHR,
         originalFetch
     };
-}
-
-const RequestMock = requestMock();
+})();
 
 export default RequestMock;
