@@ -22,8 +22,8 @@ function requestMock() {
      */
     let urlResponseMap = {};
 
-    const OriginalXHR = XMLHttpRequest;
-    const originalFetch = fetch;
+    let OriginalXHR;
+    let originalFetch;
 
     /**
      * Initialize the mock
@@ -74,6 +74,8 @@ function requestMock() {
      * e.g. status = 200 and statusText = 'OK'
      */
     function overwriteXmlHttpRequestObject() {
+        OriginalXHR = XMLHttpRequest;
+
         XMLHttpRequest = function() {
             const xhr = new OriginalXHR();
 
@@ -127,6 +129,8 @@ function requestMock() {
     }
 
     function overwriteFetch() {
+        originalFetch = fetch;
+
         fetch = function(url, options) {
             if (Object.keys(urlResponseMap).includes(url)) {
                 const responseBody = urlResponseMap[url];
