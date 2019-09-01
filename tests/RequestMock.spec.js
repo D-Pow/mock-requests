@@ -23,11 +23,19 @@ describe('RequestMock', () => {
     it('should configure URLs to mock in constructor and setter function', () => {
         expect(RequestMock.getResponse(mockUrl1)).toBe(undefined);
 
+        RequestMock.configure();
+
+        expect(RequestMock.getResponse(mockUrl1)).toBe(undefined);
+
         RequestMock.configure(mockConfig1);
         RequestMock.setMockUrlResponse(mockUrl3, mockConfig2[mockUrl3]);
 
         expect(RequestMock.getResponse(mockUrl1)).toEqual(mockConfig1[mockUrl1]);
         expect(RequestMock.getResponse(mockUrl3)).toEqual(mockConfig2[mockUrl3]);
+
+        RequestMock.deleteMockUrlResponse(mockUrl1);
+
+        expect(RequestMock.getResponse(mockUrl1)).toBe(undefined);
     });
 
     it('should be able to parse different types of response bodies, including JSON and HTML', () => {
