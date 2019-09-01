@@ -1,5 +1,5 @@
 {
-  "name": "request-mock",
+  "name": "mock-requests",
   "version": "1.0.0",
   "description": "Mocks XMLHttpRequest and fetch requests with the specified response object",
   "main": "dist/index.js",

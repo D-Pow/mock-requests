@@ -22,7 +22,7 @@ Designed to work along with third-party libraries, including [Axios](https://git
 
 Using npm:
 
-`npm install request-mock`
+`npm install mock-requests`
 
 Using locally installed repo with git:
 
@@ -30,7 +30,7 @@ Using locally installed repo with git:
 
 package.json:
 
-`"request-mock": "file:<pathToCloneLocation>:/RequestMock`
+`"mock-requests": "file:<pathToCloneLocation>:/RequestMock`
 
 ## Usage
 

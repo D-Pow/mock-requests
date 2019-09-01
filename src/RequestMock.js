@@ -4,7 +4,7 @@
  * of actually making an async request. URLs not configured will
  * still trigger an async request.
  *
- * @module request-mock
+ * @module mock-requests
  */
 /**
  * @typedef {Object} RequestMock
