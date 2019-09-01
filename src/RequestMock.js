@@ -5,6 +5,8 @@
  * @property {function} setMockUrlResponse
  * @property {function} getResponse
  * @property {function} deleteMockUrlResponse
+ * @property {function} OriginalXHR
+ * @property {function} originalFetch
  */
 /**
  * RequestMock will mock both XMLHttpRequest and fetch such that
@@ -19,6 +21,9 @@ function requestMock() {
      * @type {Object.<string, Object>} urlResponseMap - key (URL string) value (mock response) pairs for network mocks
      */
     let urlResponseMap = {};
+
+    const OriginalXHR = XMLHttpRequest;
+    const originalFetch = fetch;
 
     /**
      * Initialize the mock
@@ -69,8 +74,6 @@ function requestMock() {
      * e.g. status = 200 and statusText = 'OK'
      */
     function overwriteXmlHttpRequestObject() {
-        const OriginalXHR = XMLHttpRequest;
-
         XMLHttpRequest = function() {
             const xhr = new OriginalXHR();
 
@@ -124,8 +127,6 @@ function requestMock() {
     }
 
     function overwriteFetch() {
-        const originalFetch = fetch;
-
         fetch = function(url, options) {
             if (Object.keys(urlResponseMap).includes(url)) {
                 const responseBody = urlResponseMap[url];
@@ -153,7 +154,9 @@ function requestMock() {
         configure,
         setMockUrlResponse,
         getResponse,
-        deleteMockUrlResponse
+        deleteMockUrlResponse,
+        OriginalXHR,
+        originalFetch
     };
 }
 
