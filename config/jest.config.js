@@ -4,4 +4,7 @@ global.XMLHttpRequest = jest.fn(() => {
         send: () => {}
     };
 });
-global.fetch = jest.fn();
+global.fetch = jest.fn(() => Promise.resolve({
+    json: () => ({ realFetchResponse: 'realFetchResponse' }),
+    text: () => 'realFetchResponse'
+}));
