@@ -1,9 +1,20 @@
 /**
+ * @typedef {Object} RequestMock
+ * @global
+ * @property {function} configure
+ * @property {function} setMockUrlResponse
+ * @property {function} getResponse
+ * @property {function} deleteMockUrlResponse
+ */
+/**
  * RequestMock will mock both XMLHttpRequest and fetch such that
  * any requested URL will return the specified mock object instead
- * of actually making an async request.
+ * of actually making an async request. URLs not configured will
+ * still trigger an async request.
+ *
+ * @returns {RequestMock}
  */
-const RequestMock = (function() {
+function requestMock() {
     /**
      * @type {Object.<string, Object>} urlResponseMap - key (URL string) value (mock response) pairs for network mocks
      */
@@ -20,6 +31,7 @@ const RequestMock = (function() {
 
     /**
      * Mock any network requests to the given URL using the given responseObject
+     *
      * @param {string} url
      * @param {Object} responseObject
      */
@@ -37,6 +49,12 @@ const RequestMock = (function() {
         return urlResponseMap[url];
     }
 
+    /**
+     * Deletes the URL and respective mock object
+     *
+     * @param url
+     * @returns {boolean}
+     */
     function deleteMockUrlResponse(url) {
         return delete urlResponseMap[url];
     }
@@ -137,6 +155,8 @@ const RequestMock = (function() {
         getResponse,
         deleteMockUrlResponse
     };
-})();
+}
+
+const RequestMock = requestMock();
 
 export default RequestMock;
