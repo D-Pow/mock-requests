@@ -59,12 +59,20 @@ describe('RequestMock', () => {
     it('should overwrite the result of XMLHttpRequest for URLs mocked', async () => {
         RequestMock.configure({ ...mockConfig1, ...mockConfig2 });
 
-        const mockXHR = new XMLHttpRequest();
-        mockXHR.open('GET', mockUrl2);
-        mockXHR.onreadystatechange = () => {
-            expect(mockXHR.response).toEqual(mockConfig1[mockUrl2]);
+        const mockXhrJson = new XMLHttpRequest();
+        mockXhrJson.open('GET', mockUrl2);
+        mockXhrJson.onreadystatechange = () => {
+            expect(mockXhrJson.response).toEqual(mockConfig1[mockUrl2]);
         };
-        mockXHR.send();
+        mockXhrJson.send();
+
+        const mockXhrText = new XMLHttpRequest();
+        mockXhrText.open('GET', mockUrl4);
+        mockXhrText.onreadystatechange = () => {
+            mockXhrText.status = 302; // HTTP code for redirect
+            expect(mockXhrText.responseText).toEqual(mockConfig2[mockUrl4]);
+        };
+        mockXhrText.send();
     });
 
     it('should call fetch for URLs not mocked', async () => {
