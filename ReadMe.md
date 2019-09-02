@@ -59,20 +59,25 @@ However, replacing all API responses is still a valid use of this library.
 Note how in the below examples, the *only* part that differs from using normal, production-bound code
 and mock code is the `RequestMock.function()` calls! No other configuration/code changes necessary.
 
-```javascript
-const myApiUrl = 'https://mywebsite.com/api/vx/someApi'
+To configure global app usage of `RequestMock`, simply call `configure()` with an object containing URL-responseObject
+mappings. That's all that needs to be done, and all other async calls will receive the mocked responses!
 
+```javascript
+const myApiUrl = 'https://mywebsite.com/api/vx/someApi';
+
+// Configuring mock responses.
+// This is the only code you need to add to use this library
 RequestMock.configure({
-    [myApiUrl]: { data: 'someResponse' },
+    [myApiUrl]: { data: 'myJsonResponseObject' },
     '192.168.0.1': '<html>some other type of response</html>'
 });
 
 // ...other code
 
-// when you actually need to make async requests
+// Using your async requests
 // Note that this part DOESN'T CHANGE between using mocks and actual data
-// from your service !
-const mockedHtmlResponse = await fetch('192.168.0.1', {...configOptions})
+// from your service!
+const mockedHtmlResponse = await fetch(myApiUrl, {...configOptions})
                                 .then(res => res.json());
 useResponseContentAsNormal(mockedHtmlResponse);
 ```
@@ -82,7 +87,7 @@ decide that you need to set other URL mocks elsewhere, you can set them separate
 
 ```javascript
 // other file
-const myForgottenUrl = 'https://myotherapi.thatIforgotOriginally/api/vx/something';
+const myForgottenUrl = 'https://myotherapi.thatIforgotOriginally/api/vx/doStuff';
 
 RequestMock.setMockUrlResponse(myForgottenUrl, { data: 'myOtherResponse' });
 
@@ -115,10 +120,10 @@ useResponseContent(realApiResponse);
 
 ## RequestMock API
 
-In order to make mocking your API calls simpler, APIs have been added to allow for setting,
-getting, and deleting mock responses for certain API calls: 
+In order to make mocking your API calls simpler, config functions have been added to allow for
+setting, getting, and deleting mock responses for certain API calls:
 
-##### configure(originalUrlResponseConfigObject)
+##### configure(urlResponseConfigObject)
 ##### setMockUrlResponse(extraUrl, mockResponseObject)
 ##### getResponse(url)
 ##### deleteMockUrlResponse(urlNotMeantToBeMocked)
@@ -130,20 +135,6 @@ Note that `OriginalXHR` and `originalFetch` will use the original `XMLHttpReques
 regardless of if you've set the mock URL responses in `RequestMock.configure()` or `RequestMock.setMockUrlResponse(...)`.
 It will also use `XMLHttpRequest` and `fetch` regardless of if the browser supports them or not (will be `undefined` in
 cases where the browser doesn't support them).
-
-## RequestMock.configure
-
-To configure global app usage of `RequestMock`, simply call `configure()` with an object containing URL-responseObject
-mappings, as mentioned above:
-
-```javascript
-const myMockedResponseConfig = {
-    [myApiUrl]: { data: 'someResponse' },
-    '192.168.0.1': '<html>some other type of response</html>'
-};
-
-RequestMock.configure(myMockedResponseConfig);
-``` 
 
 ## Final notes
 
