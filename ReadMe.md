@@ -1,5 +1,9 @@
 # RequestMock
 
+[![build status](https://travis-ci.org/D-Pow/RequestMock.svg?branch=master)](https://travis-ci.org/D-Pow/RequestMock)
+[![coverage status](https://coveralls.io/repos/github/D-Pow/RequestMock/badge.svg?branch=master)](https://coveralls.io/github/D-Pow/RequestMock?branch=master)
+[![install size](https://packagephobia.now.sh/badge?p=mock-requests)](https://packagephobia.now.sh/result?p=mock-requests)
+
 Mocks async requests with mock responses so you can continue
 to use your requests/libraries without having to manually replace the
 usage of async functions with mocks.
