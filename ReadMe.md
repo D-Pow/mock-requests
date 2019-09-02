@@ -30,7 +30,7 @@ a test setup file, you can use this library as normal to mock all async response
 
 ## Installation
 
-Using npm:
+Using npm (see the [npm package](https://www.npmjs.com/package/mock-requests)):
 
 `npm install mock-requests`
 
