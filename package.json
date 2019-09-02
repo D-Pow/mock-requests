@@ -29,10 +29,6 @@
       "<rootDir>/config/jest.config.js"
     ]
   },
-  "browserslist": [
-    "> 0.25%",
-    "not dead"
-  ],
   "keywords": [
     "request",
     "HTTP",
