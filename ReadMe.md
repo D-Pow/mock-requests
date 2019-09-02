@@ -23,7 +23,7 @@ Specific benefits provided by this library that aren't offered in others:
 (which also means no need to change URLs from `website.com/api` to `localhost/api`).
 * No confusing interfaces or multi-step procedures to getting started. Simply configure it *once* in your
 source code and you're good to go!
-* This is designed to work along with third-party libraries, including [Axios@0.17.0](https://github.com/axios/axios),
+* This is designed to work along with third-party libraries, including [Axios](https://github.com/axios/axios),
 so they function as normal while still giving you the mocks you want.
 * This can easily be used alongside `jest` for testing! As long as `fetch` and `XMLHttpRequest` are defined in
 a test setup file, you can use this library as normal to mock all async responses.
