@@ -42,39 +42,46 @@ package.json:
 
 This library wraps `XMLHttpRequest` and `fetch` with a wrapper that allows
 for mock responses to be returned instead of actually making async requests.
-If the URL-mockResponse is configured, it returns the configured mock response;
-otherwise, the async request is made.
+If a URL is configured with a mock response, then `XMLHttpRequest` and `fetch` will
+return the configured mock response when opened with that URL. Otherwise, when opened
+with a URL that isn't configured with a mock response, the standard async request is made.
 
-This was designed to be used in such a way that wherever you configure
-it, the entire app experiences the effects. This means you could configure it in one file
-and then all files that call that API will receive the mock response instead (assuming
-you configure it in a file that's parsed before other files make network calls).
+This was designed to be used in such a way that wherever you configure it, the entire app
+experiences the effects. This means you could configure it in one file and then all files
+that make async requests to those configured URLs will receive the mock responses instead,
+even without importing `RequestMock` (assuming you configure it in a file that's parsed
+before other files make network calls).
 
-Furthermore, it is designed specifically when some APIs are not functioning correctly
-and a mock is necessary to replace some API responses for continuing your work.
+Furthermore, it is designed to be used specifically when some APIs are not functioning correctly
+and mocks are necessary to replace those responses for continuing your work.
 However, replacing all API responses is still a valid use of this library.
 
 ## Examples
 
 Note how in the below examples, the *only* part that differs from using normal, production-bound code
-and mock code is the `RequestMock.function()` calls! No other configuration/code changes necessary.
+and mock code is the `RequestMock.function()` calls. No other configuration/code changes necessary!
 
 To configure global app usage of `RequestMock`, simply call `configure()` with an object containing URL-responseObject
-mappings. That's all that needs to be done, and all other async calls will receive the mocked responses!
+mappings. That's all that needs to be done, and all other async calls will receive the mocked responses automatically!
+This only needs to be done once, i.e. you don't need to import `RequestMock` again in any other file.
 
 ```javascript
 const myApiUrl = 'https://mywebsite.com/api/vx/someApi';
+const anotherUrl = '192.168.0.1';
 
 // Configuring mock responses.
 // This is the only code you need to add to use this library
+// Add in a file/location that is parsed before the rest of your async code
+import RequestMock from 'mock-requests';
 RequestMock.configure({
     [myApiUrl]: { data: 'myJsonResponseObject' },
-    '192.168.0.1': '<html>some other type of response</html>'
+    [anotherUrl]: '<html>some other type of response</html>'
 });
 
 // ...other code
 
-// Using your async requests
+// Using your async requests. If the code below exists in a different file from the configuration above,
+// RequestMock doesn't need to be imported again.
 // Note that this part DOESN'T CHANGE between using mocks and actual data
 // from your service!
 const mockedHtmlResponse = await fetch(myApiUrl, {...configOptions})
@@ -89,16 +96,17 @@ decide that you need to set other URL mocks elsewhere, you can set them separate
 // other file
 const myForgottenUrl = 'https://myotherapi.thatIforgotOriginally/api/vx/doStuff';
 
+import RequestMock from 'mock-requests';
 RequestMock.setMockUrlResponse(myForgottenUrl, { data: 'myOtherResponse' });
 
-...
+// ...
 
-const otherResponseDataUsage = await fetch(myForgottenUrl, {...whateverOptions});
+const response = await fetch(myForgottenUrl, {...whateverOptions});
 
-useResponseContent(otherResponseDataUsage);
+useResponseContent(response);
 ```
 
-Finally, in the event that some APIs are not functioning correctly but some are, you can configure
+Finally, in the event that some APIs are not functioning correctly but others are, you can configure
 the non-functioning APIs using `RequestMock` and then leave the other APIs as-is for proper responses:
 
 ```javascript
@@ -107,7 +115,7 @@ const myFunctioningApi = 'https://myapi.com/api/vx/isFunctioningProperly';
 
 RequestMock.setMockUrlResponse(myNonFunctioningApi, { data: 'myOtherResponse' });
 
-...
+// ...
 
 // Will receive mock
 const mockedResponse = await fetch(myNonFunctioningApi, {...whateverOptions});
