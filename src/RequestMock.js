@@ -20,7 +20,7 @@
 /**
  * @type {RequestMock}
  */
-const RequestMock = (function requestMock() {
+const RequestMock = (function() {
     /**
      * @type {Object.<string, Object>} urlResponseMap - key (URL string) value (mock response) pairs for network mocks
      */
