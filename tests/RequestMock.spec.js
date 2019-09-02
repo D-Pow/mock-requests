@@ -67,10 +67,12 @@ describe('RequestMock', () => {
         mockXhrJson.send();
 
         const mockXhrText = new XMLHttpRequest();
+        const expectedManuallyChangedStatus = 302; // HTTP code for redirect
         mockXhrText.open('GET', mockUrl4);
+        mockXhrText.status = expectedManuallyChangedStatus;
         mockXhrText.onreadystatechange = () => {
-            mockXhrText.status = 302; // HTTP code for redirect
             expect(mockXhrText.responseText).toEqual(mockConfig2[mockUrl4]);
+            expect(mockXhrText.status).toEqual(expectedManuallyChangedStatus);
         };
         mockXhrText.send();
     });
