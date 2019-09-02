@@ -177,11 +177,11 @@ const RequestMock = (function() {
         }
     }
 
-    if (XMLHttpRequest) {
+    if (window.XMLHttpRequest) {
         overwriteXmlHttpRequestObject();
     }
 
-    if (fetch) {
+    if (window.fetch) {
         overwriteFetch();
     }
 
