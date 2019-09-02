@@ -1,6 +1,6 @@
 {
   "name": "mock-requests",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Mocks XMLHttpRequest and fetch requests with the specified response object",
   "repository": {
     "type": "git",
@@ -32,6 +32,8 @@
     "webpack-cli": "^3.3.7"
   },
   "jest": {
-    "setupFiles": [ "<rootDir>/config/jest.config.js" ]
+    "setupFiles": [
+      "<rootDir>/config/jest.config.js"
+    ]
   }
 }
