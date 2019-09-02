@@ -2,26 +2,17 @@
   "name": "mock-requests",
   "version": "1.0.3",
   "description": "Mocks XMLHttpRequest and fetch requests with the specified response object",
+  "author": "Devon Powell",
+  "license": "MIT",
+  "main": "dist/index.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/D-Pow/RequestMock.git"
   },
-  "main": "dist/index.js",
   "scripts": {
     "build": "webpack --mode production",
     "test": "jest tests"
   },
-  "keywords": [
-    "request",
-    "HTTP",
-    "requests",
-    "XMLHttpRequest",
-    "fetch",
-    "mock",
-    "network"
-  ],
-  "author": "Devon Powell",
-  "license": "MIT",
   "devDependencies": {
     "@babel/core": "^7.5.5",
     "@babel/plugin-proposal-object-rest-spread": "^7.5.5",
@@ -40,5 +31,15 @@
   "browserslist": [
     "> 0.25%",
     "not dead"
+  ],
+  "keywords": [
+    "request",
+    "HTTP",
+    "requests",
+    "XMLHttpRequest",
+    "fetch",
+    "mock",
+    "mocks",
+    "network"
   ]
 }
