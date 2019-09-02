@@ -87,7 +87,7 @@ describe('RequestMock', () => {
         expect(receivedRealFetchText.length).not.toBe(0);
     });
 
-    it('should call fetch/XMLHttpRequest for URLs not mocked', async () => {
+    it('should call XMLHttpRequest for URLs not mocked', async () => {
         RequestMock.configure(mockConfig1);
 
         const mockXHR = new XMLHttpRequest();
