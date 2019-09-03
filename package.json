@@ -1,6 +1,6 @@
 {
   "name": "mock-requests",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "Mocks XMLHttpRequest and fetch requests with the specified response object",
   "author": "Devon Powell",
   "license": "MIT",
