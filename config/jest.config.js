@@ -1,3 +1,5 @@
+import '@babel/polyfill';
+
 global.XMLHttpRequest = jest.fn(() => {
     return {
         open: () => {},

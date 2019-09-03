@@ -17,6 +17,7 @@
     "@babel/core": "^7.5.5",
     "@babel/plugin-proposal-object-rest-spread": "^7.5.5",
     "@babel/plugin-transform-template-literals": "^7.4.4",
+    "@babel/polyfill": "^7.4.4",
     "@babel/preset-env": "^7.5.5",
     "babel-loader": "^8.0.6",
     "coveralls": "^3.0.6",
