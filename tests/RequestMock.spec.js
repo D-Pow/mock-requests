@@ -38,6 +38,25 @@ describe('RequestMock', () => {
         expect(RequestMock.getResponse(mockUrl1)).toBe(undefined);
     });
 
+    it('should be able to optionally maintain previous configurations when adding new ones', () => {
+        expect(RequestMock.getResponse(mockUrl3)).toBe(undefined);
+
+        RequestMock.configure(mockConfig1);
+
+        expect(RequestMock.getResponse(mockUrl1)).toEqual(mockConfig1[mockUrl1]);
+        expect(RequestMock.getResponse(mockUrl3)).toBe(undefined);
+
+        RequestMock.configure(mockConfig2);
+
+        expect(RequestMock.getResponse(mockUrl1)).toBe(undefined);
+        expect(RequestMock.getResponse(mockUrl3)).toEqual(mockConfig2[mockUrl3]);
+
+        RequestMock.configure(mockConfig1, false);
+
+        expect(RequestMock.getResponse(mockUrl1)).toEqual(mockConfig1[mockUrl1]);
+        expect(RequestMock.getResponse(mockUrl3)).toEqual(mockConfig2[mockUrl3]);
+    });
+
     it('should be able to parse different types of response bodies, including JSON and HTML', () => {
         RequestMock.configure({ ...mockConfig1, ...mockConfig2 });
 
