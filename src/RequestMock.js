@@ -47,30 +47,44 @@ const RequestMock = (function() {
      * Initialize the mock with response objects.
      *
      * @param  {Object.<string, Object>} apiUrlResponseConfig - Config object containing URL strings as keys and respective mock response objects as values
+     * @param {boolean} [overwritePreviousConfig=true] - If the map from a previous configure call should be maintained (true) or not (false)
      */
-    function configure(apiUrlResponseConfig = {}) {
-        urlResponseMap = Object.keys(apiUrlResponseConfig).reduce((mockResponses, key) => {
+    function configure(apiUrlResponseConfig = {}, overwritePreviousConfig = true) {
+        const newUrlResponseMap = Object.keys(apiUrlResponseConfig).reduce((mockResponses, key) => {
             mockResponses[key] = {
                 response: deepCopyObject(apiUrlResponseConfig[key]),
                 dynamicResponseModFn: null
             };
             return mockResponses;
         }, {});
+
+        if (overwritePreviousConfig) {
+            urlResponseMap = newUrlResponseMap;
+        } else {
+            urlResponseMap = { ...urlResponseMap, ...newUrlResponseMap };
+        }
     }
 
     /**
      * Initialize the mock with response objects and their dynamic update functions
      *
      * @param {Object<string, MockResponseConfig>} dynamicApiUrlResponseConfig
+     * @param {boolean} [overwritePreviousConfig=true] - If the map from a previous configure call should be overwritten by this call (true) or not (false)
      */
-    function configureDynamicResponses(dynamicApiUrlResponseConfig = {}) {
-        urlResponseMap = Object.keys(dynamicApiUrlResponseConfig).reduce((mockResponses, key) => {
+    function configureDynamicResponses(dynamicApiUrlResponseConfig = {}, overwritePreviousConfig = true) {
+        const newUrlResponseMap = Object.keys(dynamicApiUrlResponseConfig).reduce((mockResponses, key) => {
             mockResponses[key] = {
                 response: deepCopyObject(dynamicApiUrlResponseConfig[key].response),
                 dynamicResponseModFn: dynamicApiUrlResponseConfig[key].dynamicResponseModFn
             };
             return mockResponses;
         }, {});
+
+        if (overwritePreviousConfig) {
+            urlResponseMap = newUrlResponseMap;
+        } else {
+            urlResponseMap = { ...urlResponseMap, ...newUrlResponseMap };
+        }
     }
 
     /**
