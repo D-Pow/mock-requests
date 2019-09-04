@@ -42,32 +42,41 @@ const RequestMock = (function() {
     let originalFetch;
 
     /**
-     * Initialize the mock
+     * Initialize the mock with response objects.
      *
      * @param  {Object.<string, Object>} apiUrlResponseConfig - Config object containing URL strings as keys and respective mock response objects as values
      */
     function configure(apiUrlResponseConfig = {}) {
-        urlResponseMap = deepCopyObject(apiUrlResponseConfig);
+        urlResponseMap = Object.keys(apiUrlResponseConfig).reduce((mockResponses, key) => {
+            mockResponses[key] = {
+                response: deepCopyObject(apiUrlResponseConfig[key]),
+                dynamicResponseModFn: null
+            };
+            return mockResponses;
+        }, {});
     }
 
     /**
      * Mock any network requests to the given URL using the given responseObject
      *
-     * @param {string} url
-     * @param {Object} responseObject
+     * @param {string} url - URL to mock
+     * @param {Object} response - Mock response object
      */
-    function setMockUrlResponse(url, responseObject) {
-        urlResponseMap[url] = responseObject;
+    function setMockUrlResponse(url, response) {
+        const MockResponseConfig = urlResponseMap[url] ? urlResponseMap[url] : { response: null, dynamicResponseModFn: null };
+
+        MockResponseConfig.response = response;
+        urlResponseMap[url] = MockResponseConfig;
     }
 
     /**
      * Get the mock response object associated with the passed URL
      *
      * @param {string} url
-     * @returns {Object} - Configured response object
+     * @returns {*} - Configured response object
      */
     function getResponse(url) {
-        return urlResponseMap[url];
+        return urlResponseMap[url] ? urlResponseMap[url].response : undefined;
     }
 
     /**
@@ -164,8 +173,8 @@ const RequestMock = (function() {
         XMLHttpRequest = function() {
             const xhr = new OriginalXHR();
 
-            function mockXhrRequest() {
-                const mockedResponse = urlResponseMap[xhr.url];
+            function mockXhrRequest(requestPayload) {
+                const mockedResponse = getResponseAndDynamicallyUpdate(xhr.url, requestPayload);
                 const mockedValues = {
                     readyState: 4,
                     response: mockedResponse,
@@ -190,23 +199,16 @@ const RequestMock = (function() {
             xhr.originalOpen = xhr.open;
             xhr.open = function(method, url, ...args) {
                 xhr.url = url;
-
-                if (Object.keys(urlResponseMap).includes(url)) {
-                    xhr.isMocked = true;
-                    mockXhrRequest();
-                }
-
                 xhr.originalOpen(method, url, ...args);
             };
 
             xhr.originalSend = xhr.send;
-            xhr.send = function(requestBody) {
-                xhr.requestBody = requestBody;
-
-                if (xhr.isMocked) {
+            xhr.send = function(requestPayload) {
+                if (urlIsMocked(xhr.url)) {
+                    mockXhrRequest(requestPayload);
                     xhr.onreadystatechange();
                 } else {
-                    xhr.originalSend(requestBody);
+                    xhr.originalSend(requestPayload);
                 }
             };
 
@@ -218,8 +220,11 @@ const RequestMock = (function() {
         originalFetch = fetch;
 
         fetch = function(url, options) {
-            if (Object.keys(urlResponseMap).includes(url)) {
-                const responseBody = urlResponseMap[url];
+            if (urlIsMocked(url)) {
+                const requestPayload = (options && options.hasOwnProperty('body') && options.body)
+                    ? attemptParseJson(options.body)
+                    : undefined;
+                const responseBody = getResponseAndDynamicallyUpdate(url, requestPayload);
                 const response = {
                     json: () => Promise.resolve(responseBody),
                     text: () => Promise.resolve(castToString(responseBody))
