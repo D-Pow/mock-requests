@@ -10,7 +10,9 @@
  * @typedef {Object} RequestMock
  * @global
  * @property {function} configure
+ * @property {function} configureDynamicResponses
  * @property {function} setMockUrlResponse
+ * @property {function} setDynamicMockUrlResponse
  * @property {function} getResponse
  * @property {function} deleteMockUrlResponse
  * @property {function} clearAllMocks
@@ -57,6 +59,21 @@ const RequestMock = (function() {
     }
 
     /**
+     * Initialize the mock with response objects and their dynamic update functions
+     *
+     * @param {Object<string, MockResponseConfig>} dynamicApiUrlResponseConfig
+     */
+    function configureDynamicResponses(dynamicApiUrlResponseConfig = {}) {
+        urlResponseMap = Object.keys(dynamicApiUrlResponseConfig).reduce((mockResponses, key) => {
+            mockResponses[key] = {
+                response: deepCopyObject(dynamicApiUrlResponseConfig[key].response),
+                dynamicResponseModFn: dynamicApiUrlResponseConfig[key].dynamicResponseModFn
+            };
+            return mockResponses;
+        }, {});
+    }
+
+    /**
      * Mock any network requests to the given URL using the given responseObject
      *
      * @param {string} url - URL to mock
@@ -67,6 +84,30 @@ const RequestMock = (function() {
 
         MockResponseConfig.response = response;
         urlResponseMap[url] = MockResponseConfig;
+    }
+
+    /**
+     * Mock any network requests to the given URL using the given responseObject
+     * and dynamic response modification function
+     *
+     * @param {string} url - URL to mock
+     * @param {Object} response - Mock response object
+     * @param {function} dynamicResponseModFn - Function to update response object from previous request/response values
+     */
+    function setDynamicMockUrlResponse(url, { response, dynamicResponseModFn }) {
+        const mockResponseConfig = urlResponseMap[url] ? urlResponseMap[url] : { response: null, dynamicResponseModFn: null };
+
+        if (response) {
+            mockResponseConfig.response = response;
+        }
+
+        if (dynamicResponseModFn && typeof dynamicResponseModFn === 'function') {
+            mockResponseConfig.dynamicResponseModFn = dynamicResponseModFn;
+        } else {
+            mockResponseConfig.dynamicResponseModFn = null;
+        }
+
+        urlResponseMap[url] = mockResponseConfig;
     }
 
     /**
@@ -247,7 +288,9 @@ const RequestMock = (function() {
 
     return {
         configure,
+        configureDynamicResponses,
         setMockUrlResponse,
+        setDynamicMockUrlResponse,
         getResponse,
         deleteMockUrlResponse,
         clearAllMocks,
