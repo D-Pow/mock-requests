@@ -164,7 +164,7 @@ xhr.statusText = 'OK';
 xhr.timeout = 0;
 ```
 
-If you want to change any of these, feel free to do so before calling `xhr.send()` or within `xhr.onreadystatechange`.
+If you want to change any of these, feel free to do so within `xhr.onreadystatechange`.
 
 ## License
 
