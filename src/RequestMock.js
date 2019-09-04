@@ -96,7 +96,7 @@ const RequestMock = (function() {
     function setMockUrlResponse(url, response) {
         const mockResponseConfig = urlResponseMap[url] ? urlResponseMap[url] : { response: null, dynamicResponseModFn: null };
 
-        mockResponseConfig.response = response;
+        mockResponseConfig.response = deepCopyObject(response);
         urlResponseMap[url] = mockResponseConfig;
     }
 
@@ -112,7 +112,7 @@ const RequestMock = (function() {
         const mockResponseConfig = urlResponseMap[url] ? urlResponseMap[url] : { response: null, dynamicResponseModFn: null };
 
         if (response) {
-            mockResponseConfig.response = response;
+            mockResponseConfig.response = deepCopyObject(response);
         }
 
         if (dynamicResponseModFn && typeof dynamicResponseModFn === 'function') {
@@ -205,7 +205,7 @@ const RequestMock = (function() {
         const mockResponseConfig = urlResponseMap[url];
 
         if (mockResponseConfig.dynamicResponseModFn && typeof mockResponseConfig.dynamicResponseModFn === 'function') {
-            const newResponse = mockResponseConfig.dynamicResponseModFn(requestPayload, mockResponseConfig.response);
+            const newResponse = deepCopyObject(mockResponseConfig.dynamicResponseModFn(requestPayload, mockResponseConfig.response));
 
             mockResponseConfig.response = newResponse;
         }
