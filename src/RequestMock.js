@@ -22,7 +22,19 @@
  */
 const RequestMock = (function() {
     /**
-     * @type {Object.<string, Object>} urlResponseMap - key (URL string) value (mock response) pairs for network mocks
+     * @typedef {function} DynamicResponseModFn
+     * @param {*} request - Payload passed to the async function
+     * @param {*} response - Previous response object to be modified
+     * @returns {*} modifiedResponse - Updated response to be saved in the mock response map
+     */
+    /**
+     * @typedef {Object} MockResponseConfig
+     * @property {Object} response - Mock response to be returned
+     * @property {DynamicResponseModFn} dynamicResponseModFn - Function to dynamically change the response object based on previous request/response
+     */
+
+    /**
+     * @type {Object.<string, MockResponseConfig>} urlResponseMap - key (URL string) value (mock response) pairs for network mocks
      */
     let urlResponseMap = {};
 
