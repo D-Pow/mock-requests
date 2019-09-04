@@ -106,6 +106,49 @@ const RequestMock = (function() {
         return typeof response === typeof {} ? JSON.stringify(response) : `${response}`;
     }
 
+    function urlIsMocked(url) {
+        return Object.keys(urlResponseMap).includes(url);
+    }
+
+    /**
+     * Parse payload content from fetch/XHR such that if it's a stringified object,
+     * the object is returned. Otherwise, return the content as-is.
+     *
+     * @param {*} content
+     * @returns {(Object|*)} - Object if the content is a stringified object, otherwise the passed content
+     */
+    function attemptParseJson(content) {
+        let parsedContent;
+
+        try {
+            parsedContent = JSON.parse(content);
+        } catch (e) {
+            parsedContent = content;
+        }
+
+        return parsedContent;
+    }
+
+    /**
+     * Returns the configured mock response. If a dynamic response modification function exists, then modify the
+     * response before returning it and save it to the urlRequestMap.
+     *
+     * @param {string} url
+     * @param {*} requestPayload
+     * @returns {*} - Configured response after the dynamic modification function has been run (if it exists)
+     */
+    function getResponseAndDynamicallyUpdate(url, requestPayload) {
+        const mockResponseConfig = urlResponseMap[url];
+
+        if (mockResponseConfig.dynamicResponseModFn && typeof mockResponseConfig.dynamicResponseModFn === 'function') {
+            const newResponse = mockResponseConfig.dynamicResponseModFn(requestPayload, mockResponseConfig.response);
+
+            mockResponseConfig.response = newResponse;
+        }
+
+        return mockResponseConfig.response;
+    }
+
     /**
      * Overwrites the XMLHttpRequest function with a wrapper that
      * mocks the readyState, status, statusText, and various other
