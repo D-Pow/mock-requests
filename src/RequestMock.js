@@ -94,10 +94,10 @@ const RequestMock = (function() {
      * @param {Object} response - Mock response object
      */
     function setMockUrlResponse(url, response) {
-        const MockResponseConfig = urlResponseMap[url] ? urlResponseMap[url] : { response: null, dynamicResponseModFn: null };
+        const mockResponseConfig = urlResponseMap[url] ? urlResponseMap[url] : { response: null, dynamicResponseModFn: null };
 
-        MockResponseConfig.response = response;
-        urlResponseMap[url] = MockResponseConfig;
+        mockResponseConfig.response = response;
+        urlResponseMap[url] = mockResponseConfig;
     }
 
     /**
