@@ -98,4 +98,53 @@ describe('Dynamic response modifications', () => {
 
         expect(dynamicConfig1[mockUrl1].response).toEqual(originalConfig);
     });
+
+    it('should dynamically update the response object of XMLHttpRequest for URLs mocked without changing original config', () => {
+        const originalConfig = JSON.parse(JSON.stringify(dynamicConfig2[mockUrl2].response));
+
+        const testDynamicXhrResponse = (payload, expectedResult) => {
+            const mockXhr = new XMLHttpRequest();
+            mockXhr.open('POST', mockUrl2);
+            mockXhr.onreadystatechange = () => {
+                expect(mockXhr.response).toEqual(expectedResult);
+            };
+            mockXhr.send(payload);
+        };
+
+        RequestMock.configureDynamicResponses(dynamicConfig2);
+
+        const mockPayload1 = {
+            addObject: {
+                id: 2,
+                someData: 'my new data'
+            }
+        };
+        const expectedResponse1 = {
+            aggregateObjects: [
+                { id: 1, value: 'Some value' },
+                mockPayload1.addObject
+            ]
+        };
+
+        const mockPayload2 = {
+            removeId: 1,
+            addObject: {
+                id: 3,
+                differentField: {
+                    data: 'some other data'
+                }
+            }
+        };
+        const expectedResponse2 = {
+            aggregateObjects: [
+                mockPayload1.addObject,
+                mockPayload2.addObject
+            ]
+        };
+
+        testDynamicXhrResponse(mockPayload1, expectedResponse1);
+        testDynamicXhrResponse(mockPayload2, expectedResponse2);
+
+        expect(dynamicConfig2[mockUrl2].response).toEqual(originalConfig);
+    });
 });
