@@ -64,6 +64,16 @@ describe('Dynamic response modifications', () => {
         expect(RequestMock.getResponse(mockUrl2)).toEqual(dynamicConfig2[mockUrl2].response);
     });
 
+    it('should have the ability to maintain previous configurations', () => {
+        expect(RequestMock.getResponse(mockUrl1)).toBe(undefined);
+        expect(RequestMock.getResponse(mockUrl2)).toBe(undefined);
+
+        RequestMock.configureDynamicResponses(dynamicConfig1);
+        RequestMock.configureDynamicResponses(dynamicConfig2, false);
+
+        expect(RequestMock.getResponse(mockUrl1)).toEqual(dynamicConfig1[mockUrl1].response);
+        expect(RequestMock.getResponse(mockUrl2)).toEqual(dynamicConfig2[mockUrl2].response);
+    });
 
     it('should dynamically update the response object of fetch for URLs mocked without changing original config', async () => {
         const originalConfig = JSON.parse(JSON.stringify(dynamicConfig1[mockUrl1].response));
@@ -146,5 +156,35 @@ describe('Dynamic response modifications', () => {
         testDynamicXhrResponse(mockPayload2, expectedResponse2);
 
         expect(dynamicConfig2[mockUrl2].response).toEqual(originalConfig);
+    });
+
+    it('should have the ability to remove dynamic response-changing functions', async () => {
+        RequestMock.configureDynamicResponses(dynamicConfig1);
+
+        const mockPayloadRound1 = {
+            addLettersArray: ['f', 'g'],
+            valueModification: 5
+        };
+        const modifiedResponseRound1 = await fetch(mockUrl1, {
+            body: JSON.stringify(mockPayloadRound1)
+        }).then(res => res.json());
+        const expectedResponseRound1 = {
+            data: ['a', 'b', 'c', 'd', 'e', 'f', 'g'],
+            value: 12
+        };
+        expect(modifiedResponseRound1).toEqual(expectedResponseRound1);
+
+        const nowStaticResponse = 'now a static response';
+        RequestMock.setDynamicMockUrlResponse(mockUrl1, { response: nowStaticResponse });
+        const modifiedResponseRound2 = await fetch(mockUrl1, {
+            body: 'some other type of payload'
+        }).then(res => res.json());
+        expect(modifiedResponseRound2).toEqual(nowStaticResponse);
+
+        RequestMock.setDynamicMockUrlResponse(mockUrl1);
+        const modifiedResponseRound3 = await fetch(mockUrl1, {
+            body: 'some other type of payload'
+        }).then(res => res.json());
+        expect(modifiedResponseRound3).toEqual(nowStaticResponse);
     });
 });

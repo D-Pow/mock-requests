@@ -23,10 +23,6 @@ describe('RequestMock', () => {
     it('should configure URLs to mock in constructor and setter function', () => {
         expect(RequestMock.getResponse(mockUrl1)).toBe(undefined);
 
-        RequestMock.configure();
-
-        expect(RequestMock.getResponse(mockUrl1)).toBe(undefined);
-
         RequestMock.configure(mockConfig1);
         RequestMock.setMockUrlResponse(mockUrl3, mockConfig2[mockUrl3]);
 
@@ -36,6 +32,20 @@ describe('RequestMock', () => {
         RequestMock.deleteMockUrlResponse(mockUrl1);
 
         expect(RequestMock.getResponse(mockUrl1)).toBe(undefined);
+    });
+
+    it('should have fallback configs when configure/set functions are called without fields', () => {
+        RequestMock.configure();
+        expect(RequestMock.getResponse(mockUrl1)).toBe(undefined);
+
+        RequestMock.configureDynamicResponses();
+        expect(RequestMock.getResponse(mockUrl1)).toBe(undefined);
+
+        RequestMock.setMockUrlResponse(mockUrl1, mockConfig1[mockUrl1]);
+        expect(RequestMock.getResponse(mockUrl1)).toEqual(mockConfig1[mockUrl1]);
+
+        RequestMock.setMockUrlResponse(mockUrl1);
+        expect(RequestMock.getResponse(mockUrl1)).toBe(null);
     });
 
     it('should be able to optionally maintain previous configurations when adding new ones', () => {
