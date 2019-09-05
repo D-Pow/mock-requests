@@ -63,4 +63,39 @@ describe('Dynamic response modifications', () => {
         expect(RequestMock.getResponse(mockUrl1)).toEqual(dynamicConfig1[mockUrl1].response);
         expect(RequestMock.getResponse(mockUrl2)).toEqual(dynamicConfig2[mockUrl2].response);
     });
+
+
+    it('should dynamically update the response object of fetch for URLs mocked without changing original config', async () => {
+        const originalConfig = JSON.parse(JSON.stringify(dynamicConfig1[mockUrl1].response));
+
+        RequestMock.configureDynamicResponses(dynamicConfig1);
+
+        const mockPayloadRound1 = {
+            addLettersArray: ['f', 'g'],
+            valueModification: 5
+        };
+        const modifiedResponseRound1 = await fetch(mockUrl1, {
+            body: JSON.stringify(mockPayloadRound1)
+        }).then(res => res.json());
+        const expectedResponseRound1 = {
+            data: ['a', 'b', 'c', 'd', 'e', 'f', 'g'],
+            value: 12
+        };
+        expect(modifiedResponseRound1).toEqual(expectedResponseRound1);
+
+        const mockPayloadRound2 = {
+            addLettersArray: ['h', 'i', 'j'],
+            valueModification: -10
+        };
+        const modifiedResponseRound2 = await fetch(mockUrl1, {
+            body: JSON.stringify(mockPayloadRound2)
+        }).then(res => res.json());
+        const expectedResponseRound2 = {
+            data: ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j'],
+            value: 2
+        };
+        expect(modifiedResponseRound2).toEqual(expectedResponseRound2);
+
+        expect(dynamicConfig1[mockUrl1].response).toEqual(originalConfig);
+    });
 });
