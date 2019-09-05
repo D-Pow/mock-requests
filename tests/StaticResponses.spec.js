@@ -75,7 +75,7 @@ describe('RequestMock', () => {
         expect(mockFetchResponseText).toEqual(mockConfig2[mockUrl4]);
     });
 
-    it('should overwrite the result of XMLHttpRequest for URLs mocked', async () => {
+    it('should overwrite the result of XMLHttpRequest for URLs mocked', () => {
         RequestMock.configure({ ...mockConfig1, ...mockConfig2 });
 
         const mockXhrJson = new XMLHttpRequest();
