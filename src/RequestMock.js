@@ -93,7 +93,7 @@ const RequestMock = (function() {
      * @param {string} url - URL to mock
      * @param {Object} response - Mock response object
      */
-    function setMockUrlResponse(url, response) {
+    function setMockUrlResponse(url, response = null) {
         const mockResponseConfig = urlResponseMap[url] ? urlResponseMap[url] : { response: null, dynamicResponseModFn: null };
 
         mockResponseConfig.response = deepCopyObject(response);
@@ -108,7 +108,7 @@ const RequestMock = (function() {
      * @param {Object} response - Mock response object
      * @param {function} dynamicResponseModFn - Function to update response object from previous request/response values
      */
-    function setDynamicMockUrlResponse(url, { response, dynamicResponseModFn }) {
+    function setDynamicMockUrlResponse(url, { response, dynamicResponseModFn } = {}) {
         const mockResponseConfig = urlResponseMap[url] ? urlResponseMap[url] : { response: null, dynamicResponseModFn: null };
 
         if (response) {
