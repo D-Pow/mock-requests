@@ -27,6 +27,7 @@ source code and you're good to go
 so they function as normal while still giving you the mocks you want.
 * This can easily be used alongside `jest` for testing! As long as `fetch` and `XMLHttpRequest` are defined in
 a test setup file, you can use this library as normal to mock all async responses.
+* **Dynamically update mock responses** based on request payloads and the previous mock response object
 
 ## Installation
 
@@ -59,6 +60,10 @@ before other files make network calls).
 Furthermore, it is designed to be used specifically when some APIs are not functioning correctly
 and mocks are necessary to replace those responses for continuing your work.
 However, replacing all API responses is still a valid use of this library.
+
+This library also supports **dynamic responses** so that you can mimic the actions of your back-end
+services. Simply add dynamic-update functions to your config and call `RequestMock`'s dynamic
+configuration functions, and everything else flows as normal.
 
 ## Examples
 
@@ -130,13 +135,63 @@ useResponseContent(mockedResponse);
 useResponseContent(realApiResponse);
 ```
 
+This library also supports dynamically updating your mocked APIs responses, so as to mimic actual
+back-end systems. To utilize this feature, you'll need to call the dynamic counterparts of
+`configure/setMockUrlResponse` (`configureDynamicResponses/setDynamicMockUrlResponse`) along with
+a slightly modified config object that has `response` and `dynamicResponseModFn` fields:
+
+```javascript
+const myApiUrl = 'https://example.com/someApi/1';
+
+import RequestMock from 'mock-requests';
+const dynamicConfig1 = {
+    [myApiUrl]: {
+        // Note how the response object is now nested inside the `response` property
+        response: {
+            data: ['a', 'b', 'c', 'd', 'e'],
+            value: 7
+        },
+        // Note how the dynamicResponseModFn takes in the request and previous response as arguments
+        // to produce the new response.
+        // The new response **must** be returned from this function.
+        // Feel free to modify the response parameter as it will be deep-copied later
+        dynamicResponseModFn: (request, response) => {
+            // see the mixed interactions of request and response data to generate new response
+            response.data = response.data.concat(request.addLettersArray);
+            response.value += request.valueModification;
+
+            return response; // is actually now the new response
+        }
+    }
+};
+
+// ... whatever other file you call `fetch` in
+
+const payload = {
+    addLettersArray: ['f', 'g'],
+    valueModification: 5
+};
+const myDynamicallyModifiedResponse = await fetch(myApiUrl, {
+    body: JSON.stringify(payload)
+}).then(res => res.json());
+console.log(myDynamicallyModifiedResponse)
+/* Will output
+{
+    data: ['a', 'b', 'c', 'd', 'e', 'f', 'g'],
+    value: 12
+};
+*/
+```
+
 ## RequestMock API
 
 In order to make mocking your API calls simpler, config functions have been added to allow for
 setting, getting, and deleting mock responses for certain API calls:
 
-##### configure(urlResponseConfigObject)
-##### setMockUrlResponse(extraUrl, mockResponseObject)
+##### configure(staticUrlResponseConfigObject, overwritePreviousConfig = true)
+##### configureDynamicResponses(dynamicUrlResponseConfigObject, overwritePreviousConfig = true)
+##### setMockUrlResponse(url, staticMockResponseObject)
+##### setDynamicMockUrlResponse(url, dynamicMockResponseObject)
 ##### getResponse(url)
 ##### deleteMockUrlResponse(urlNotMeantToBeMocked)
 ##### clearAllMocks()
