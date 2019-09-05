@@ -18,11 +18,11 @@ to use real network requests. This library differs from all the others in that i
 you to continue writing code **as normal** while still using mock network activity.
 
 Specific benefits provided by this library that aren't offered in others:
-* You don't have to replace your usage of async calls with mocks (that means no more replacing `fetch` with `Promise.resolve(desiredResponse)`)!
-* You don't have to do any painful configuration, such as running your own server, to host mock data
-(which also means no need to change URLs from `website.com/api` to `localhost/api`).
+* You don't have to replace your usage of async calls with mocks. This means no more replacing `fetch` with `Promise.resolve(desiredResponse)`!
+* You don't have to do any painful configuration, such as running your own server, to host mock data.
+This also means no need to change URLs from `website.com/api` to `localhost/api`.
 * No confusing interfaces or multi-step procedures to getting started. Simply configure it *once* in your
-source code and you're good to go!
+source code and you're good to go
 * This is designed to work along with third-party libraries, including [Axios](https://github.com/axios/axios),
 so they function as normal while still giving you the mocks you want.
 * This can easily be used alongside `jest` for testing! As long as `fetch` and `XMLHttpRequest` are defined in
@@ -110,7 +110,7 @@ const response = await fetch(myForgottenUrl, {...whateverOptions});
 useResponseContent(response);
 ```
 
-Finally, in the event that some APIs are not functioning correctly but others are, you can configure
+In the event that some APIs are not functioning correctly but others are, you can configure
 the non-functioning APIs using `RequestMock` and then leave the other APIs as-is for proper responses:
 
 ```javascript
