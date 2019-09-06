@@ -2,6 +2,7 @@ import RequestMock from '../src/RequestMock';
 
 const mockUrl1 = 'https://example.com/someApi/1';
 const mockUrl2 = 'https://example.com/someApi/2';
+const mockUrl3 = 'some.other/API';
 
 const dynamicConfig1 = {
     [mockUrl1]: {
@@ -175,6 +176,11 @@ describe('Dynamic response modifications', () => {
                 dynamicResponseModFn: (request) => {
                     expect(typeof request).toEqual(typeof '');
                 }
+            },
+            [mockUrl3]: {
+                dynamicResponseModFn: (request) => {
+                    expect(request).toBe(undefined);
+                }
             }
         });
 
@@ -184,6 +190,7 @@ describe('Dynamic response modifications', () => {
         await fetch(mockUrl2, {
             body: 'some other payload'
         });
+        await fetch(mockUrl3);
     });
 
     it('should have the ability to remove dynamic response-changing functions', async () => {

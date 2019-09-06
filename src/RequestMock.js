@@ -206,7 +206,7 @@ const RequestMock = (function() {
 
         if (mockResponseConfig.dynamicResponseModFn && typeof mockResponseConfig.dynamicResponseModFn === 'function') {
             const newResponse = deepCopyObject(
-                mockResponseConfig.dynamicResponseModFn(attemptParseJson(requestPayload), mockResponseConfig.response)
+                mockResponseConfig.dynamicResponseModFn(attemptParseJson(requestPayload), mockResponseConfig.response) || null
             );
 
             mockResponseConfig.response = newResponse;
