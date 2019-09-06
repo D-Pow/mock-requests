@@ -15,7 +15,7 @@ const mockConfig2 = {
     [mockUrl4]: '<!DOCTYPE html><head><meta http-equiv="content-type" content="text/html;charset=utf-8"><title>301 Moved</title></head><body><h1>301 Moved</h1>The document has moved<a HREF="http://www.google.com/">here</a>.</body></html>'
 };
 
-describe('RequestMock', () => {
+describe('StaticResponses', () => {
     beforeEach(() => {
         RequestMock.clearAllMocks();
     });
