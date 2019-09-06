@@ -70,6 +70,8 @@ configuration functions, and everything else flows as normal.
 Note how in the below examples, the *only* part that differs from using normal, production-bound code
 and mock code is the `MockRequests.function()` calls. No other configuration/code changes necessary!
 
+### Static responses
+
 To configure global app usage of `MockRequests`, simply call `configure()` with an object containing URL-responseObject
 mappings.
 
@@ -133,6 +135,8 @@ const realApiResponse = await fetch(myFunctioningApi, {...whateverOptions});
 useResponseContent(mockedResponse);
 useResponseContent(realApiResponse);
 ```
+
+### Dynamic responses
 
 This library also supports dynamically updating your mocked APIs responses, so as to mimic actual
 back-end systems. To utilize this feature, you'll need to call the dynamic counterparts of
