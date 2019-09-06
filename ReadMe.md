@@ -71,8 +71,7 @@ Note how in the below examples, the *only* part that differs from using normal, 
 and mock code is the `MockRequests.function()` calls. No other configuration/code changes necessary!
 
 To configure global app usage of `MockRequests`, simply call `configure()` with an object containing URL-responseObject
-mappings. That's all that needs to be done, and all other async calls will receive the mocked responses automatically!
-This only needs to be done once, i.e. you don't need to import `MockRequests` again in any other file.
+mappings.
 
 ```javascript
 const myApiUrl = 'https://mywebsite.com/api/vx/someApi';
