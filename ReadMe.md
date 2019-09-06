@@ -28,6 +28,7 @@ so they function as normal while still giving you the mocks you want.
 * This can easily be used alongside `jest` for testing! As long as `fetch` and `XMLHttpRequest` are defined in
 a test setup file, you can use this library as normal to mock all async responses.
 * **Dynamically update mock responses** based on request payloads and the previous mock response object
+* Configurable outside the src folder such that the **mock code isn't bundled with production code**
 
 ## Installation
 
@@ -185,6 +186,60 @@ console.log(myDynamicallyModifiedResponse)
 };
 */
 ```
+
+### Separating mocks from source code
+
+If you would rather not package the mocks and `MockRequests` along with your source code, you can simply move your
+mock files to a separate folder and add a few extra lines to your `webpack.config.js` file. For example, if we have
+the setup:
+
+```
+MyApp
+├───src/
+├───mocks/
+|   ├───MockUsingMockRequests.js
+```
+
+and your original `webpack.config.js` looked something similar to:
+
+```javascript
+var srcDir = path.resolve(__dirname, 'src');
+var entryFiles = srcDir + '/index.js';
+var includeDir = srcDir;
+
+module.exports = {
+    entry: entryFiles,
+    // ... other config entries
+    module: {
+        rules: [
+            {
+                test: /\.jsx?$/,
+                include: includeDir,
+                exclude: /node_modules/,
+                loader: 'babel-loader'
+            }
+        ]
+    }
+}
+```
+
+then all you would need to add would be something akin to:
+
+```javascript
+if (process.env.MOCK === 'true') {
+    var mockDir = path.resolve(__dirname, 'mocks');
+    var mockEntryFiles = mockDir + '/MockUsingMockRequests.js';
+    // Update entry field and babel-loader's include field
+    entryFiles = [ mockEntryFiles, entryFiles ];
+    includeDir = [ mockDir, includeDir ];
+}
+```
+
+and run using `MOCK=true npm start`.
+
+Doing so will have the net effect of loading the `mocks` directory with `babel-loader` and including
+`MockUsingMockRequests.js` as entry code to be loaded in the browser, and will prevent any mock-related
+code from going into production.
 
 ## MockRequests API
 
