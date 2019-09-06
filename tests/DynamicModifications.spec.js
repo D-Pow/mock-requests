@@ -164,6 +164,28 @@ describe('Dynamic response modifications', () => {
         expect(dynamicConfig2[mockUrl2].response).toEqual(originalConfig);
     });
 
+    it('should parse request objects if they are JSON', async () => {
+        RequestMock.configureDynamicResponses({
+            [mockUrl1]: {
+                dynamicResponseModFn: (request) => {
+                    expect(typeof request).toEqual(typeof {});
+                }
+            },
+            [mockUrl2]: {
+                dynamicResponseModFn: (request) => {
+                    expect(typeof request).toEqual(typeof '');
+                }
+            }
+        });
+
+        await fetch(mockUrl1, {
+            body: JSON.stringify({})
+        });
+        await fetch(mockUrl2, {
+            body: 'some other payload'
+        });
+    });
+
     it('should have the ability to remove dynamic response-changing functions', async () => {
         RequestMock.configureDynamicResponses(dynamicConfig1);
 

@@ -205,7 +205,9 @@ const RequestMock = (function() {
         const mockResponseConfig = urlResponseMap[url];
 
         if (mockResponseConfig.dynamicResponseModFn && typeof mockResponseConfig.dynamicResponseModFn === 'function') {
-            const newResponse = deepCopyObject(mockResponseConfig.dynamicResponseModFn(requestPayload, mockResponseConfig.response));
+            const newResponse = deepCopyObject(
+                mockResponseConfig.dynamicResponseModFn(attemptParseJson(requestPayload), mockResponseConfig.response)
+            );
 
             mockResponseConfig.response = newResponse;
         }
