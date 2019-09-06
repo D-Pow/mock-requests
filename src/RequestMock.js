@@ -74,7 +74,7 @@ const RequestMock = (function() {
     function configureDynamicResponses(dynamicApiUrlResponseConfig = {}, overwritePreviousConfig = true) {
         const newUrlResponseMap = Object.keys(dynamicApiUrlResponseConfig).reduce((mockResponses, key) => {
             mockResponses[key] = {
-                response: deepCopyObject(dynamicApiUrlResponseConfig[key].response),
+                response: deepCopyObject(dynamicApiUrlResponseConfig[key].response || null),
                 dynamicResponseModFn: dynamicApiUrlResponseConfig[key].dynamicResponseModFn
             };
             return mockResponses;

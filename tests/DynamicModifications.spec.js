@@ -64,6 +64,12 @@ describe('Dynamic response modifications', () => {
         expect(RequestMock.getResponse(mockUrl2)).toEqual(dynamicConfig2[mockUrl2].response);
     });
 
+    it('should be able to handle null response/dynamicResponseModFn entries', () => {
+        RequestMock.configureDynamicResponses({
+            [mockUrl1]: {}
+        });
+    });
+
     it('should have the ability to maintain previous configurations', () => {
         expect(RequestMock.getResponse(mockUrl1)).toBe(undefined);
         expect(RequestMock.getResponse(mockUrl2)).toBe(undefined);
