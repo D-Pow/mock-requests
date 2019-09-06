@@ -1,3 +1,3 @@
-import RequestMock from './RequestMock';
+import MockRequests from './MockRequests';
 
-export default RequestMock;
+export default MockRequests;

@@ -7,7 +7,7 @@
   "main": "dist/index.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/D-Pow/RequestMock.git"
+    "url": "https://github.com/D-Pow/MockRequests.git"
   },
   "scripts": {
     "build": "webpack --mode production",

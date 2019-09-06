@@ -1,5 +1,5 @@
 /**
- * RequestMock will mock both XMLHttpRequest and fetch such that
+ * MockRequests will mock both XMLHttpRequest and fetch such that
  * any requested URL will return the specified mock object instead
  * of actually making an async request. URLs not configured will
  * still trigger an async request.
@@ -7,7 +7,7 @@
  * @module mock-requests
  */
 /**
- * @typedef {Object} RequestMock
+ * @typedef {Object} MockRequests
  * @global
  * @property {function} configure
  * @property {function} configureDynamicResponses
@@ -20,9 +20,9 @@
  * @property {function} originalFetch
  */
 /**
- * @type {RequestMock}
+ * @type {MockRequests}
  */
-const RequestMock = (function() {
+const MockRequests = (function() {
     /**
      * @typedef {function} DynamicResponseModFn
      * @param {*} request - Payload passed to the async function
@@ -145,7 +145,7 @@ const RequestMock = (function() {
     }
 
     /**
-     * Deletes all entries in the RequestMock configuration
+     * Deletes all entries in the MockRequests configuration
      */
     function clearAllMocks() {
         urlResponseMap = {};
@@ -315,4 +315,4 @@ const RequestMock = (function() {
     };
 })();
 
-export default RequestMock;
+export default MockRequests;

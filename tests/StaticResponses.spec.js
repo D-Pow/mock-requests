@@ -1,4 +1,4 @@
-import RequestMock from '../src/RequestMock';
+import MockRequests from '../src/MockRequests';
 
 const mockUrl1 = 'https://example.com';
 const mockUrl2 = 'https://other.example/someApi';
@@ -17,66 +17,66 @@ const mockConfig2 = {
 
 describe('StaticResponses', () => {
     beforeEach(() => {
-        RequestMock.clearAllMocks();
+        MockRequests.clearAllMocks();
     });
 
     it('should configure URLs to mock in constructor and setter function', () => {
-        expect(RequestMock.getResponse(mockUrl1)).toBe(undefined);
+        expect(MockRequests.getResponse(mockUrl1)).toBe(undefined);
 
-        RequestMock.configure(mockConfig1);
-        RequestMock.setMockUrlResponse(mockUrl3, mockConfig2[mockUrl3]);
+        MockRequests.configure(mockConfig1);
+        MockRequests.setMockUrlResponse(mockUrl3, mockConfig2[mockUrl3]);
 
-        expect(RequestMock.getResponse(mockUrl1)).toEqual(mockConfig1[mockUrl1]);
-        expect(RequestMock.getResponse(mockUrl3)).toEqual(mockConfig2[mockUrl3]);
+        expect(MockRequests.getResponse(mockUrl1)).toEqual(mockConfig1[mockUrl1]);
+        expect(MockRequests.getResponse(mockUrl3)).toEqual(mockConfig2[mockUrl3]);
 
-        RequestMock.deleteMockUrlResponse(mockUrl1);
+        MockRequests.deleteMockUrlResponse(mockUrl1);
 
-        expect(RequestMock.getResponse(mockUrl1)).toBe(undefined);
+        expect(MockRequests.getResponse(mockUrl1)).toBe(undefined);
     });
 
     it('should have fallback configs when configure/set functions are called without fields', () => {
-        RequestMock.configure();
-        expect(RequestMock.getResponse(mockUrl1)).toBe(undefined);
+        MockRequests.configure();
+        expect(MockRequests.getResponse(mockUrl1)).toBe(undefined);
 
-        RequestMock.configureDynamicResponses();
-        expect(RequestMock.getResponse(mockUrl1)).toBe(undefined);
+        MockRequests.configureDynamicResponses();
+        expect(MockRequests.getResponse(mockUrl1)).toBe(undefined);
 
-        RequestMock.setMockUrlResponse(mockUrl1, mockConfig1[mockUrl1]);
-        expect(RequestMock.getResponse(mockUrl1)).toEqual(mockConfig1[mockUrl1]);
+        MockRequests.setMockUrlResponse(mockUrl1, mockConfig1[mockUrl1]);
+        expect(MockRequests.getResponse(mockUrl1)).toEqual(mockConfig1[mockUrl1]);
 
-        RequestMock.setMockUrlResponse(mockUrl1);
-        expect(RequestMock.getResponse(mockUrl1)).toBe(null);
+        MockRequests.setMockUrlResponse(mockUrl1);
+        expect(MockRequests.getResponse(mockUrl1)).toBe(null);
     });
 
     it('should be able to optionally maintain previous configurations when adding new ones', () => {
-        expect(RequestMock.getResponse(mockUrl3)).toBe(undefined);
+        expect(MockRequests.getResponse(mockUrl3)).toBe(undefined);
 
-        RequestMock.configure(mockConfig1);
+        MockRequests.configure(mockConfig1);
 
-        expect(RequestMock.getResponse(mockUrl1)).toEqual(mockConfig1[mockUrl1]);
-        expect(RequestMock.getResponse(mockUrl3)).toBe(undefined);
+        expect(MockRequests.getResponse(mockUrl1)).toEqual(mockConfig1[mockUrl1]);
+        expect(MockRequests.getResponse(mockUrl3)).toBe(undefined);
 
-        RequestMock.configure(mockConfig2);
+        MockRequests.configure(mockConfig2);
 
-        expect(RequestMock.getResponse(mockUrl1)).toBe(undefined);
-        expect(RequestMock.getResponse(mockUrl3)).toEqual(mockConfig2[mockUrl3]);
+        expect(MockRequests.getResponse(mockUrl1)).toBe(undefined);
+        expect(MockRequests.getResponse(mockUrl3)).toEqual(mockConfig2[mockUrl3]);
 
-        RequestMock.configure(mockConfig1, false);
+        MockRequests.configure(mockConfig1, false);
 
-        expect(RequestMock.getResponse(mockUrl1)).toEqual(mockConfig1[mockUrl1]);
-        expect(RequestMock.getResponse(mockUrl3)).toEqual(mockConfig2[mockUrl3]);
+        expect(MockRequests.getResponse(mockUrl1)).toEqual(mockConfig1[mockUrl1]);
+        expect(MockRequests.getResponse(mockUrl3)).toEqual(mockConfig2[mockUrl3]);
     });
 
     it('should be able to parse different types of response bodies, including JSON and HTML', () => {
-        RequestMock.configure({ ...mockConfig1, ...mockConfig2 });
+        MockRequests.configure({ ...mockConfig1, ...mockConfig2 });
 
-        expect(typeof RequestMock.getResponse(mockUrl1)).toEqual(typeof {});
-        expect(typeof RequestMock.getResponse(mockUrl3)).toEqual(typeof '');
-        expect(typeof RequestMock.getResponse(mockUrl4)).toEqual(typeof '');
+        expect(typeof MockRequests.getResponse(mockUrl1)).toEqual(typeof {});
+        expect(typeof MockRequests.getResponse(mockUrl3)).toEqual(typeof '');
+        expect(typeof MockRequests.getResponse(mockUrl4)).toEqual(typeof '');
     });
 
     it('should overwrite the result of fetch for URLs mocked', async () => {
-        RequestMock.configure({ ...mockConfig1, ...mockConfig2 });
+        MockRequests.configure({ ...mockConfig1, ...mockConfig2 });
 
         const mockFetchResponseJson = await fetch(mockUrl2).then(res => res.json());
         const mockFetchResponseText = await fetch(mockUrl4).then(res => res.text());
@@ -86,7 +86,7 @@ describe('StaticResponses', () => {
     });
 
     it('should overwrite the result of XMLHttpRequest for URLs mocked', () => {
-        RequestMock.configure({ ...mockConfig1, ...mockConfig2 });
+        MockRequests.configure({ ...mockConfig1, ...mockConfig2 });
 
         const mockXhrJson = new XMLHttpRequest();
         mockXhrJson.open('GET', mockUrl2);
@@ -118,7 +118,7 @@ describe('StaticResponses', () => {
     });
 
     it('should call XMLHttpRequest for URLs not mocked', async () => {
-        RequestMock.configure(mockConfig1);
+        MockRequests.configure(mockConfig1);
 
         const mockXHR = new XMLHttpRequest();
         mockXHR.open('GET', notMockedUrl);
