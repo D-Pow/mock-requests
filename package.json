@@ -5,6 +5,9 @@
   "author": "Devon Powell",
   "license": "MIT",
   "main": "dist/MockRequests.js",
+  "files": [
+    "dist/MockRequests.js"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/D-Pow/MockRequests.git"
