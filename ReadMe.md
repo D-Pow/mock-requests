@@ -29,6 +29,7 @@ so they function as normal while still giving you the mocks you want.
 a test setup file, you can use this library as normal to mock all async responses.
 * **Dynamically update mock responses** based on request payloads and the previous mock response object
 * Configurable outside the src folder such that the **mock code isn't bundled with production code**
+* Customizable mock response resolution delay to mimic natural network interactions
 
 ## Installation
 
@@ -185,6 +186,16 @@ console.log(myDynamicallyModifiedResponse)
     value: 12
 };
 */
+```
+
+There is also a `delay` option you can use if you want to mimic network delays:
+
+```javascript
+MockRequests.setDynamicMockUrlResponse(myApiUrl, {    // or configureDynamicResponses
+    response: myMockResponse,
+    dynamicResponseModFn: (req, res) => {/*...*/},
+    delay: 1500   // will make fetch/XMLHttpRequest take 1.5 seconds only for myApiUrl
+});
 ```
 
 ### Separating mocks from source code
