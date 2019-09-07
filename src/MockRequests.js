@@ -33,6 +33,7 @@ const MockRequests = (function() {
      * @typedef {Object} MockResponseConfig
      * @property {Object} response - Mock response to be returned
      * @property {DynamicResponseModFn} dynamicResponseModFn - Function to dynamically change the response object based on previous request/response
+     * @property {number} delay - Optional network mock resolution time
      */
 
     /**
