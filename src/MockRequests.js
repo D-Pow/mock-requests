@@ -108,8 +108,9 @@ const MockRequests = (function() {
      * and dynamic response modification function
      *
      * @param {string} url - URL to mock
-     * @param {Object} response - Mock response object
-     * @param {function} dynamicResponseModFn - Function to update response object from previous request/response values
+     * @param {MockResponseConfig} mockResponseConfig - Config object with the fields desired to be configured
+     * @param {Object|string|number|boolean} mockResponseConfig.response - Mock response to be resolved
+     * @param {function} mockResponseConfig.dynamicResponseModFn - Function to update response object from previous request/response values
      */
     function setDynamicMockUrlResponse(url, { response, dynamicResponseModFn } = {}) {
         const mockResponseConfig = urlResponseMap[url] ? urlResponseMap[url] : { response: null, dynamicResponseModFn: null };
