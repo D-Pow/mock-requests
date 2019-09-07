@@ -149,13 +149,15 @@ a slightly modified config object that has `response` and `dynamicResponseModFn`
 const myApiUrl = 'https://example.com/someApi/1';
 
 import MockRequests from 'mock-requests';
+
+const myMockResponse = {
+    data: ['a', 'b', 'c', 'd', 'e'],
+    value: 7
+};
 const dynamicConfig1 = {
     [myApiUrl]: {
         // Note how the response object is now nested inside the `response` property
-        response: {
-            data: ['a', 'b', 'c', 'd', 'e'],
-            value: 7
-        },
+        response: myMockResponse,
         // Note how the dynamicResponseModFn takes in the request and previous response as arguments
         // to produce the new response.
         // The new response **must** be returned from this function.
