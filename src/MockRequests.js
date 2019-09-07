@@ -111,8 +111,9 @@ const MockRequests = (function() {
      * @param {MockResponseConfig} mockResponseConfig - Config object with the fields desired to be configured
      * @param {Object|string|number|boolean} mockResponseConfig.response - Mock response to be resolved
      * @param {function} mockResponseConfig.dynamicResponseModFn - Function to update response object from previous request/response values
+     * @param {number} mockResponseConfig.delay - Optional resolution delay time
      */
-    function setDynamicMockUrlResponse(url, { response, dynamicResponseModFn } = {}) {
+    function setDynamicMockUrlResponse(url, { response, dynamicResponseModFn, delay } = {}) {
         const mockResponseConfig = urlResponseMap[url] ? urlResponseMap[url] : { response: null, dynamicResponseModFn: null };
 
         if (response) {
@@ -123,6 +124,10 @@ const MockRequests = (function() {
             mockResponseConfig.dynamicResponseModFn = dynamicResponseModFn;
         } else {
             mockResponseConfig.dynamicResponseModFn = null;
+        }
+
+        if (delay) {
+            mockResponseConfig.delay = delay;
         }
 
         urlResponseMap[url] = mockResponseConfig;

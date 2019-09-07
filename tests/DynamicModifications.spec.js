@@ -257,9 +257,9 @@ describe('Dynamic response modifications', () => {
     });
 
     it('should have the ability to delay the resolution of the network call with XHR', async () => {
-        MockRequests.configureDynamicResponses(dynamicConfigWithDelay);
-        const { response, dynamicResponseModFn } =  dynamicConfigWithDelay[mockUrl1];
-        const expectedModifiedResponse = dynamicResponseModFn(null, response);
+        const mockResponseConfig = dynamicConfigWithDelay[mockUrl1];
+        MockRequests.setDynamicMockUrlResponse(mockUrl1, mockResponseConfig);
+        const expectedModifiedResponse = mockResponseConfig.dynamicResponseModFn(null, mockResponseConfig.response);
         let done = false;
 
         const mockXhr = new XMLHttpRequest();
