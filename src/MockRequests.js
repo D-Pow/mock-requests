@@ -216,6 +216,25 @@ const MockRequests = (function() {
     }
 
     /**
+     * Composes the passed function with a timeout delay if it exists
+     *
+     * @param {number} delay - Milliseconds delay
+     * @param {function} func - Function to wrap
+     * @returns {function} - Original function if no delay or same function to be called after a delay
+     */
+    function withOptionalDelay(delay, func) {
+        if (delay) {
+            return (...args) => {
+                setTimeout(() => {
+                    func(...args);
+                }, delay);
+            };
+        }
+
+        return func;
+    }
+
+    /**
      * Overwrites the XMLHttpRequest function with a wrapper that
      * mocks the readyState, status, statusText, and various other
      * fields that depend on the status of the request, and applies
