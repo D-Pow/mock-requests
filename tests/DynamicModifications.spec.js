@@ -1,5 +1,7 @@
 import MockRequests from '../src/MockRequests';
 
+jest.useFakeTimers();
+
 const mockUrl1 = 'https://example.com/someApi/1';
 const mockUrl2 = 'https://example.com/someApi/2';
 const mockUrl3 = 'some.other/API';
@@ -37,6 +39,16 @@ const dynamicConfig2 = {
 
             return response;
         }
+    }
+};
+const dynamicConfigWithDelay = {
+    [mockUrl1]: {
+        response: { data: 'some mock response' },
+        dynamicResponseModFn: (request, response) => {
+            response.data = 'new mock response';
+            return response;
+        },
+        delay: 1000
     }
 };
 
@@ -221,5 +233,46 @@ describe('Dynamic response modifications', () => {
             body: 'some other type of payload'
         }).then(res => res.json());
         expect(modifiedResponseRound3).toEqual(nowStaticResponse);
+    });
+
+    it('should have the ability to delay the resolution of the network call with fetch', async () => {
+        MockRequests.configureDynamicResponses(dynamicConfigWithDelay);
+        const { response, dynamicResponseModFn } =  dynamicConfigWithDelay[mockUrl1];
+        let done = false;
+        const mockedNetworkPromise = fetch(mockUrl1).then(res => {
+            done = true;
+            return res.json();
+        });
+
+        expect(done).toBe(false);
+        expect(setTimeout).toHaveBeenCalled();
+
+        jest.runAllTimers();
+
+        const responseBody = await mockedNetworkPromise;
+        const expectedModifiedResponse = dynamicResponseModFn(null, response);
+
+        expect(responseBody).toEqual(expectedModifiedResponse);
+        expect(done).toBe(true);
+    });
+
+    it('should have the ability to delay the resolution of the network call with XHR', async () => {
+        MockRequests.configureDynamicResponses(dynamicConfigWithDelay);
+        const { response, dynamicResponseModFn } =  dynamicConfigWithDelay[mockUrl1];
+        const expectedModifiedResponse = dynamicResponseModFn(null, response);
+        let done = false;
+
+        const mockXhr = new XMLHttpRequest();
+        mockXhr.open('POST', mockUrl1);
+        mockXhr.onreadystatechange = () => {
+            done = true;
+            expect(mockXhr.response).toEqual(expectedModifiedResponse);
+        };
+        mockXhr.send();
+
+        expect(done).toBe(false);
+        expect(setTimeout).toHaveBeenCalled();
+
+        jest.runAllTimers();
     });
 });
