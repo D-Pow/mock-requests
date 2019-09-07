@@ -53,7 +53,8 @@ const MockRequests = (function() {
         const newUrlResponseMap = Object.keys(apiUrlResponseConfig).reduce((mockResponses, key) => {
             mockResponses[key] = {
                 response: deepCopyObject(apiUrlResponseConfig[key]),
-                dynamicResponseModFn: null
+                dynamicResponseModFn: null,
+                delay: null
             };
             return mockResponses;
         }, {});
@@ -75,7 +76,8 @@ const MockRequests = (function() {
         const newUrlResponseMap = Object.keys(dynamicApiUrlResponseConfig).reduce((mockResponses, key) => {
             mockResponses[key] = {
                 response: deepCopyObject(dynamicApiUrlResponseConfig[key].response || null),
-                dynamicResponseModFn: dynamicApiUrlResponseConfig[key].dynamicResponseModFn
+                dynamicResponseModFn: dynamicApiUrlResponseConfig[key].dynamicResponseModFn,
+                delay: dynamicApiUrlResponseConfig[key].delay
             };
             return mockResponses;
         }, {});
@@ -282,7 +284,8 @@ const MockRequests = (function() {
             xhr.send = function(requestPayload) {
                 if (urlIsMocked(xhr.url)) {
                     mockXhrRequest(requestPayload);
-                    xhr.onreadystatechange();
+                    const resolveAfterDelay = withOptionalDelay(urlResponseMap[xhr.url].delay, xhr.onreadystatechange);
+                    resolveAfterDelay();
                 } else {
                     xhr.originalSend(requestPayload);
                 }
@@ -306,7 +309,10 @@ const MockRequests = (function() {
                     text: () => Promise.resolve(castToString(responseBody))
                 };
 
-                return Promise.resolve(response);
+                return new Promise(res => {
+                    const resolveAfterDelay = withOptionalDelay(urlResponseMap[url].delay, res);
+                    resolveAfterDelay(response);
+                });
             } else {
                 return originalFetch(url, options);
             }
