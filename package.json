@@ -4,7 +4,7 @@
   "description": "Mocks XMLHttpRequest and fetch requests with the specified response object",
   "author": "Devon Powell",
   "license": "MIT",
-  "main": "dist/index.js",
+  "main": "dist/MockRequests.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/D-Pow/MockRequests.git"
