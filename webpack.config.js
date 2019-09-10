@@ -1,4 +1,5 @@
 const path = require('path');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 module.exports = {
     entry: {
@@ -14,7 +15,7 @@ module.exports = {
         rules: [
             {
                 test: /\.js$/,
-                exclude: /node_modules/,
+                exclude: /(node_modules|MockRequests.d.ts)/,
                 include: path.resolve(__dirname, 'src'),
                 use: {
                     loader: 'babel-loader',
@@ -25,6 +26,14 @@ module.exports = {
             }
         ]
     },
+    plugins: [
+        new CopyWebpackPlugin([
+            {
+                from: 'MockRequests.d.ts',
+                to: '[name].[ext]'
+            }
+        ])
+    ],
     devServer: {
         port: 3000,
         open: true

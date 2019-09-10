@@ -5,6 +5,7 @@
   "author": "Devon Powell",
   "license": "MIT",
   "main": "dist/MockRequests.js",
+  "types": "dist/MockRequests.d.js",
   "files": [
     "dist/MockRequests.js"
   ],
@@ -23,6 +24,7 @@
     "@babel/polyfill": "^7.4.4",
     "@babel/preset-env": "^7.5.5",
     "babel-loader": "^8.0.6",
+    "copy-webpack-plugin": "^5.0.4",
     "coveralls": "^3.0.6",
     "jest": "^24.9.0",
     "webpack": "^4.39.2",
