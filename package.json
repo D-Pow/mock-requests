@@ -15,8 +15,7 @@
   },
   "scripts": {
     "build": "webpack --mode production",
-    "test": "jest --coverage tests",
-    "publish": "npm run build && npm publish"
+    "test": "jest --coverage tests"
   },
   "devDependencies": {
     "@babel/core": "^7.5.5",
