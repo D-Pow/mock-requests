@@ -8,9 +8,23 @@
  */
 
 /**
- * @namespace
+ * @typedef {Object} MockRequestsImport
+ * @property {function} configure - {@link module:mock-requests~MockRequests.configure}
+ * @property {function} configureDynamicResponses - {@link module:mock-requests~MockRequests.configureDynamicResponses}
+ * @property {function} setMockUrlResponse - {@link module:mock-requests~MockRequests.setMockUrlResponse}
+ * @property {function} setDynamicMockUrlResponse - {@link module:mock-requests~MockRequests.setDynamicMockUrlResponse}
+ * @property {function} getResponse - {@link module:mock-requests~MockRequests.getResponse}
+ * @property {function} deleteMockUrlResponse - {@link module:mock-requests~MockRequests.deleteMockUrlResponse}
+ * @property {function} clearAllMocks - {@link module:mock-requests~MockRequests.clearAllMocks}
+ * @property {function} OriginalXHR - {@link module:mock-requests~MockRequests.OriginalXHR}
+ * @property {function} originalFetch - {@link module:mock-requests~MockRequests.originalFetch}
  */
-const MockRequests = (function() {
+
+/**
+ * @namespace MockRequests
+ */
+
+const MockRequests = (/** @returns {MockRequestsImport} */ function MockRequestsFactory() {
     /**
      * Original XMLHttpRequest class, as defined in the browser
      *
