@@ -7,20 +7,22 @@
  * @module mock-requests
  */
 /**
- * @typedef {Object} MockRequests
- * @global
- * @property {function} configure
- * @property {function} configureDynamicResponses
- * @property {function} setMockUrlResponse
- * @property {function} setDynamicMockUrlResponse
- * @property {function} getResponse
- * @property {function} deleteMockUrlResponse
- * @property {function} clearAllMocks
- * @property {function} OriginalXHR
- * @property {function} originalFetch
+ * Original XMLHttpRequest class, as defined in the browser
+ *
+ * @class OriginalXHR
+ * @augments XMLHttpRequest
+ * @memberOf module:mock-requests
  */
 /**
- * @type {MockRequests}
+ * Original fetch function, as defined in the browser
+ *
+ * @function originalFetch
+ * @memberOf module:mock-requests
+ */
+
+/**
+ *
+ * @type {module:mock-requests}
  */
 const MockRequests = (function() {
     /**
@@ -28,16 +30,20 @@ const MockRequests = (function() {
      * @param {*} request - Payload passed to the async function
      * @param {*} response - Previous response object to be modified
      * @returns {*} modifiedResponse - Updated response to be saved in the mock response map
+     * @memberOf module:mock-requests
      */
     /**
      * @typedef {Object} MockResponseConfig
      * @property {Object} response - Mock response to be returned
      * @property {DynamicResponseModFn} dynamicResponseModFn - Function to dynamically change the response object based on previous request/response
      * @property {number} delay - Optional network mock resolution time
+     * @memberOf module:mock-requests
      */
 
     /**
-     * @type {Object.<string, MockResponseConfig>} urlResponseMap - key (URL string) value (mock response) pairs for network mocks
+     * Key (URL string) - Value (mock response) pairs for network mocks
+     *
+     * @type {Object.<string, MockResponseConfig>}
      */
     let urlResponseMap = {};
 
@@ -49,6 +55,7 @@ const MockRequests = (function() {
      *
      * @param  {Object.<string, Object>} apiUrlResponseConfig - Config object containing URL strings as keys and respective mock response objects as values
      * @param {boolean} [overwritePreviousConfig=true] - If the map from a previous configure call should be maintained (true) or not (false)
+     * @memberOf module:mock-requests
      */
     function configure(apiUrlResponseConfig = {}, overwritePreviousConfig = true) {
         const newUrlResponseMap = Object.keys(apiUrlResponseConfig).reduce((mockResponses, key) => {
@@ -72,6 +79,7 @@ const MockRequests = (function() {
      *
      * @param {Object<string, MockResponseConfig>} dynamicApiUrlResponseConfig
      * @param {boolean} [overwritePreviousConfig=true] - If the map from a previous configure call should be overwritten by this call (true) or not (false)
+     * @memberOf module:mock-requests
      */
     function configureDynamicResponses(dynamicApiUrlResponseConfig = {}, overwritePreviousConfig = true) {
         const newUrlResponseMap = Object.keys(dynamicApiUrlResponseConfig).reduce((mockResponses, key) => {
@@ -95,6 +103,7 @@ const MockRequests = (function() {
      *
      * @param {string} url - URL to mock
      * @param {Object} response - Mock response object
+     * @memberOf module:mock-requests
      */
     function setMockUrlResponse(url, response = null) {
         const mockResponseConfig = urlResponseMap[url] ? urlResponseMap[url] : { response: null, dynamicResponseModFn: null };
@@ -112,6 +121,7 @@ const MockRequests = (function() {
      * @param {Object|string|number|boolean} mockResponseConfig.response - Mock response to be resolved
      * @param {function} mockResponseConfig.dynamicResponseModFn - Function to update response object from previous request/response values
      * @param {number} mockResponseConfig.delay - Optional resolution delay time
+     * @memberOf module:mock-requests
      */
     function setDynamicMockUrlResponse(url, { response, dynamicResponseModFn, delay } = {}) {
         const mockResponseConfig = urlResponseMap[url] ? urlResponseMap[url] : { response: null, dynamicResponseModFn: null };
@@ -138,6 +148,7 @@ const MockRequests = (function() {
      *
      * @param {string} url
      * @returns {*} - Configured response object
+     * @memberOf module:mock-requests
      */
     function getResponse(url) {
         return urlResponseMap[url] ? urlResponseMap[url].response : undefined;
@@ -148,6 +159,7 @@ const MockRequests = (function() {
      *
      * @param url
      * @returns {boolean}
+     * @memberOf module:mock-requests
      */
     function deleteMockUrlResponse(url) {
         return delete urlResponseMap[url];
@@ -155,6 +167,8 @@ const MockRequests = (function() {
 
     /**
      * Deletes all entries in the MockRequests configuration
+     *
+     * @memberOf module:mock-requests
      */
     function clearAllMocks() {
         urlResponseMap = {};
