@@ -34,6 +34,9 @@ module.exports = {
             }
         ])
     ],
+    optimization: {
+        minimize: false
+    },
     devServer: {
         port: 3000,
         open: true
