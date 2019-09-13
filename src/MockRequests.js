@@ -6,25 +6,25 @@
  *
  * @module mock-requests
  */
-/**
- * Original XMLHttpRequest class, as defined in the browser
- *
- * @class OriginalXHR
- * @augments XMLHttpRequest
- * @memberOf module:mock-requests
- */
-/**
- * Original fetch function, as defined in the browser
- *
- * @function originalFetch
- * @memberOf module:mock-requests
- */
 
 /**
  *
  * @type {module:mock-requests}
  */
 const MockRequests = (function() {
+    /**
+     * Original XMLHttpRequest class, as defined in the browser
+     *
+     * @class OriginalXHR
+     * @augments XMLHttpRequest
+     * @memberOf module:mock-requests
+     */
+    /**
+     * Original fetch function, as defined in the browser
+     *
+     * @function originalFetch
+     * @memberOf module:mock-requests
+     */
     /**
      * @typedef {function} DynamicResponseModFn
      * @param {*} request - Payload passed to the async function
