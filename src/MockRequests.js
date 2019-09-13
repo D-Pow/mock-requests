@@ -8,8 +8,7 @@
  */
 
 /**
- *
- * @type {module:mock-requests}
+ * @namespace
  */
 const MockRequests = (function() {
     /**
@@ -17,27 +16,27 @@ const MockRequests = (function() {
      *
      * @class OriginalXHR
      * @augments XMLHttpRequest
-     * @memberOf module:mock-requests
+     * @memberOf module:mock-requests~MockRequests
      */
     /**
      * Original fetch function, as defined in the browser
      *
      * @function originalFetch
-     * @memberOf module:mock-requests
+     * @memberOf module:mock-requests~MockRequests
      */
     /**
      * @typedef {function} DynamicResponseModFn
      * @param {*} request - Payload passed to the async function
      * @param {*} response - Previous response object to be modified
      * @returns {*} modifiedResponse - Updated response to be saved in the mock response map
-     * @memberOf module:mock-requests
+     * @memberOf module:mock-requests~MockRequests
      */
     /**
      * @typedef {Object} MockResponseConfig
      * @property {Object} response - Mock response to be returned
      * @property {DynamicResponseModFn} dynamicResponseModFn - Function to dynamically change the response object based on previous request/response
      * @property {number} delay - Optional network mock resolution time
-     * @memberOf module:mock-requests
+     * @memberOf module:mock-requests~MockRequests
      */
 
     /**
@@ -55,7 +54,7 @@ const MockRequests = (function() {
      *
      * @param  {Object.<string, Object>} apiUrlResponseConfig - Config object containing URL strings as keys and respective mock response objects as values
      * @param {boolean} [overwritePreviousConfig=true] - If the map from a previous configure call should be maintained (true) or not (false)
-     * @memberOf module:mock-requests
+     * @memberOf module:mock-requests~MockRequests
      */
     function configure(apiUrlResponseConfig = {}, overwritePreviousConfig = true) {
         const newUrlResponseMap = Object.keys(apiUrlResponseConfig).reduce((mockResponses, key) => {
@@ -79,7 +78,7 @@ const MockRequests = (function() {
      *
      * @param {Object<string, MockResponseConfig>} dynamicApiUrlResponseConfig
      * @param {boolean} [overwritePreviousConfig=true] - If the map from a previous configure call should be overwritten by this call (true) or not (false)
-     * @memberOf module:mock-requests
+     * @memberOf module:mock-requests~MockRequests
      */
     function configureDynamicResponses(dynamicApiUrlResponseConfig = {}, overwritePreviousConfig = true) {
         const newUrlResponseMap = Object.keys(dynamicApiUrlResponseConfig).reduce((mockResponses, key) => {
@@ -103,7 +102,7 @@ const MockRequests = (function() {
      *
      * @param {string} url - URL to mock
      * @param {Object} response - Mock response object
-     * @memberOf module:mock-requests
+     * @memberOf module:mock-requests~MockRequests
      */
     function setMockUrlResponse(url, response = null) {
         const mockResponseConfig = urlResponseMap[url] ? urlResponseMap[url] : { response: null, dynamicResponseModFn: null };
@@ -121,7 +120,7 @@ const MockRequests = (function() {
      * @param {Object|string|number|boolean} mockResponseConfig.response - Mock response to be resolved
      * @param {function} mockResponseConfig.dynamicResponseModFn - Function to update response object from previous request/response values
      * @param {number} mockResponseConfig.delay - Optional resolution delay time
-     * @memberOf module:mock-requests
+     * @memberOf module:mock-requests~MockRequests
      */
     function setDynamicMockUrlResponse(url, { response, dynamicResponseModFn, delay } = {}) {
         const mockResponseConfig = urlResponseMap[url] ? urlResponseMap[url] : { response: null, dynamicResponseModFn: null };
@@ -148,7 +147,7 @@ const MockRequests = (function() {
      *
      * @param {string} url
      * @returns {*} - Configured response object
-     * @memberOf module:mock-requests
+     * @memberOf module:mock-requests~MockRequests
      */
     function getResponse(url) {
         return urlResponseMap[url] ? urlResponseMap[url].response : undefined;
@@ -159,7 +158,7 @@ const MockRequests = (function() {
      *
      * @param url
      * @returns {boolean}
-     * @memberOf module:mock-requests
+     * @memberOf module:mock-requests~MockRequests
      */
     function deleteMockUrlResponse(url) {
         return delete urlResponseMap[url];
@@ -168,7 +167,7 @@ const MockRequests = (function() {
     /**
      * Deletes all entries in the MockRequests configuration
      *
-     * @memberOf module:mock-requests
+     * @memberOf module:mock-requests~MockRequests
      */
     function clearAllMocks() {
         urlResponseMap = {};
