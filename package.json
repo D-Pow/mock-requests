@@ -15,7 +15,8 @@
     "url": "https://github.com/D-Pow/MockRequests.git"
   },
   "scripts": {
-    "build": "webpack --mode production",
+    "jsdoc": "jsdoc -R ./ReadMe.md -c config/jsdoc.config.json",
+    "build": "webpack --mode production && npm run jsdoc",
     "test": "jest --coverage tests"
   },
   "devDependencies": {
@@ -27,7 +28,9 @@
     "babel-loader": "^8.0.6",
     "copy-webpack-plugin": "^5.0.4",
     "coveralls": "^3.0.6",
+    "docdash": "^1.1.1",
     "jest": "^24.9.0",
+    "jsdoc": "^3.6.3",
     "webpack": "^4.39.2",
     "webpack-cli": "^3.3.7"
   },
