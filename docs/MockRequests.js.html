@@ -1,4 +1,54 @@
-/**
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    
+    <meta charset="utf-8">
+    <title>MockRequests.js - Documentation</title>
+    
+    <meta name="description" content="MockRequests will mock both XMLHttpRequest and fetch such that any requested URL will return the specified mock object instead of actually making an async request. URLs not configured will be unaffected and still trigger an async request as normal." />
+    
+        <meta name="keywords" content="request HTTP requests XMLHttpRequest fetch mock mocks network" />
+        <meta name="keyword" content="request HTTP requests XMLHttpRequest fetch mock mocks network" />
+    
+    
+    
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc.css">
+    <script src="scripts/nav.js" defer></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav >
+    
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-mock-requests.html">mock-requests</a></li></ul><h3>Namespaces</h3><ul><li><a href="module-mock-requests-MockRequests.html">MockRequests</a><ul class='methods'><li data-type='method'><a href="module-mock-requests-MockRequests.html#.configure">configure</a></li><li data-type='method'><a href="module-mock-requests-MockRequests.html#.configureDynamicResponses">configureDynamicResponses</a></li><li data-type='method'><a href="module-mock-requests-MockRequests.html#.setMockUrlResponse">setMockUrlResponse</a></li><li data-type='method'><a href="module-mock-requests-MockRequests.html#.setDynamicMockUrlResponse">setDynamicMockUrlResponse</a></li><li data-type='method'><a href="module-mock-requests-MockRequests.html#.getResponse">getResponse</a></li><li data-type='method'><a href="module-mock-requests-MockRequests.html#.deleteMockUrlResponse">deleteMockUrlResponse</a></li><li data-type='method'><a href="module-mock-requests-MockRequests.html#.clearAllMocks">clearAllMocks</a></li><li data-type='method'><a href="module-mock-requests-MockRequests.html#.originalFetch">originalFetch</a></li></ul></li></ul>
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">MockRequests.js</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
  * MockRequests will mock both XMLHttpRequest and fetch such that
  * any requested URL will return the specified mock object instead
  * of actually making an async request. URLs not configured will
@@ -43,7 +93,7 @@ const MockRequests = (/** @returns {MockRequestsImport} */ function MockRequests
     /**
      * Key (URL string) - Value (mock response) pairs for network mocks
      *
-     * @type {Object.<string, MockResponseConfig>}
+     * @type {Object.&lt;string, MockResponseConfig>}
      */
     let urlResponseMap = {};
 
@@ -53,7 +103,7 @@ const MockRequests = (/** @returns {MockRequestsImport} */ function MockRequests
     /**
      * Initialize the mock with response objects.
      *
-     * @param  {Object.<string, Object>} apiUrlResponseConfig - Config object containing URL strings as keys and respective mock response objects as values
+     * @param  {Object.&lt;string, Object>} apiUrlResponseConfig - Config object containing URL strings as keys and respective mock response objects as values
      * @param {boolean} [overwritePreviousConfig=true] - If the map from a previous configure call should be maintained (true) or not (false)
      * @memberOf module:mock-requests~MockRequests
      */
@@ -77,7 +127,7 @@ const MockRequests = (/** @returns {MockRequestsImport} */ function MockRequests
     /**
      * Initialize the mock with response objects and their dynamic update functions
      *
-     * @param {Object<string, MockResponseConfig>} dynamicApiUrlResponseConfig
+     * @param {Object&lt;string, MockResponseConfig>} dynamicApiUrlResponseConfig
      * @param {boolean} [overwritePreviousConfig=true] - If the map from a previous configure call should be overwritten by this call (true) or not (false)
      * @memberOf module:mock-requests~MockRequests
      */
@@ -130,7 +180,7 @@ const MockRequests = (/** @returns {MockRequestsImport} */ function MockRequests
             mockResponseConfig.response = deepCopyObject(response);
         }
 
-        if (dynamicResponseModFn && typeof dynamicResponseModFn === 'function') {
+        if (dynamicResponseModFn &amp;&amp; typeof dynamicResponseModFn === 'function') {
             mockResponseConfig.dynamicResponseModFn = dynamicResponseModFn;
         } else {
             mockResponseConfig.dynamicResponseModFn = null;
@@ -227,7 +277,7 @@ const MockRequests = (/** @returns {MockRequestsImport} */ function MockRequests
     function getResponseAndDynamicallyUpdate(url, requestPayload) {
         const mockResponseConfig = urlResponseMap[url];
 
-        if (mockResponseConfig.dynamicResponseModFn && typeof mockResponseConfig.dynamicResponseModFn === 'function') {
+        if (mockResponseConfig.dynamicResponseModFn &amp;&amp; typeof mockResponseConfig.dynamicResponseModFn === 'function') {
             const newResponse = deepCopyObject(
                 mockResponseConfig.dynamicResponseModFn(attemptParseJson(requestPayload), mockResponseConfig.response) || null
             );
@@ -321,7 +371,7 @@ const MockRequests = (/** @returns {MockRequestsImport} */ function MockRequests
 
         fetch = function(url, options) {
             if (urlIsMocked(url)) {
-                const requestPayload = (options && options.hasOwnProperty('body') && options.body)
+                const requestPayload = (options &amp;&amp; options.hasOwnProperty('body') &amp;&amp; options.body)
                     ? attemptParseJson(options.body)
                     : undefined;
                 const responseBody = getResponseAndDynamicallyUpdate(url, requestPayload);
@@ -376,3 +426,28 @@ const MockRequests = (/** @returns {MockRequestsImport} */ function MockRequests
 })();
 
 export default MockRequests;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+    
+    
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.3</a> using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/polyfill.js"></script>
+<script src="scripts/linenumber.js"></script>
+
+
+
+</body>
+</html>
