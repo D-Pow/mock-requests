@@ -72,29 +72,31 @@ to use your requests/libraries without having to manually replace the
 usage of async functions with mocks.</p>
 <h2>Features</h2>
 <p>This library was made for the purpose of allowing developers to be able to
-continue to write their code as normal even when their network or APIs are down.
+continue to write their code as normal even when their APIs are down, not set up yet, or
+don't have internet at all.
 In particular, most other network-mocking libraries are not user friendly in that they
-<strong>force users to re-write</strong> their code to use mocks and then <strong>change it back later</strong> in order
+<strong>force users to re-write</strong> their source code to use mocks and then <strong>change it back later</strong> in order
 to use real network requests. This library differs from all the others in that it allows
 you to continue writing code <strong>as normal</strong> while still using mock network activity.</p>
 <p>Specific benefits provided by this library that aren't offered in others:</p>
 <ul>
-<li>You don't have to replace your usage of async calls with mocks. This means no more replacing <code>fetch</code> with <code>Promise.resolve(desiredResponse)</code>!</li>
+<li>You don't have to replace your usage of async calls with mocks.
+This means no more replacing <code>fetch</code> with <code>Promise.resolve(desiredResponse)</code>!</li>
 <li>You don't have to do any painful configuration, such as running your own server, to host mock data.
 This also means no need to change URLs from <code>website.com/api</code> to <code>localhost/api</code>.</li>
-<li>No confusing interfaces or multi-step procedures to getting started. Simply configure it <em>once</em> in your
-source code and you're good to go</li>
+<li>No confusing interfaces or multi-step procedures to getting started. Simply configure it <em>once</em> and you're good to go.</li>
 <li>This is designed to work along with third-party libraries, including <a href="https://github.com/axios/axios">Axios</a>,
 so they function as normal while still giving you the mocks you want.</li>
 <li>This can easily be used alongside <code>jest</code> for testing! As long as <code>fetch</code> and <code>XMLHttpRequest</code> are defined in
 a test setup file, you can use this library as normal to mock all async responses.</li>
-<li><strong>Dynamically update mock responses</strong> based on request payloads and the previous mock response object</li>
-<li>Configurable outside the src folder such that the <strong>mock code isn't bundled with production code</strong></li>
-<li>Customizable mock response resolution delay to mimic natural network interactions</li>
+<li><strong>Dynamically update mock responses</strong> based on request payloads and the previous mock response object in order to
+mimic back-end alterations of data.</li>
+<li>Configurable outside the src folder such that the <strong>mock code isn't bundled with production code</strong>.</li>
+<li>Customizable mock response resolution delay to <strong>mimic natural network interactions</strong>.</li>
 </ul>
 <h2>Installation</h2>
 <p>Using npm (see the <a href="https://www.npmjs.com/package/mock-requests">npm package</a>):</p>
-<p><code>npm install mock-requests</code></p>
+<p><code>npm i -D mock-requests</code></p>
 <p>Using locally installed repo with git:</p>
 <p><code>git clone &lt;this repo&gt;</code></p>
 <p>package.json:</p>
@@ -108,53 +110,50 @@ with a URL that isn't configured with a mock response, the standard async reques
 <p>This was designed to be used in such a way that wherever you configure it, the entire app
 experiences the effects. This means you could configure it in one file and then all files
 that make async requests to those configured URLs will receive the mock responses instead,
-even without importing <code>MockRequests</code> (assuming you configure it in a file that's parsed
-before other files make network calls).</p>
+even without importing <code>MockRequests</code>.</p>
 <p>Furthermore, it is designed to be used specifically when some APIs are not functioning correctly
-and mocks are necessary to replace those responses for continuing your work.
-However, replacing all API responses is still a valid use of this library.</p>
+and mocks are necessary to replace those responses for continuing your work. In this regard,
+it is also great to use when the back-end API is still being developed but you want to work on the
+front-end, or when you don't have internet at all but still need to get work done.</p>
 <p>This library also supports <strong>dynamic responses</strong> so that you can mimic the actions of your back-end
 services. Simply add dynamic-update functions to your config and call <code>MockRequests</code>'s dynamic
 configuration functions, and everything else flows as normal.</p>
 <h2>Examples</h2>
-<p>Note how in the below examples, the <em>only</em> part that differs from using normal, production-bound code
-and mock code is the <code>MockRequests.function()</code> calls. No other configuration/code changes necessary!</p>
+<p>Note how in the below examples, the production-bound code doesn't change between
+mocking and using network calls.</p>
 <h3>Static responses</h3>
 <p>To configure global app usage of <code>MockRequests</code>, simply call <code>configure()</code> with an object containing URL-responseObject
 mappings.</p>
 <pre class="prettyprint source lang-javascript"><code>const myApiUrl = 'https://mywebsite.com/api/vx/someApi';
 const anotherUrl = '192.168.0.1';
 
-// Configuring mock responses.
 // This is the only code you need to add to use this library
-// Add in a file/location that is parsed before the rest of your async code
+// Add in the file described by &quot;Separating mocks from source
+// code&quot; below
 import MockRequests from 'mock-requests';
 MockRequests.configure({
     [myApiUrl]: { data: 'myJsonResponseObject' },
     [anotherUrl]: '&lt;html>some other type of response&lt;/html>'
 });
 
-// ...other code
+// ...source code
 
-// Using your async requests. If the code below exists in a different file from the configuration above,
-// MockRequests doesn't need to be imported again.
+// Using your async requests.
 // Note that this part DOESN'T CHANGE between using mocks and actual data
-// from your service!
+// from your service
 const mockedHtmlResponse = await fetch(myApiUrl, {...configOptions})
                                 .then(res => res.json());
 useResponseContentAsNormal(mockedHtmlResponse);
 </code></pre>
-<p>Alternatively, if you configure some URL-response content separately from other files and
-decide that you need to set other URL mocks elsewhere, you can set them separately:</p>
-<pre class="prettyprint source lang-javascript"><code>// other file
-const myForgottenUrl = 'https://myotherapi.thatIforgotOriginally/api/vx/doStuff';
+<p>Alternatively, you could configure URL-response content individually:</p>
+<pre class="prettyprint source lang-javascript"><code>const myApi = 'https://myotherapi.thatIforgotOriginally/api/vx/doStuff';
 
 import MockRequests from 'mock-requests';
-MockRequests.setMockUrlResponse(myForgottenUrl, { data: 'myOtherResponse' });
+MockRequests.setMockUrlResponse(myApi, { data: 'myOtherResponse' });
 
-// ...
+// ...source code
 
-const response = await fetch(myForgottenUrl, {...whateverOptions});
+const response = await fetch(myApi, {...whateverOptions});
 
 useResponseContent(response);
 </code></pre>
@@ -190,14 +189,14 @@ const myMockResponse = {
 };
 const dynamicConfig1 = {
     [myApiUrl]: {
-        // Note how the response object is now nested inside the `response` property
+        // The desired response is now nested inside the `response` property
         response: myMockResponse,
-        // Note how the dynamicResponseModFn takes in the request and previous response as arguments
-        // to produce the new response.
+        // The dynamicResponseModFn takes in the request and previous
+        // response as arguments to produce the new response.
         // The new response **must** be returned from this function.
         // Feel free to modify the response parameter as it will be deep-copied later
         dynamicResponseModFn: (request, response) => {
-            // see the mixed interactions of request and response data to generate new response
+            // You can mix both request and response data to generate new response
             response.data = response.data.concat(request.addLettersArray);
             response.value += request.valueModification;
 
@@ -205,6 +204,7 @@ const dynamicConfig1 = {
         }
     }
 };
+MockRequests.configureDynamicResponses(dynamicConfig1);
 
 // ... whatever other file you call `fetch` in
 
@@ -227,11 +227,11 @@ console.log(myDynamicallyModifiedResponse)
 <pre class="prettyprint source lang-javascript"><code>MockRequests.setDynamicMockUrlResponse(myApiUrl, {    // or configureDynamicResponses
     response: myMockResponse,
     dynamicResponseModFn: (req, res) => {/*...*/},
-    delay: 1500   // will make fetch/XMLHttpRequest take 1.5 seconds only for myApiUrl
+    delay: 1500   // will make fetch take 1.5 seconds to resolve myApiUrl
 });
 </code></pre>
 <h3>Separating mocks from source code</h3>
-<p>If you would rather not package the mocks and <code>MockRequests</code> along with your source code, you can simply move your
+<p>To avoid packaging the mocks and <code>MockRequests</code> along with your source code, you can simply move your
 mock files to a separate folder and add a few extra lines to your <code>webpack.config.js</code> file. For example, if we have
 the setup:</p>
 <pre class="prettyprint source"><code>MyApp
@@ -246,7 +246,6 @@ var includeDir = srcDir;
 
 module.exports = {
     entry: entryFiles,
-    // ... other config entries
     module: {
         rules: [
             {
@@ -317,7 +316,7 @@ xhr.timeout = 0;
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.3</a> on Fri Sep 13 2019 20:53:06 GMT-0400 (Eastern Daylight Time) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.3</a> on Sat Sep 14 2019 10:21:58 GMT-0400 (Eastern Daylight Time) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
 </footer>
 
 <script>prettyPrint();</script>
