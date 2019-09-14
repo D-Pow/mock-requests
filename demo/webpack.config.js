@@ -29,13 +29,26 @@ const cssRegex = /\.css$/;
 const sassRegex = /\.scss$/;
 const assetRegex = /\.(png|gif|jpe?g|svg|ico|pdf|tex)$/;
 
+var srcDir = path.resolve(__dirname, 'src');
+var entryFiles = [ '@babel/polyfill', srcDir + '/index.js' ];
+var includeDir = srcDir;
+
+if (process.env.MOCK === 'true') {
+    console.log('Turning on network mocks\n');
+    var mockDir = path.resolve(__dirname, 'mocks');
+    var mockEntryFiles = mockDir + '/MockConfig.js';
+    // Update entry field and babel-loader's include field
+    entryFiles = [ mockEntryFiles, ...entryFiles ];
+    includeDir = [ mockDir, includeDir ];
+}
+
 module.exports = {
     module: {
         rules: [
             {
                 test: jsRegex,
                 exclude: /node_modules/,
-                include: /src/,
+                include: includeDir,
                 loader: 'babel-loader'
             },
             {
@@ -96,7 +109,7 @@ module.exports = {
         ]
     },
     entry: {
-        client: ['@babel/polyfill', path.resolve(__dirname, 'src/index.js')],
+        client: entryFiles,
         vendor: ['react', 'react-dom', 'prop-types']
     },
     output: {
