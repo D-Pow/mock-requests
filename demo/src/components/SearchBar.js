@@ -18,7 +18,7 @@ function SearchBar(props) {
                         onChange={handleTyping}
                     />
                     <div className={'input-group-append'}>
-                        <button className={'btn btn-outline-secondary'} onClick={props.handleSubmit}>
+                        <button className={'btn btn-outline-secondary remove-focus-highlight'} onClick={props.handleSubmit}>
                             <i className={'fas fa-search'} />
                         </button>
                     </div>
