@@ -1,4 +1,5 @@
 import React from 'react';
+import SearchBar from 'components/SearchBar';
 
 function App() {
     const pageText = {
@@ -17,6 +18,7 @@ function App() {
         <div className={'container'}>
             <div className={'text-center mx-auto'}>
                 {renderedTitle}
+                <SearchBar />
             </div>
         </div>
     );
