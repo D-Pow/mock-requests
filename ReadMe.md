@@ -49,6 +49,8 @@ package.json:
 
 ## Usage
 
+API docs can be viewed [here](https://d-pow.github.io/MockRequests/module-mock-requests-MockRequests.html).
+
 This library wraps `XMLHttpRequest` and `fetch` with a wrapper that allows
 for mock responses to be returned instead of actually making async requests.
 If a URL is configured with a mock response, then `XMLHttpRequest` and `fetch` will
@@ -280,8 +282,9 @@ code from going into production.
 
 ## MockRequests API
 
-In order to make mocking your API calls simpler, config functions have been added to allow for
-setting, getting, and deleting mock responses for certain API calls:
+In order to make mocking your network calls simpler, config functions have been added to allow for
+setting, getting, and deleting mock responses for your network calls. These are described at length
+in the [JSDoc](https://d-pow.github.io/MockRequests/module-mock-requests-MockRequests.html).
 
 ##### configure(staticUrlResponseConfigObject, overwritePreviousConfig = true)
 ##### configureDynamicResponses(dynamicUrlResponseConfigObject, overwritePreviousConfig = true)

@@ -102,6 +102,7 @@ mimic back-end alterations of data.</li>
 <p>package.json:</p>
 <p><code>&quot;mock-requests&quot;: &quot;file:&lt;pathToCloneLocation&gt;:/MockRequests</code></p>
 <h2>Usage</h2>
+<p>API docs can be viewed <a href="https://d-pow.github.io/MockRequests/module-mock-requests-MockRequests.html">here</a>.</p>
 <p>This library wraps <code>XMLHttpRequest</code> and <code>fetch</code> with a wrapper that allows
 for mock responses to be returned instead of actually making async requests.
 If a URL is configured with a mock response, then <code>XMLHttpRequest</code> and <code>fetch</code> will
@@ -294,8 +295,9 @@ module.exports = {
 <code>MockUsingMockRequests.js</code> as entry code to be loaded in the browser, and will prevent any mock-related
 code from going into production.</p>
 <h2>MockRequests API</h2>
-<p>In order to make mocking your API calls simpler, config functions have been added to allow for
-setting, getting, and deleting mock responses for certain API calls:</p>
+<p>In order to make mocking your network calls simpler, config functions have been added to allow for
+setting, getting, and deleting mock responses for your network calls. These are described at length
+in the <a href="https://d-pow.github.io/MockRequests/module-mock-requests-MockRequests.html">JSDoc</a>.</p>
 <h5>configure(staticUrlResponseConfigObject, overwritePreviousConfig = true)</h5>
 <h5>configureDynamicResponses(dynamicUrlResponseConfigObject, overwritePreviousConfig = true)</h5>
 <h5>setMockUrlResponse(url, staticMockResponseObject)</h5>
