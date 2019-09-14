@@ -2,7 +2,7 @@
  * MockRequests will mock both XMLHttpRequest and fetch such that
  * any requested URL will return the specified mock object instead
  * of actually making an async request. URLs not configured will
- * still trigger an async request.
+ * be unaffected and still trigger an async request as normal.
  *
  * @module mock-requests
  */
