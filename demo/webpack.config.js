@@ -120,6 +120,7 @@ module.exports = {
     devServer: {
         port: 3000,
         stats: 'minimal',
+        hot: true,
         open: true
     },
     stats: {
