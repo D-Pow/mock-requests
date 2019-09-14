@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import PropTypes from 'prop-types';
 
 function SearchBar(props) {
     const [ typedText, setTypedText ] = useState('');
@@ -15,7 +16,7 @@ function SearchBar(props) {
                         onChange={e => setTypedText(e.target.value)}
                     />
                     <div className={'input-group-append'}>
-                        <button className={'btn btn-outline-secondary'}>
+                        <button className={'btn btn-outline-secondary'} onClick={props.handleSubmit}>
                             <i className={'fas fa-search'} />
                         </button>
                     </div>
@@ -24,5 +25,13 @@ function SearchBar(props) {
         </div>
     );
 }
+
+SearchBar.propTypes = {
+    handleSubmit: PropTypes.func
+};
+
+SearchBar.defaultProps = {
+    handleSubmit: () => {}
+};
 
 export default SearchBar;
