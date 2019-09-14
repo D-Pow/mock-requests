@@ -200,6 +200,31 @@ MockRequests.setDynamicMockUrlResponse(myApiUrl, {    // or configureDynamicResp
 });
 ```
 
+Because the configuration/setter functions take in a simple url-response mapping,
+using different mocks at different times becomes incredibly user-friendly. For example,
+a particularly great use case for this library would be if your data changes based on
+which user is logged in. In this case, after defining each user's mock responses, you
+could nest them in a single `loginMocks` object and simply choose which login to use:
+
+```javascript
+const bobMocks = {
+    [homepageUrl]: bobHomepageMock,
+    [friendsUrl]: bobFriendsMock
+};
+const aliceMocks = {
+    [homepageUrl]: aliceHomepageMock,
+    [friendsUrl]: aliceFriendsMock
+};
+const loginMocks = {
+    bob: bobMocks,
+    alice: aliceMocks
+};
+// Today, I want to be Alice
+MockRequests.configure(loginMocks.alice);
+// no, wait, I'll be Bob instead
+MockRequests.configure(loginMocks.bob);
+```
+
 ### Separating mocks from source code
 
 To avoid packaging the mocks and `MockRequests` along with your source code, you can simply move your

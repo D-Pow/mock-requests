@@ -230,6 +230,28 @@ console.log(myDynamicallyModifiedResponse)
     delay: 1500   // will make fetch take 1.5 seconds to resolve myApiUrl
 });
 </code></pre>
+<p>Because the configuration/setter functions take in a simple url-response mapping,
+using different mocks at different times becomes incredibly user-friendly. For example,
+a particularly great use case for this library would be if your data changes based on
+which user is logged in. In this case, after defining each user's mock responses, you
+could nest them in a single <code>loginMocks</code> object and simply choose which login to use:</p>
+<pre class="prettyprint source lang-javascript"><code>const bobMocks = {
+    [homepageUrl]: bobHomepageMock,
+    [friendsUrl]: bobFriendsMock
+};
+const aliceMocks = {
+    [homepageUrl]: aliceHomepageMock,
+    [friendsUrl]: aliceFriendsMock
+};
+const loginMocks = {
+    bob: bobMocks,
+    alice: aliceMocks
+};
+// Today, I want to be Alice
+MockRequests.configure(loginMocks.alice);
+// no, wait, I'll be Bob instead
+MockRequests.configure(loginMocks.bob);
+</code></pre>
 <h3>Separating mocks from source code</h3>
 <p>To avoid packaging the mocks and <code>MockRequests</code> along with your source code, you can simply move your
 mock files to a separate folder and add a few extra lines to your <code>webpack.config.js</code> file. For example, if we have
