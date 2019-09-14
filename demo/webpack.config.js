@@ -27,7 +27,7 @@ const publicEnv = {
 const jsRegex = /\.jsx?$/;
 const cssRegex = /\.css$/;
 const sassRegex = /\.scss$/;
-const assetRegex = /\.(png|gif|jpe?g|svg|ico|pdf|tex)$/;
+const assetRegex = /\.(png|gif|jpe?g|svg|ico|pdf|tex|eot)$/;
 
 var srcDir = path.resolve(__dirname, 'src');
 var entryFiles = [ '@babel/polyfill', srcDir + '/index.js' ];
