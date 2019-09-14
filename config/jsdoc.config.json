@@ -6,6 +6,11 @@
         "destination": "./docs",
         "template": "node_modules/docdash"
     },
+    "templates": {
+        "default": {
+            "includeDate": false
+        }
+    },
     "docdash": {
         "sort": false,
         "sectionOrder": [
