@@ -8,7 +8,7 @@ function SearchBar(props) {
             <div className={'col-xs-12 mx-auto'}>
                 <div className={'input-group my-3'}>
                     <input
-                        className={'form-control input-large'}
+                        className={'form-control input-large remove-focus-highlight'}
                         type={'text'}
                         placeholder={'e.g. "Kimi no na wa"'}
                         value={typedText}

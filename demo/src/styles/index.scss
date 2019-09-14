@@ -1,1 +1,6 @@
 @import "~bootstrap/scss/bootstrap";
+
+input.remove-focus-highlight:focus {
+    box-shadow: none;
+    border-color: inherit;
+}
