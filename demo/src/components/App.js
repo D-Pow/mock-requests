@@ -1,10 +1,12 @@
-import React from 'react';
+import React, { useState } from 'react';
 import SearchBar from 'components/SearchBar';
 
 function App() {
     const pageText = {
         title: 'Anime search'
     };
+
+    const [ typedText, setTypedText ] = useState('');
 
     const renderedTitle = (
         <div className={'row mt-5'}>
@@ -18,7 +20,7 @@ function App() {
         <div className={'container'}>
             <div className={'text-center mx-auto'}>
                 {renderedTitle}
-                <SearchBar />
+                <SearchBar value={typedText} handleTyping={setTypedText} />
             </div>
         </div>
     );

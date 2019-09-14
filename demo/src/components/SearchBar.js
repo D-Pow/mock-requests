@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 
 function SearchBar(props) {
-    const [ typedText, setTypedText ] = useState('');
+    const handleTyping = ({ target: { value }}) => {
+        props.handleTyping(value);
+    };
 
     return (
         <div className={'row my-5'}>
@@ -12,8 +14,8 @@ function SearchBar(props) {
                         className={'form-control input-large remove-focus-highlight'}
                         type={'text'}
                         placeholder={'e.g. "Kimi no na wa"'}
-                        value={typedText}
-                        onChange={e => setTypedText(e.target.value)}
+                        value={props.value}
+                        onChange={handleTyping}
                     />
                     <div className={'input-group-append'}>
                         <button className={'btn btn-outline-secondary'} onClick={props.handleSubmit}>
@@ -27,10 +29,14 @@ function SearchBar(props) {
 }
 
 SearchBar.propTypes = {
+    value: PropTypes.string,
+    handleTyping: PropTypes.func,
     handleSubmit: PropTypes.func
 };
 
 SearchBar.defaultProps = {
+    value: '',
+    handleTyping: () => {},
     handleSubmit: () => {}
 };
 
