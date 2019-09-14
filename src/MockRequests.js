@@ -26,19 +26,6 @@
 
 const MockRequests = (/** @returns {MockRequestsImport} */ function MockRequestsFactory() {
     /**
-     * Original XMLHttpRequest class, as defined in the browser
-     *
-     * @class OriginalXHR
-     * @augments XMLHttpRequest
-     * @memberOf module:mock-requests~MockRequests
-     */
-    /**
-     * Original fetch function, as defined in the browser
-     *
-     * @function originalFetch
-     * @memberOf module:mock-requests~MockRequests
-     */
-    /**
      * @typedef {function} DynamicResponseModFn
      * @param {*} request - Payload passed to the async function
      * @param {*} response - Previous response object to be modified
@@ -360,6 +347,20 @@ const MockRequests = (/** @returns {MockRequestsImport} */ function MockRequests
     if (window.fetch) {
         overwriteFetch();
     }
+
+    /**
+     * Original XMLHttpRequest class, as defined in the browser
+     *
+     * @class OriginalXHR
+     * @augments XMLHttpRequest
+     * @memberOf module:mock-requests~MockRequests
+     */
+    /**
+     * Original fetch function, as defined in the browser
+     *
+     * @function originalFetch
+     * @memberOf module:mock-requests~MockRequests
+     */
 
     return {
         configure,
