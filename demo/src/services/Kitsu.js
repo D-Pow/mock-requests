@@ -7,7 +7,7 @@ import { getKitsuTitleSearchUrl } from 'utils/Constants';
 export async function fetchKitsuTitleSearch(searchText) {
     try {
         const results = await fetch(getKitsuTitleSearchUrl(searchText));
-        const json = results.json();
+        const json = await results.json();
 
         return json;
     } catch (e) {
