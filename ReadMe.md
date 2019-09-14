@@ -8,6 +8,20 @@ Mocks async requests with mock responses so you can continue
 to use your requests/libraries without having to manually replace the
 usage of async functions with mocks.
 
+## Contents
+
+* [Features](#features)
+* [Installation](#installation)
+* [Usage](#usage)
+* [Examples](#examples)
+    * [Static responses](#example-static)
+    * [Dynamic responses](#example-dynamic)
+* [Separating mocks from source](#separate-from-source)
+* [MockRequests API](#api)
+* [Final notes](#final-notes)
+* [License](#license)
+
+<a name="features"></a>
 ## Features
 
 This library was made for the purpose of allowing developers to be able to
@@ -33,6 +47,7 @@ mimic back-end alterations of data.
 * Configurable outside the src folder such that the **mock code isn't bundled with production code**.
 * Customizable mock response resolution delay to **mimic natural network interactions**.
 
+<a name="installation"></a>
 ## Installation
 
 Using npm (see the [npm package](https://www.npmjs.com/package/mock-requests)):
@@ -47,6 +62,7 @@ package.json:
 
 `"mock-requests": "file:<pathToCloneLocation>:/MockRequests`
 
+<a name="usage"></a>
 ## Usage
 
 API docs can be viewed [here](https://d-pow.github.io/MockRequests/module-mock-requests-MockRequests.html).
@@ -71,11 +87,13 @@ This library also supports **dynamic responses** so that you can mimic the actio
 services. Simply add dynamic-update functions to your config and call `MockRequests`'s dynamic
 configuration functions, and everything else flows as normal.
 
+<a name="examples"></a>
 ## Examples
 
 Note how in the below examples, the production-bound code doesn't change between
 mocking and using network calls.
 
+<a name="example-static"></a>
 ### Static responses
 
 To configure global app usage of `MockRequests`, simply call `configure()` with an object containing URL-responseObject
@@ -139,6 +157,7 @@ useResponseContent(mockedResponse);
 useResponseContent(realApiResponse);
 ```
 
+<a name="example-dynamic"></a>
 ### Dynamic responses
 
 This library also supports dynamically updating your mocked APIs responses, so as to mimic actual
@@ -227,7 +246,8 @@ MockRequests.configure(loginMocks.alice);
 MockRequests.configure(loginMocks.bob);
 ```
 
-### Separating mocks from source code
+<a name="separate-from-source"></a>
+## Separating mocks from source code
 
 To avoid packaging the mocks and `MockRequests` along with your source code, you can simply move your
 mock files to a separate folder and add a few extra lines to your `webpack.config.js` file. For example, if we have
@@ -280,6 +300,7 @@ Doing so will have the net effect of loading the `mocks` directory with `babel-l
 `MockUsingMockRequests.js` as entry code to be loaded in the browser, and will prevent any mock-related
 code from going into production.
 
+<a name="api"></a>
 ## MockRequests API
 
 In order to make mocking your network calls simpler, config functions have been added to allow for
@@ -301,6 +322,7 @@ regardless of if you've set the mock URL responses in `MockRequests.configure()`
 It will also use `XMLHttpRequest` and `fetch` regardless of if the browser supports them or not (will be `undefined` in
 cases where the browser doesn't support them).
 
+<a name="final-notes"></a>
 ## Final notes
 
 This mocks the usage of `XMLHttpRequest` and `fetch` such that the response is always valid.
@@ -319,6 +341,7 @@ xhr.timeout = 0;
 
 If you want to change any of these, feel free to do so within `xhr.onreadystatechange`.
 
+<a name="license"></a>
 ## License
 
 MIT

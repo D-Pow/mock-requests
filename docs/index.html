@@ -70,6 +70,23 @@
 <p>Mocks async requests with mock responses so you can continue
 to use your requests/libraries without having to manually replace the
 usage of async functions with mocks.</p>
+<h2>Contents</h2>
+<ul>
+<li><a href="#features">Features</a></li>
+<li><a href="#installation">Installation</a></li>
+<li><a href="#usage">Usage</a></li>
+<li><a href="#examples">Examples</a>
+<ul>
+<li><a href="#example-static">Static responses</a></li>
+<li><a href="#example-dynamic">Dynamic responses</a></li>
+</ul>
+</li>
+<li><a href="#separate-from-source">Separating mocks from source</a></li>
+<li><a href="#api">MockRequests API</a></li>
+<li><a href="#final-notes">Final notes</a></li>
+<li><a href="#license">License</a></li>
+</ul>
+<p><a name="features"></a></p>
 <h2>Features</h2>
 <p>This library was made for the purpose of allowing developers to be able to
 continue to write their code as normal even when their APIs are down, not set up yet, or
@@ -94,6 +111,7 @@ mimic back-end alterations of data.</li>
 <li>Configurable outside the src folder such that the <strong>mock code isn't bundled with production code</strong>.</li>
 <li>Customizable mock response resolution delay to <strong>mimic natural network interactions</strong>.</li>
 </ul>
+<p><a name="installation"></a></p>
 <h2>Installation</h2>
 <p>Using npm (see the <a href="https://www.npmjs.com/package/mock-requests">npm package</a>):</p>
 <p><code>npm i -D mock-requests</code></p>
@@ -101,6 +119,7 @@ mimic back-end alterations of data.</li>
 <p><code>git clone &lt;this repo&gt;</code></p>
 <p>package.json:</p>
 <p><code>&quot;mock-requests&quot;: &quot;file:&lt;pathToCloneLocation&gt;:/MockRequests</code></p>
+<p><a name="usage"></a></p>
 <h2>Usage</h2>
 <p>API docs can be viewed <a href="https://d-pow.github.io/MockRequests/module-mock-requests-MockRequests.html">here</a>.</p>
 <p>This library wraps <code>XMLHttpRequest</code> and <code>fetch</code> with a wrapper that allows
@@ -119,9 +138,11 @@ front-end, or when you don't have internet at all but still need to get work don
 <p>This library also supports <strong>dynamic responses</strong> so that you can mimic the actions of your back-end
 services. Simply add dynamic-update functions to your config and call <code>MockRequests</code>'s dynamic
 configuration functions, and everything else flows as normal.</p>
+<p><a name="examples"></a></p>
 <h2>Examples</h2>
 <p>Note how in the below examples, the production-bound code doesn't change between
 mocking and using network calls.</p>
+<p><a name="example-static"></a></p>
 <h3>Static responses</h3>
 <p>To configure global app usage of <code>MockRequests</code>, simply call <code>configure()</code> with an object containing URL-responseObject
 mappings.</p>
@@ -175,6 +196,7 @@ const realApiResponse = await fetch(myFunctioningApi, {...whateverOptions});
 useResponseContent(mockedResponse);
 useResponseContent(realApiResponse);
 </code></pre>
+<p><a name="example-dynamic"></a></p>
 <h3>Dynamic responses</h3>
 <p>This library also supports dynamically updating your mocked APIs responses, so as to mimic actual
 back-end systems. To utilize this feature, you'll need to call the dynamic counterparts of
@@ -253,7 +275,8 @@ MockRequests.configure(loginMocks.alice);
 // no, wait, I'll be Bob instead
 MockRequests.configure(loginMocks.bob);
 </code></pre>
-<h3>Separating mocks from source code</h3>
+<p><a name="separate-from-source"></a></p>
+<h2>Separating mocks from source code</h2>
 <p>To avoid packaging the mocks and <code>MockRequests</code> along with your source code, you can simply move your
 mock files to a separate folder and add a few extra lines to your <code>webpack.config.js</code> file. For example, if we have
 the setup:</p>
@@ -294,6 +317,7 @@ module.exports = {
 <p>Doing so will have the net effect of loading the <code>mocks</code> directory with <code>babel-loader</code> and including
 <code>MockUsingMockRequests.js</code> as entry code to be loaded in the browser, and will prevent any mock-related
 code from going into production.</p>
+<p><a name="api"></a></p>
 <h2>MockRequests API</h2>
 <p>In order to make mocking your network calls simpler, config functions have been added to allow for
 setting, getting, and deleting mock responses for your network calls. These are described at length
@@ -311,6 +335,7 @@ in the <a href="https://d-pow.github.io/MockRequests/module-mock-requests-MockRe
 regardless of if you've set the mock URL responses in <code>MockRequests.configure()</code> or <code>MockRequests.setMockUrlResponse(...)</code>.
 It will also use <code>XMLHttpRequest</code> and <code>fetch</code> regardless of if the browser supports them or not (will be <code>undefined</code> in
 cases where the browser doesn't support them).</p>
+<p><a name="final-notes"></a></p>
 <h2>Final notes</h2>
 <p>This mocks the usage of <code>XMLHttpRequest</code> and <code>fetch</code> such that the response is always valid.
 This means that, in particular for <code>XMLHttpRequest</code>, the following instance attributes are always
@@ -324,6 +349,7 @@ xhr.statusText = 'OK';
 xhr.timeout = 0;
 </code></pre>
 <p>If you want to change any of these, feel free to do so within <code>xhr.onreadystatechange</code>.</p>
+<p><a name="license"></a></p>
 <h2>License</h2>
 <p>MIT</p></article>
     </section>
