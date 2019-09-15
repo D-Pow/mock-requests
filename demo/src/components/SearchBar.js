@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import { useKeyboardEvent } from 'utils/Hooks';
 
 function SearchBar(props) {
-    const isMocked = process.env.MOCK === 'true';
     const [ isExpanded, setIsExpanded ] = useState(false);
 
     const handleTyping = ({ target: { value }}) => {
@@ -38,7 +37,7 @@ function SearchBar(props) {
                         <button className={'btn btn-outline-secondary remove-focus-highlight'} onClick={() => props.handleSubmit()}>
                             <i className={'fas fa-search'} />
                         </button>
-                        {isMocked && (
+                        {window.isMocked && (
                             <React.Fragment>
                                 <button
                                     className={'btn btn-outline-secondary dropdown-toggle dropdown-toggle-split remove-focus-highlight'}

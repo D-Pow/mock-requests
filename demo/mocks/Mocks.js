@@ -6,6 +6,7 @@ const bleachSearchQuery = 'bleach';
 const fullmetalSearchQuery = 'fullmetal alchemist';
 const attackOnTitanSearchQuery = 'attack on titan';
 
+window.isMocked = true;
 window.mockedSearchQueries = [kimiNoNaWaSearchQuery, narutoSearchQuery, bleachSearchQuery, fullmetalSearchQuery, attackOnTitanSearchQuery];
 
 export const kimiNoNaWaUrl = getKitsuTitleSearchUrl(kimiNoNaWaSearchQuery);
