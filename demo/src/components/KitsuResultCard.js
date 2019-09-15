@@ -18,8 +18,8 @@ function KitsuResultCard({ kitsuResult }) {
 
     return (
         <React.Fragment>
-            <img src={small} alt={canonicalTitle} />
-            <div className={'media-body'}>
+            <img className={'align-self-center img-thumbnail'} src={small} alt={canonicalTitle} />
+            <div className={'media-body align-self-center ml-2 mt-2'}>
                 <h5>{canonicalTitle}</h5>
                 <p>{synopsis}</p>
             </div>
