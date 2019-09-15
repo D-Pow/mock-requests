@@ -1,10 +1,18 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { useKeyboardEvent } from 'utils/Hooks';
 
 function SearchBar(props) {
     const handleTyping = ({ target: { value }}) => {
         props.handleTyping(value);
     };
+
+    const [ keyDown, setKeyDown ] = useKeyboardEvent();
+
+    if (keyDown === 'Enter') {
+        props.handleSubmit();
+        setKeyDown(null);
+    }
 
     return (
         <div className={'row my-5'}>
