@@ -1,10 +1,19 @@
-import React from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { useKeyboardEvent } from 'utils/Hooks';
 
 function SearchBar(props) {
+    const isMocked = process.env.MOCK === 'true';
+    const [ isExpanded, setIsExpanded ] = useState(false);
+
     const handleTyping = ({ target: { value }}) => {
         props.handleTyping(value);
+    };
+
+    const handleSuggestionClick = query => {
+        handleTyping({ target: { value: query }});
+        setIsExpanded(false);
+        props.handleSubmit();
     };
 
     const [ keyDown, setKeyDown ] = useKeyboardEvent();
@@ -29,6 +38,23 @@ function SearchBar(props) {
                         <button className={'btn btn-outline-secondary remove-focus-highlight'} onClick={props.handleSubmit}>
                             <i className={'fas fa-search'} />
                         </button>
+                        {isMocked && (
+                            <React.Fragment>
+                                <button
+                                    className={'btn btn-outline-secondary dropdown-toggle dropdown-toggle-split remove-focus-highlight'}
+                                    onClick={() => setIsExpanded(!isExpanded)}
+                                />
+                                <div className={`dropdown-menu w-100 d-${isExpanded ? 'block' : 'none'}`}>
+                                    <div className={'dropdown-item'}>Mocked responses</div>
+                                    <div role={'separator'} className={'dropdown-divider'} />
+                                    {window.mockedSearchQueries.map(query => (
+                                        <a className={'dropdown-item'} onClick={() => handleSuggestionClick(query)} href={'#'} key={query}>
+                                            {query}
+                                        </a>
+                                    ))}
+                                </div>
+                            </React.Fragment>
+                        )}
                     </div>
                 </div>
             </div>
