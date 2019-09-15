@@ -22,6 +22,11 @@ function SearchBar(props) {
         setKeyDown(null);
     }
 
+    // font-awesome replaces <i/> with <svg/> so wrap in a tag
+    // that will always be the same so React can mount/unmount as needed
+    const defaultDisplay = (<span><i className={'fas fa-search'} /></span>);
+    const renderedDisplay = props.btnDisplay ? props.btnDisplay : defaultDisplay;
+
     return (
         <div className={'row my-5'}>
             <div className={'col-xs-12 mx-auto'}>
@@ -35,7 +40,7 @@ function SearchBar(props) {
                     />
                     <div className={'input-group-append'}>
                         <button className={'btn btn-outline-secondary remove-focus-highlight'} onClick={() => props.handleSubmit()}>
-                            <i className={'fas fa-search'} />
+                            {renderedDisplay}
                         </button>
                         {window.isMocked && (
                             <React.Fragment>
@@ -62,12 +67,14 @@ function SearchBar(props) {
 }
 
 SearchBar.propTypes = {
+    btnDisplay: PropTypes.node,
     value: PropTypes.string,
     handleTyping: PropTypes.func,
     handleSubmit: PropTypes.func
 };
 
 SearchBar.defaultProps = {
+    btnDisplay: null,
     value: '',
     handleTyping: () => {},
     handleSubmit: () => {}
