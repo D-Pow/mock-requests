@@ -28,6 +28,7 @@ function KitsuResultCard({ kitsuResult }) {
                     <Anchor href={getMyAnimeListSearchUrl(canonicalTitle)}>
                         {canonicalTitle}
                     </Anchor>
+                    {` (${episodeCount === 1 ? showType : episodeCount + ' episodes'})`}
                 </h5>
                 <p>{synopsis}</p>
             </div>
