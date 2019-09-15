@@ -6,7 +6,12 @@ import Spinner from 'components/Spinner';
 
 function App() {
     const pageText = {
-        title: 'Anime search'
+        title: 'Anime search',
+        description: `Search for any anime you want.${
+            window.isMocked
+                ? ' Some JSON responses have already been mocked (see dropdown).'
+                : ''
+        }`
     };
 
     const [ typedText, setTypedText ] = useState('');
@@ -29,12 +34,21 @@ function App() {
         </div>
     );
 
+    const renderedDescription = (
+        <div className={'row mt-3'}>
+            <div className={'col-12 col-md-6 text-center mx-auto'}>
+                <h6>{pageText.description}</h6>
+            </div>
+        </div>
+    );
+
     const renderedSearchButtonContent = showSpinner ? <Spinner show={showSpinner} /> : null;
 
     return (
         <div className={'container'}>
             <div className={'text-center mx-auto'}>
                 {renderedTitle}
+                {renderedDescription}
                 <SearchBar btnDisplay={renderedSearchButtonContent} value={typedText} handleTyping={setTypedText} handleSubmit={handleSubmit} />
                 <SearchResults kitsuResults={kitsuResults} />
             </div>
