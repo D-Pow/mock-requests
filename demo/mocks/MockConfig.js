@@ -1,3 +1,4 @@
 import MockRequests from 'mock-requests';
+import { searchMocks } from './Mocks';
 
-MockRequests.configure({ 'someUrl': { data: 'my mock' }});
+MockRequests.configure(searchMocks);
