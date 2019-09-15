@@ -12,13 +12,13 @@ function KitsuResultCard({ kitsuResult }) {
         episodeCount,
         showType,
         posterImage: {
-            original
+            small
         }
     } = kitsuResult.attributes;
 
     return (
         <React.Fragment>
-            <img src={original} alt={canonicalTitle} />
+            <img src={small} alt={canonicalTitle} />
             <div className={'media-body'}>
                 <h5>{canonicalTitle}</h5>
                 <p>{synopsis}</p>
