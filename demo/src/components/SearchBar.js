@@ -13,7 +13,7 @@ function SearchBar(props) {
     const handleSuggestionClick = query => {
         handleTyping({ target: { value: query }});
         setIsExpanded(false);
-        props.handleSubmit();
+        props.handleSubmit(query);
     };
 
     const [ keyDown, setKeyDown ] = useKeyboardEvent();
@@ -35,7 +35,7 @@ function SearchBar(props) {
                         onChange={handleTyping}
                     />
                     <div className={'input-group-append'}>
-                        <button className={'btn btn-outline-secondary remove-focus-highlight'} onClick={props.handleSubmit}>
+                        <button className={'btn btn-outline-secondary remove-focus-highlight'} onClick={() => props.handleSubmit()}>
                             <i className={'fas fa-search'} />
                         </button>
                         {isMocked && (

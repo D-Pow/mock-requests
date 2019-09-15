@@ -11,8 +11,9 @@ function App() {
     const [ typedText, setTypedText ] = useState('');
     const [ kitsuResults, setKitsuResults ] = useState(null);
 
-    const handleSubmit = async () => {
-        const response = await fetchKitsuTitleSearch(typedText.toLowerCase());
+    const handleSubmit = async selectedDropdownText => {
+        const searchQuery = selectedDropdownText || typedText;
+        const response = await fetchKitsuTitleSearch(searchQuery.toLowerCase());
         setKitsuResults(response);
     };
 
