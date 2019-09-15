@@ -6,6 +6,8 @@ const bleachSearchQuery = 'bleach';
 const fullmetalSearchQuery = 'fullmetal alchemist';
 const attackOnTitanSearchQuery = 'attack on titan';
 
+window.mockedSearchQueries = [kimiNoNaWaSearchQuery, narutoSearchQuery, bleachSearchQuery, fullmetalSearchQuery, attackOnTitanSearchQuery];
+
 export const kimiNoNaWaUrl = getKitsuTitleSearchUrl(kimiNoNaWaSearchQuery);
 export const narutoUrl = getKitsuTitleSearchUrl(narutoSearchQuery);
 export const bleachUrl = getKitsuTitleSearchUrl(bleachSearchQuery);
@@ -13,7 +15,7 @@ export const fullmetalUrl = getKitsuTitleSearchUrl(fullmetalSearchQuery);
 export const attackOnTitanUrl = getKitsuTitleSearchUrl(attackOnTitanSearchQuery);
 
 console.log(`Mocks are turned on for the following search queries: \n"${
-    [kimiNoNaWaSearchQuery, narutoSearchQuery, bleachSearchQuery, fullmetalSearchQuery, attackOnTitanSearchQuery].join('"\n"')
+    window.mockedSearchQueries.join('"\n"')
 }"`);
 
 export const searchMocks = {
