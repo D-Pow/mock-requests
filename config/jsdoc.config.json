@@ -21,6 +21,11 @@
             "title": "Documentation",
             "description": "MockRequests will mock both XMLHttpRequest and fetch such that any requested URL will return the specified mock object instead of actually making an async request. URLs not configured will be unaffected and still trigger an async request as normal.",
             "keyword": "request HTTP requests XMLHttpRequest fetch mock mocks network"
+        },
+        "menu": {
+            "Demo": {
+                "href": "./demo"
+            }
         }
     }
 }
