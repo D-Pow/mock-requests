@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import SearchBar from 'components/SearchBar';
+import SearchResults from 'components/SearchResults';
+import { fetchKitsuTitleSearch } from 'services/Kitsu';
 
 function App() {
     const pageText = {
@@ -7,6 +9,12 @@ function App() {
     };
 
     const [ typedText, setTypedText ] = useState('');
+    const [ kitsuResults, setKitsuResults ] = useState(null);
+
+    const handleSubmit = async () => {
+        const response = await fetchKitsuTitleSearch(typedText);
+        setKitsuResults(response);
+    };
 
     const renderedTitle = (
         <div className={'row mt-5'}>
@@ -20,7 +28,8 @@ function App() {
         <div className={'container'}>
             <div className={'text-center mx-auto'}>
                 {renderedTitle}
-                <SearchBar value={typedText} handleTyping={setTypedText} />
+                <SearchBar value={typedText} handleTyping={setTypedText} handleSubmit={handleSubmit} />
+                <SearchResults kitsuResults={kitsuResults} />
             </div>
         </div>
     );
