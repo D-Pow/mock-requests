@@ -12,7 +12,7 @@ function App() {
     const [ kitsuResults, setKitsuResults ] = useState(null);
 
     const handleSubmit = async () => {
-        const response = await fetchKitsuTitleSearch(typedText);
+        const response = await fetchKitsuTitleSearch(typedText.toLowerCase());
         setKitsuResults(response);
     };
 
