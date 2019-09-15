@@ -9,7 +9,7 @@ function SearchResults({ kitsuResults }) {
 
     return (
         <div className={'row my-5'}>
-            <div className={'col-xs-12 mx-auto'}>
+            <div className={'col-12 mx-auto'}>
                 <ul className={'list-unstyled'}>
                     {kitsuResults.data.map(kitsuResult => {
                         return (

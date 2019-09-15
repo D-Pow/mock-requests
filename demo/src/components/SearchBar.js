@@ -29,7 +29,7 @@ function SearchBar(props) {
 
     return (
         <div className={'row my-5'}>
-            <div className={'col-xs-12 mx-auto'}>
+            <div className={'col-12 col-md-6 mx-auto'}>
                 <div className={'input-group my-3'}>
                     <input
                         className={'form-control input-large remove-focus-highlight'}

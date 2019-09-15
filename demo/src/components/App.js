@@ -23,7 +23,7 @@ function App() {
 
     const renderedTitle = (
         <div className={'row mt-5'}>
-            <div className={'col-xs-12 text-center mx-auto'}>
+            <div className={'col-12 text-center mx-auto'}>
                 <h1>{pageText.title}</h1>
             </div>
         </div>
