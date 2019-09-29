@@ -37,6 +37,9 @@
   "jest": {
     "setupFiles": [
       "<rootDir>/config/jest.config.js"
+    ],
+    "modulePathIgnorePatterns": [
+      "<rootDir>/dist"
     ]
   },
   "keywords": [
