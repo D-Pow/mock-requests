@@ -264,8 +264,8 @@ and your original `webpack.config.js` looked something similar to:
 
 ```javascript
 var srcDir = path.resolve(__dirname, 'src');
-var entryFiles = srcDir + '/index.js';
-var includeDir = srcDir;
+var entryFiles = [ srcDir + '/index.js' ];
+var includeDir = [ srcDir ];
 
 module.exports = {
     entry: entryFiles,
@@ -289,8 +289,8 @@ if (process.env.MOCK === 'true') {
     var mockDir = path.resolve(__dirname, 'mocks');
     var mockEntryFiles = mockDir + '/MockUsingMockRequests.js';
     // Update entry field and babel-loader's include field
-    entryFiles = [ mockEntryFiles, entryFiles ];
-    includeDir = [ mockDir, includeDir ];
+    entryFiles.push(mockEntryFiles);
+    includeDir.push(mockDir);
 }
 ```
 

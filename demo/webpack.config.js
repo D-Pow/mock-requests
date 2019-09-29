@@ -37,15 +37,15 @@ const assetRegex = /\.(png|gif|jpe?g|svg|ico|pdf|tex|eot)$/;
 
 var srcDir = path.resolve(__dirname, 'src');
 var entryFiles = [ '@babel/polyfill', srcDir + '/index.js' ];
-var includeDir = srcDir;
+var includeDir = [ srcDir ];
 
 if (process.env.MOCK === 'true') {
     console.log('Turning on network mocks\n');
     var mockDir = path.resolve(__dirname, 'mocks');
     var mockEntryFiles = mockDir + '/MockConfig.js';
     // Update entry field and babel-loader's include field
-    entryFiles = [ mockEntryFiles, ...entryFiles ];
-    includeDir = [ mockDir, includeDir ];
+    entryFiles.push(mockEntryFiles);
+    includeDir.push(mockDir);
 }
 
 module.exports = {
