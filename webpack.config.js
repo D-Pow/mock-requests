@@ -31,6 +31,14 @@ module.exports = {
             {
                 from: 'typings/MockRequests.d.ts',
                 to: 'index.d.[ext]'
+            },
+            {
+                from: 'ReadMe.md',
+                to: '[name].[ext]'
+            },
+            {
+                from: 'package.json',
+                to: '[name].[ext]'
             }
         ])
     ],
