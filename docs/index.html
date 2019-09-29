@@ -287,8 +287,8 @@ the setup:</p>
 </code></pre>
 <p>and your original <code>webpack.config.js</code> looked something similar to:</p>
 <pre class="prettyprint source lang-javascript"><code>var srcDir = path.resolve(__dirname, 'src');
-var entryFiles = srcDir + '/index.js';
-var includeDir = srcDir;
+var entryFiles = [ srcDir + '/index.js' ];
+var includeDir = [ srcDir ];
 
 module.exports = {
     entry: entryFiles,
@@ -309,8 +309,9 @@ module.exports = {
     var mockDir = path.resolve(__dirname, 'mocks');
     var mockEntryFiles = mockDir + '/MockUsingMockRequests.js';
     // Update entry field and babel-loader's include field
-    entryFiles = [ mockEntryFiles, entryFiles ];
-    includeDir = [ mockDir, includeDir ];
+    entryFiles.push(mockEntryFiles);
+    includeDir.push(mockDir);
+    console.log('Network mocks activated by MockRequests\n');
 }
 </code></pre>
 <p>and run using <code>MOCK=true npm start</code>.</p>
