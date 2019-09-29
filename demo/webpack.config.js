@@ -40,7 +40,7 @@ var entryFiles = [ '@babel/polyfill', srcDir + '/index.js' ];
 var includeDir = [ srcDir ];
 
 if (process.env.MOCK === 'true') {
-    console.log('Turning on network mocks\n');
+    console.log('Network mocks activated by MockRequests\n');
     var mockDir = path.resolve(__dirname, 'mocks');
     var mockEntryFiles = mockDir + '/MockConfig.js';
     // Update entry field and babel-loader's include field

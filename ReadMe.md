@@ -291,6 +291,7 @@ if (process.env.MOCK === 'true') {
     // Update entry field and babel-loader's include field
     entryFiles.push(mockEntryFiles);
     includeDir.push(mockDir);
+    console.log('Network mocks activated by MockRequests\n');
 }
 ```
 
