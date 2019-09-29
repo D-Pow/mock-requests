@@ -8,7 +8,7 @@ function App() {
     const pageText = {
         title: 'Anime search',
         description: `Search for any anime you want.${
-            window.isMocked
+            process.env.MOCK
                 ? ' Some JSON responses have already been mocked (see dropdown).'
                 : ''
         }`

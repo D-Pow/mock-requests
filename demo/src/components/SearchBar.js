@@ -42,7 +42,7 @@ function SearchBar(props) {
                         <button className={'btn btn-outline-secondary remove-focus-highlight'} onClick={() => props.handleSubmit()}>
                             {renderedDisplay}
                         </button>
-                        {window.isMocked && (
+                        {process.env.MOCK && (
                             <React.Fragment>
                                 <button
                                     className={'btn btn-outline-secondary dropdown-toggle dropdown-toggle-split remove-focus-highlight'}
