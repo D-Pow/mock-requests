@@ -16,7 +16,8 @@
   "scripts": {
     "jsdoc": "jsdoc -R ./ReadMe.md -c config/jsdoc.config.json",
     "build": "webpack --mode production && npm run jsdoc",
-    "test": "jest --coverage tests"
+    "test": "jest --coverage tests",
+    "publish": "npm publish dist"
   },
   "devDependencies": {
     "@babel/core": "^7.5.5",
