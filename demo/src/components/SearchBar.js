@@ -51,7 +51,7 @@ function SearchBar(props) {
                                 <div className={`dropdown-menu w-100 d-${isExpanded ? 'block' : 'none'}`}>
                                     <div className={'dropdown-item'}>Mocked responses</div>
                                     <div role={'separator'} className={'dropdown-divider'} />
-                                    {window.mockedSearchQueries.map(query => (
+                                    {window.mockedSearchQueries && window.mockedSearchQueries.map(query => (
                                         <a className={'dropdown-item'} onClick={() => handleSuggestionClick(query)} href={'#'} key={query}>
                                             {query}
                                         </a>
