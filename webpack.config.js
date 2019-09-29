@@ -3,7 +3,7 @@ const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 module.exports = {
     entry: {
-        MockRequests: './src/index.js'
+        index: './src/index.js'
     },
     output: {
         path: path.resolve(__dirname, 'dist'),
@@ -30,7 +30,7 @@ module.exports = {
         new CopyWebpackPlugin([
             {
                 from: 'typings/MockRequests.d.ts',
-                to: '[name].[ext]'
+                to: 'index.d.[ext]'
             }
         ])
     ],

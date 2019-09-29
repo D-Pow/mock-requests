@@ -4,11 +4,10 @@
   "description": "Mocks XMLHttpRequest and fetch requests with the specified response object",
   "author": "Devon Powell",
   "license": "MIT",
-  "main": "dist/MockRequests.js",
-  "types": "dist/MockRequests.d.js",
+  "main": "dist/index.js",
+  "types": "dist/index.d.js",
   "files": [
-    "dist/MockRequests.js",
-    "dist/MockRequests.d.ts"
+    "dist"
   ],
   "repository": {
     "type": "git",
