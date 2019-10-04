@@ -60,7 +60,7 @@ Using locally installed repo with git:
 
 package.json:
 
-`"mock-requests": "file:<pathToCloneLocation>:/MockRequests`
+`"mock-requests": "file:<pathToCloneLocation>/MockRequests`
 
 <a name="usage"></a>
 ## Usage
