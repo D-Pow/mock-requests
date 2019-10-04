@@ -39,6 +39,10 @@ module.exports = {
             {
                 from: 'package.json',
                 to: '[name].[ext]'
+            },
+            {
+                from: 'LICENSE.md',
+                to: '[name].[ext]'
             }
         ])
     ],
