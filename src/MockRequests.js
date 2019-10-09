@@ -194,7 +194,7 @@ const MockRequests = (/** @returns {MockRequestsImport} */ function MockRequests
     }
 
     function urlIsMocked(url) {
-        return Object.keys(urlResponseMap).includes(url);
+        return urlResponseMap.hasOwnProperty(url);
     }
 
     /**
