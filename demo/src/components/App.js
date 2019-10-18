@@ -1,8 +1,31 @@
 import React, { useState } from 'react';
 import SearchBar from 'components/SearchBar';
 import SearchResults from 'components/SearchResults';
-import { fetchKitsuTitleSearch } from 'services/Kitsu';
 import Spinner from 'components/Spinner';
+import { fetchKitsuTitleSearch } from 'services/Kitsu';
+import {
+    attackOnTitanSearchQuery,
+    bleachSearchQuery,
+    fullmetalSearchQuery,
+    kimiNoNaWaSearchQuery,
+    narutoSearchQuery
+} from 'utils/Constants';
+
+let mockedSearchQueries = [];
+
+if (process.env.MOCK === 'true') {
+    mockedSearchQueries = [
+        kimiNoNaWaSearchQuery,
+        narutoSearchQuery,
+        bleachSearchQuery,
+        fullmetalSearchQuery,
+        attackOnTitanSearchQuery
+    ];
+
+    console.log(`Mocks are turned on for the following search queries: \n"${
+        mockedSearchQueries.join('"\n"')
+    }"`);
+}
 
 function App() {
     const pageText = {
@@ -49,7 +72,13 @@ function App() {
             <div className={'text-center mx-auto'}>
                 {renderedTitle}
                 {renderedDescription}
-                <SearchBar btnDisplay={renderedSearchButtonContent} value={typedText} handleTyping={setTypedText} handleSubmit={handleSubmit} />
+                <SearchBar
+                    btnDisplay={renderedSearchButtonContent}
+                    mockedSearchQueries={mockedSearchQueries}
+                    value={typedText}
+                    handleTyping={setTypedText}
+                    handleSubmit={handleSubmit}
+                />
                 <SearchResults kitsuResults={kitsuResults} />
             </div>
         </div>

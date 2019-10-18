@@ -51,7 +51,7 @@ function SearchBar(props) {
                                 <div className={`dropdown-menu w-100 d-${isExpanded ? 'block' : 'none'}`}>
                                     <div className={'dropdown-item'}>Mocked responses</div>
                                     <div role={'separator'} className={'dropdown-divider'} />
-                                    {window.mockedSearchQueries && window.mockedSearchQueries.map(query => (
+                                    {props.mockedSearchQueries && props.mockedSearchQueries.map(query => (
                                         <a className={'dropdown-item'} onClick={() => handleSuggestionClick(query)} href={'#'} key={query}>
                                             {query}
                                         </a>
@@ -68,6 +68,7 @@ function SearchBar(props) {
 
 SearchBar.propTypes = {
     btnDisplay: PropTypes.node,
+    mockedSearchQueries: PropTypes.array,
     value: PropTypes.string,
     handleTyping: PropTypes.func,
     handleSubmit: PropTypes.func
@@ -75,6 +76,7 @@ SearchBar.propTypes = {
 
 SearchBar.defaultProps = {
     btnDisplay: null,
+    mockedSearchQueries: [],
     value: '',
     handleTyping: () => {},
     handleSubmit: () => {}
