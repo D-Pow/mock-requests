@@ -281,9 +281,21 @@ MockRequests.configure(loginMocks.bob);
 mock files to a separate folder and add a few extra lines to your <code>webpack.config.js</code> file. For example, if we have
 the setup:</p>
 <pre class="prettyprint source"><code>MyApp
-├───src/
-├───mocks/
-|   ├───MockUsingMockRequests.js
+├─── src/
+|   ├─── (... source code)
+├─── mocks/
+|   ├─── MockConfig.js
+|   ├─── (... other mock files imported by MockConfig.js)
+</code></pre>
+<p>where <code>MockConfig.js</code> does all the <code>mock-requests</code> configuration, e.g.</p>
+<pre class="prettyprint source lang-javascript"><code>import MockRequests from 'mock-requests';
+// Imports from mocks/ directory
+import { myStaticApiUrl, myDynamicApiUrl } from './Urls';
+import { myStaticApiResponse } from './StaticResponses';
+import { myDynamicApiConfig } from './DynamicResponseConfigs';
+
+MockRequests.setMockUrlResponse(myStaticApiUrl, myStaticApiResponse);
+MockRequests.setDynamicMockUrlResponse(myDynamicApiUrl, myDynamicApiConfig);
 </code></pre>
 <p>and your original <code>webpack.config.js</code> looked something similar to:</p>
 <pre class="prettyprint source lang-javascript"><code>var srcDir = path.resolve(__dirname, 'src');
@@ -304,10 +316,11 @@ module.exports = {
     }
 }
 </code></pre>
-<p>then all you would need to add would be something akin to:</p>
+<p>then all you would need to add to your <code>webpack.config.js</code> file would be something akin to:</p>
 <pre class="prettyprint source lang-javascript"><code>if (process.env.MOCK === 'true') {
     var mockDir = path.resolve(__dirname, 'mocks');
-    var mockEntryFiles = mockDir + '/MockUsingMockRequests.js';
+    var mockEntryFiles = mockDir + '/MockConfig.js';
+
     // Update entry field and babel-loader's include field
     entryFiles.push(mockEntryFiles);
     includeDir.push(mockDir);
@@ -316,8 +329,8 @@ module.exports = {
 </code></pre>
 <p>and run using <code>MOCK=true npm start</code>.</p>
 <p>Doing so will have the net effect of loading the <code>mocks</code> directory with <code>babel-loader</code> and including
-<code>MockUsingMockRequests.js</code> as entry code to be loaded in the browser, and will prevent any mock-related
-code from going into production.</p>
+<code>MockConfig.js</code> as entry code to be loaded in the browser only during development. This way, all
+mock-related code will be prevented from going into production.</p>
 <p><a name="api"></a></p>
 <h2>MockRequests API</h2>
 <p>In order to make mocking your network calls simpler, config functions have been added to allow for
