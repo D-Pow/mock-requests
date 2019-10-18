@@ -255,9 +255,24 @@ the setup:
 
 ```
 MyApp
-├───src/
-├───mocks/
-|   ├───MockUsingMockRequests.js
+├─── src/
+|   ├─── (... source code)
+├─── mocks/
+|   ├─── MockConfig.js
+|   ├─── (... other mock files imported by MockConfig.js)
+```
+
+where `MockConfig.js` does all the `mock-requests` configuration, e.g.
+
+```javascript
+import MockRequests from 'mock-requests';
+// Imports from mocks/ directory
+import { myStaticApiUrl, myDynamicApiUrl } from './Urls';
+import { myStaticApiResponse } from './StaticResponses';
+import { myDynamicApiConfig } from './DynamicResponseConfigs';
+
+MockRequests.setMockUrlResponse(myStaticApiUrl, myStaticApiResponse);
+MockRequests.setDynamicMockUrlResponse(myDynamicApiUrl, myDynamicApiConfig);
 ```
 
 and your original `webpack.config.js` looked something similar to:
@@ -282,12 +297,13 @@ module.exports = {
 }
 ```
 
-then all you would need to add would be something akin to:
+then all you would need to add to your `webpack.config.js` file would be something akin to:
 
 ```javascript
 if (process.env.MOCK === 'true') {
     var mockDir = path.resolve(__dirname, 'mocks');
-    var mockEntryFiles = mockDir + '/MockUsingMockRequests.js';
+    var mockEntryFiles = mockDir + '/MockConfig.js';
+
     // Update entry field and babel-loader's include field
     entryFiles.push(mockEntryFiles);
     includeDir.push(mockDir);
@@ -298,8 +314,8 @@ if (process.env.MOCK === 'true') {
 and run using `MOCK=true npm start`.
 
 Doing so will have the net effect of loading the `mocks` directory with `babel-loader` and including
-`MockUsingMockRequests.js` as entry code to be loaded in the browser, and will prevent any mock-related
-code from going into production.
+`MockConfig.js` as entry code to be loaded in the browser only during development. This way, all
+mock-related code will be prevented from going into production.
 
 <a name="api"></a>
 ## MockRequests API
