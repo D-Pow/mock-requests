@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import Anchor from 'ui/Anchor';
-import { getMyAnimeListSearchUrl } from 'utils/Constants';
+import { getMyAnimeListSearchUrl } from 'utils/Functions';
 
 function KitsuResultCard({ kitsuResult }) {
     if (!kitsuResult || !kitsuResult.attributes) {

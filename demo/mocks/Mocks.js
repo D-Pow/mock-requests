@@ -1,10 +1,11 @@
-import { getKitsuTitleSearchUrl } from 'utils/Constants';
-
-const kimiNoNaWaSearchQuery = 'kimi no na wa';
-const narutoSearchQuery = 'naruto';
-const bleachSearchQuery = 'bleach';
-const fullmetalSearchQuery = 'fullmetal alchemist';
-const attackOnTitanSearchQuery = 'attack on titan';
+import { getKitsuTitleSearchUrl } from 'utils/Functions';
+import {
+    kimiNoNaWaSearchQuery,
+    narutoSearchQuery,
+    bleachSearchQuery,
+    fullmetalSearchQuery,
+    attackOnTitanSearchQuery
+} from 'utils/Constants';
 
 window.mockedSearchQueries = [kimiNoNaWaSearchQuery, narutoSearchQuery, bleachSearchQuery, fullmetalSearchQuery, attackOnTitanSearchQuery];
 
