@@ -78,7 +78,7 @@ const MockRequests = (/** @returns {MockRequestsImport} */ function MockRequests
     function configureDynamicResponses(dynamicApiUrlResponseConfig = {}, overwritePreviousConfig = true) {
         const newUrlResponseMap = Object.keys(dynamicApiUrlResponseConfig).reduce((mockResponses, key) => {
             mockResponses[key] = {
-                response: deepCopyObject(dynamicApiUrlResponseConfig[key].response || null),
+                response: deepCopyObject(dynamicApiUrlResponseConfig[key].response),
                 dynamicResponseModFn: dynamicApiUrlResponseConfig[key].dynamicResponseModFn,
                 delay: dynamicApiUrlResponseConfig[key].delay
             };
@@ -174,7 +174,7 @@ const MockRequests = (/** @returns {MockRequestsImport} */ function MockRequests
      * @param {Object} obj
      * @returns {Object}
      */
-    function deepCopyObject(obj) {
+    function deepCopyObject(obj = null) {
         return JSON.parse(JSON.stringify(obj));
     }
 
@@ -187,7 +187,7 @@ const MockRequests = (/** @returns {MockRequestsImport} */ function MockRequests
      */
     function mapStaticMockConfigToDynamic(staticConfig) {
         return Object.keys(staticConfig).reduce((dynamicMockConfig, staticUrl) => {
-            const staticResponse = deepCopyObject(staticConfig[staticUrl] || null);
+            const staticResponse = deepCopyObject(staticConfig[staticUrl]);
 
             dynamicMockConfig[staticUrl] = {
                 response: staticResponse,
@@ -287,7 +287,10 @@ const MockRequests = (/** @returns {MockRequestsImport} */ function MockRequests
 
         if (mockResponseConfig.dynamicResponseModFn && typeof mockResponseConfig.dynamicResponseModFn === 'function') {
             const newResponse = deepCopyObject(
-                mockResponseConfig.dynamicResponseModFn(attemptParseJson(requestPayload), mockResponseConfig.response) || null
+                mockResponseConfig.dynamicResponseModFn(
+                    attemptParseJson(requestPayload),
+                    mockResponseConfig.response
+                )
             );
 
             mockResponseConfig.response = newResponse;
