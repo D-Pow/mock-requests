@@ -45,25 +45,42 @@ describe('Dynamic modifications with query parameters', () => {
     });
 
     it('should treat URLs with the same pathname identically if parseQueryParams is true', async () => {
+        const testSamePathnameIsIdentical = async () => {
+            const queriesAndHash = await fetch(mockUrl1).then(res => res.json());
+            const onlyQueries = await fetch(mockUrl2).then(res => res.json());
+
+            expect(queriesAndHash.queryVals.length).toEqual(3); // 2 queries and one hash
+            expect(queriesAndHash.hashVal).toEqual('someHash');
+            expect(onlyQueries.queryVals.length).toEqual(1);
+            expect(onlyQueries.hashVal).toBe(null);
+        };
+
+        // Test with both configure() and setResponse()
         MockRequests.configureDynamicResponses(dynamicConfigWithQueryParsing);
-
-        const queriesAndHash = await fetch(mockUrl1).then(res => res.json());
-        const onlyQueries = await fetch(mockUrl2).then(res => res.json());
-
-        expect(queriesAndHash.queryVals.length).toEqual(3); // 2 queries and one hash
-        expect(queriesAndHash.hashVal).toEqual('someHash');
-        expect(onlyQueries.queryVals.length).toEqual(1);
-        expect(onlyQueries.hashVal).toBe(null);
+        await testSamePathnameIsIdentical();
+        MockRequests.deleteMockUrlResponse(mockUrlPathname);
+        MockRequests.setDynamicMockUrlResponse(mockUrl1, dynamicConfigWithQueryParsing[mockUrlPathname]);
+        MockRequests.setDynamicMockUrlResponse(mockUrl2, dynamicConfigWithQueryParsing[mockUrlPathname]);
+        await testSamePathnameIsIdentical();
     });
 
     it('should treat URLs with the same pathname separately if parseQueryParams is false', async () => {
+        const testSamePathnameIsSeparate = async () => {
+            const mock1Response = await fetch(mockUrl1).then(res => res.json());
+            const mock2Response = await fetch(mockUrl2).then(res => res.json());
+
+            expect(mock1Response).not.toEqual(mock2Response);
+            expect(mock1Response).toEqual(dynamicConfigWithoutQueryParsing[mockUrl1].response);
+            expect(mock2Response).toEqual(dynamicConfigWithoutQueryParsing[mockUrl2].response);
+        };
+
+        // Test with both configure() and setResponse()
         MockRequests.configureDynamicResponses(dynamicConfigWithoutQueryParsing);
-
-        const mock1Response = await fetch(mockUrl1).then(res => res.json());
-        const mock2Response = await fetch(mockUrl2).then(res => res.json());
-
-        expect(mock1Response).not.toEqual(mock2Response);
-        expect(mock1Response).toEqual(dynamicConfigWithoutQueryParsing[mockUrl1].response);
-        expect(mock2Response).toEqual(dynamicConfigWithoutQueryParsing[mockUrl2].response);
+        await testSamePathnameIsSeparate();
+        MockRequests.deleteMockUrlResponse(mockUrl1);
+        MockRequests.deleteMockUrlResponse(mockUrl2);
+        MockRequests.setDynamicMockUrlResponse(mockUrl1, dynamicConfigWithoutQueryParsing[mockUrl1]);
+        MockRequests.setDynamicMockUrlResponse(mockUrl2, dynamicConfigWithoutQueryParsing[mockUrl2]);
+        await testSamePathnameIsSeparate();
     });
 });
