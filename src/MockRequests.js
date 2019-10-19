@@ -187,7 +187,7 @@ const MockRequests = (/** @returns {MockRequestsImport} */ function MockRequests
      */
     function mapStaticMockConfigToDynamic(staticConfig) {
         return Object.keys(staticConfig).reduce((dynamicMockConfig, staticUrl) => {
-            const staticResponse = deepCopyObject(staticConfig[staticUrl]);
+            const staticResponse = deepCopyObject(staticConfig[staticUrl] || null);
 
             dynamicMockConfig[staticUrl] = {
                 response: staticResponse,
