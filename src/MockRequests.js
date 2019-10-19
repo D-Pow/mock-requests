@@ -209,16 +209,27 @@ const MockRequests = (/** @returns {MockRequestsImport} */ function MockRequests
     }
 
     /**
-     * Parses a URL for query parameters and extracts pathname/query parameter map respectively.
+     * Parses a URL for query parameters/hash entry and extracts the pathname/query parameter map respectively.
      *
      * @param {string} url - URL to parse for query parameters
-     * @returns {{hasQueryParams: boolean, queryParamMap: Object, pathname: string}} - Pathname, query parameter map, and if query params exist
+     * @returns {{hasQueryParams: boolean, queryParamMap: Object, pathname: string}} - Pathname, query parameter map, and if query params/hash exist
      */
     function getPathnameAndQueryParams(url) {
         const queryIndex = url.indexOf('?');
         const hasQueryParams = queryIndex >= 0;
-        const pathname = hasQueryParams ? url.substring(0, queryIndex) : url;
-        const queryString = hasQueryParams ? url.substring(queryIndex + 1) : '';
+        const hashIndex = url.indexOf('#');
+        const hasHash = hashIndex >= 0;
+        const pathname = hasQueryParams ?
+            url.substring(0, queryIndex)
+            : hasHash ?
+                url.substring(0, hashIndex)
+                : url;
+        const queryString = hasQueryParams ?
+            hasHash ?
+                url.substring(queryIndex + 1, hashIndex)
+                : url.substring(queryIndex + 1)
+            : '';
+        const hashString = hasHash ? url.substring(hashIndex + 1) : '';
         const queryParamMap = queryString.length === 0 ? {} : queryString.split('&').reduce((queryParamObj, query) => {
             const unparsedKeyVal = query.split('=');
             const key = decodeURIComponent(unparsedKeyVal[0]);
@@ -229,10 +240,14 @@ const MockRequests = (/** @returns {MockRequestsImport} */ function MockRequests
             return queryParamObj;
         }, {});
 
+        if (hashString.length > 0) {
+            queryParamMap.hash = decodeURIComponent(hashString);
+        }
+
         return {
             pathname,
             queryParamMap,
-            hasQueryParams: hasQueryParams && queryString.length > 0
+            hasQueryParams: (hasQueryParams && queryString.length > 0) || (hasHash && hashString.length > 0)
         };
     }
 
