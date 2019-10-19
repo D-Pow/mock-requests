@@ -333,10 +333,12 @@ const MockRequests = (/** @returns {MockRequestsImport} */ function MockRequests
         const mockResponseConfig = getConfig(url);
 
         if (mockResponseConfig.dynamicResponseModFn && typeof mockResponseConfig.dynamicResponseModFn === 'function') {
+            const { queryParamMap } = getPathnameAndQueryParams(url);
             const newResponse = deepCopyObject(
                 mockResponseConfig.dynamicResponseModFn(
                     attemptParseJson(requestPayload),
-                    mockResponseConfig.response
+                    mockResponseConfig.response,
+                    queryParamMap
                 )
             );
 
