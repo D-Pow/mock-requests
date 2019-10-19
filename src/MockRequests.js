@@ -102,7 +102,7 @@ const MockRequests = (/** @returns {MockRequestsImport} */ function MockRequests
      * @memberOf module:mock-requests~MockRequests
      */
     function setMockUrlResponse(url, response = null) {
-        const mockResponseConfig = urlResponseMap[url] ? urlResponseMap[url] : { response: null, dynamicResponseModFn: null };
+        const mockResponseConfig = urlResponseMap[url] ? urlResponseMap[url] : mapStaticMockConfigToDynamic({});
 
         mockResponseConfig.response = deepCopyObject(response);
         urlResponseMap[url] = mockResponseConfig;
@@ -121,7 +121,7 @@ const MockRequests = (/** @returns {MockRequestsImport} */ function MockRequests
      * @memberOf module:mock-requests~MockRequests
      */
     function setDynamicMockUrlResponse(url, { response, dynamicResponseModFn, delay, parseQueryParams } = {}) {
-        const mockResponseConfig = urlResponseMap[url] ? urlResponseMap[url] : { response: null, dynamicResponseModFn: null };
+        const mockResponseConfig = getConfig(url) || mapStaticMockConfigToDynamic({});
 
         if (response) {
             mockResponseConfig.response = deepCopyObject(response);
@@ -137,7 +137,14 @@ const MockRequests = (/** @returns {MockRequestsImport} */ function MockRequests
             mockResponseConfig.delay = delay;
         }
 
-        urlResponseMap[url] = mockResponseConfig;
+        mockResponseConfig.parseQueryParams = Boolean(parseQueryParams);
+
+        if (mockResponseConfig.parseQueryParams) {
+            const { pathname } = getPathnameAndQueryParams(url);
+            urlResponseMap[pathname] = mockResponseConfig;
+        } else {
+            urlResponseMap[url] = mockResponseConfig;
+        }
     }
 
     /**
@@ -184,6 +191,13 @@ const MockRequests = (/** @returns {MockRequestsImport} */ function MockRequests
      * @memberOf module:mock-requests~MockRequests
      */
     function deleteMockUrlResponse(url) {
+        const config = getConfig(url);
+
+        if (config.parseQueryParams) {
+            const { pathname } = getPathnameAndQueryParams(url);
+            return delete urlResponseMap[pathname];
+        }
+
         return delete urlResponseMap[url];
     }
 
@@ -316,7 +330,7 @@ const MockRequests = (/** @returns {MockRequestsImport} */ function MockRequests
      * @returns {*} - Configured response after the dynamic modification function has been run (if it exists)
      */
     function getResponseAndDynamicallyUpdate(url, requestPayload) {
-        const mockResponseConfig = urlResponseMap[url];
+        const mockResponseConfig = getConfig(url);
 
         if (mockResponseConfig.dynamicResponseModFn && typeof mockResponseConfig.dynamicResponseModFn === 'function') {
             const newResponse = deepCopyObject(
@@ -399,7 +413,7 @@ const MockRequests = (/** @returns {MockRequestsImport} */ function MockRequests
             xhr.send = function(requestPayload) {
                 if (urlIsMocked(xhr.url)) {
                     mockXhrRequest(requestPayload);
-                    const resolveAfterDelay = withOptionalDelay(urlResponseMap[xhr.url].delay, xhr.onreadystatechange);
+                    const resolveAfterDelay = withOptionalDelay(getConfig(xhr.url).delay, xhr.onreadystatechange);
                     resolveAfterDelay();
                 } else {
                     xhr.originalSend(requestPayload);
@@ -425,7 +439,7 @@ const MockRequests = (/** @returns {MockRequestsImport} */ function MockRequests
                 };
 
                 return new Promise(res => {
-                    const resolveAfterDelay = withOptionalDelay(urlResponseMap[url].delay, res);
+                    const resolveAfterDelay = withOptionalDelay(getConfig(url).delay, res);
                     resolveAfterDelay(response);
                 });
             } else {
