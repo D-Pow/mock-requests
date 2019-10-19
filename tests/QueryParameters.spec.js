@@ -3,6 +3,7 @@ import MockRequests from '../src/MockRequests';
 const mockUrlPathname = 'https://example.com/someApi';
 const mockUrl1 = mockUrlPathname + '?q1=val1&q2=val2#someHash';
 const mockUrl2 = mockUrlPathname + '?someQuery=someValue';
+const mockUrl3 = mockUrlPathname + '#differentHash';
 
 function dynamicModFn(request, response, queryParamMap) {
     response = {
@@ -36,6 +37,9 @@ const dynamicConfigWithoutQueryParsing = {
     },
     [mockUrl2]: {
         response: 'world'
+    },
+    [mockUrl3]: {
+        response: 'only hash'
     }
 };
 
@@ -68,10 +72,12 @@ describe('Dynamic modifications with query parameters', () => {
         const testSamePathnameIsSeparate = async () => {
             const mock1Response = await fetch(mockUrl1).then(res => res.json());
             const mock2Response = await fetch(mockUrl2).then(res => res.json());
+            const mock3Response = await fetch(mockUrl3).then(res => res.json());
 
             expect(mock1Response).not.toEqual(mock2Response);
             expect(mock1Response).toEqual(dynamicConfigWithoutQueryParsing[mockUrl1].response);
             expect(mock2Response).toEqual(dynamicConfigWithoutQueryParsing[mockUrl2].response);
+            expect(mock3Response).toEqual(dynamicConfigWithoutQueryParsing[mockUrl3].response);
         };
 
         // Test with both configure() and setResponse()
@@ -79,8 +85,10 @@ describe('Dynamic modifications with query parameters', () => {
         await testSamePathnameIsSeparate();
         MockRequests.deleteMockUrlResponse(mockUrl1);
         MockRequests.deleteMockUrlResponse(mockUrl2);
+        MockRequests.deleteMockUrlResponse(mockUrl3);
         MockRequests.setDynamicMockUrlResponse(mockUrl1, dynamicConfigWithoutQueryParsing[mockUrl1]);
         MockRequests.setDynamicMockUrlResponse(mockUrl2, dynamicConfigWithoutQueryParsing[mockUrl2]);
+        MockRequests.setDynamicMockUrlResponse(mockUrl3, dynamicConfigWithoutQueryParsing[mockUrl3]);
         await testSamePathnameIsSeparate();
     });
 });
