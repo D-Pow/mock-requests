@@ -77,13 +77,21 @@ const MockRequests = (/** @returns {MockRequestsImport} */ function MockRequests
      * @memberOf module:mock-requests~MockRequests
      */
     function configureDynamicResponses(dynamicApiUrlResponseConfig = {}, overwritePreviousConfig = true) {
-        const newUrlResponseMap = Object.keys(dynamicApiUrlResponseConfig).reduce((mockResponses, key) => {
-            mockResponses[key] = {
-                response: deepCopyObject(dynamicApiUrlResponseConfig[key].response),
-                dynamicResponseModFn: dynamicApiUrlResponseConfig[key].dynamicResponseModFn,
-                delay: dynamicApiUrlResponseConfig[key].delay,
-                parseQueryParams: Boolean(dynamicApiUrlResponseConfig[key].parseQueryParams)
+        const newUrlResponseMap = Object.keys(dynamicApiUrlResponseConfig).reduce((mockResponses, url) => {
+            const config = {
+                response: deepCopyObject(dynamicApiUrlResponseConfig[url].response),
+                dynamicResponseModFn: dynamicApiUrlResponseConfig[url].dynamicResponseModFn,
+                delay: dynamicApiUrlResponseConfig[url].delay,
+                parseQueryParams: Boolean(dynamicApiUrlResponseConfig[url].parseQueryParams)
             };
+
+            if (config.parseQueryParams) {
+                const { pathname } = getPathnameAndQueryParams(url);
+                mockResponses[pathname] = config;
+            } else {
+                mockResponses[url] = config;
+            }
+
             return mockResponses;
         }, {});
 
