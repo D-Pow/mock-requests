@@ -247,7 +247,7 @@ const MockRequests = (/** @returns {MockRequestsImport} */ function MockRequests
         return {
             pathname,
             queryParamMap,
-            hasQueryParams: (hasQueryParams && queryString.length > 0) || (hasHash && hashString.length > 0)
+            hasQueryParams: hasQueryParams || hasHash
         };
     }
 
