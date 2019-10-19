@@ -38,6 +38,7 @@ const MockRequests = (/** @returns {MockRequestsImport} */ function MockRequests
      * @property {Object} response - Mock response to be returned
      * @property {DynamicResponseModFn} dynamicResponseModFn - Function to dynamically change the response object based on previous request/response
      * @property {number} delay - Optional network mock resolution time
+     * @property {boolean} parseQueryParams - Optional flag to treat all URLs with the same pathname as one URL
      * @memberOf module:mock-requests~MockRequests
      */
 
@@ -80,7 +81,8 @@ const MockRequests = (/** @returns {MockRequestsImport} */ function MockRequests
             mockResponses[key] = {
                 response: deepCopyObject(dynamicApiUrlResponseConfig[key].response),
                 dynamicResponseModFn: dynamicApiUrlResponseConfig[key].dynamicResponseModFn,
-                delay: dynamicApiUrlResponseConfig[key].delay
+                delay: dynamicApiUrlResponseConfig[key].delay,
+                parseQueryParams: Boolean(dynamicApiUrlResponseConfig[key].parseQueryParams)
             };
             return mockResponses;
         }, {});
@@ -115,9 +117,10 @@ const MockRequests = (/** @returns {MockRequestsImport} */ function MockRequests
      * @param {Object|string|number|boolean} mockResponseConfig.response - Mock response to be resolved
      * @param {function} mockResponseConfig.dynamicResponseModFn - Function to update response object from previous request/response values
      * @param {number} mockResponseConfig.delay - Optional resolution delay time
+     * @param {boolean} mockResponseConfig.parseQueryParams - Optional flag to treat all URLs with the same pathname as one URL
      * @memberOf module:mock-requests~MockRequests
      */
-    function setDynamicMockUrlResponse(url, { response, dynamicResponseModFn, delay } = {}) {
+    function setDynamicMockUrlResponse(url, { response, dynamicResponseModFn, delay, parseQueryParams } = {}) {
         const mockResponseConfig = urlResponseMap[url] ? urlResponseMap[url] : { response: null, dynamicResponseModFn: null };
 
         if (response) {
@@ -192,7 +195,8 @@ const MockRequests = (/** @returns {MockRequestsImport} */ function MockRequests
             dynamicMockConfig[staticUrl] = {
                 response: staticResponse,
                 dynamicResponseModFn: null,
-                delay: null
+                delay: null,
+                parseQueryParams: false
             };
 
             return dynamicMockConfig;
