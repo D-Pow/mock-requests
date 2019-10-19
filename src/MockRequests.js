@@ -148,7 +148,32 @@ const MockRequests = (/** @returns {MockRequestsImport} */ function MockRequests
      * @memberOf module:mock-requests~MockRequests
      */
     function getResponse(url) {
-        return urlResponseMap[url] ? urlResponseMap[url].response : undefined;
+        const config = getConfig(url);
+
+        if (!config) {
+            return undefined;
+        }
+
+        return config.response;
+    }
+
+    /**
+     * Gets the config object for a specified URL or its pathname if the URL itself isn't mocked
+     *
+     * @param {string} url
+     * @returns {MockResponseConfig|undefined}
+     */
+    function getConfig(url) {
+        const isMocked = urlIsMocked(url);
+
+        if (!isMocked) {
+            return undefined;
+        }
+
+        const { pathname } = getPathnameAndQueryParams(url);
+        const config = urlResponseMap[url] || urlResponseMap[pathname];
+
+        return config;
     }
 
     /**
