@@ -208,6 +208,34 @@ const MockRequests = (/** @returns {MockRequestsImport} */ function MockRequests
         return typeof response === typeof {} ? JSON.stringify(response) : `${response}`;
     }
 
+    /**
+     * Parses a URL for query parameters and extracts pathname/query parameter map respectively.
+     *
+     * @param {string} url - URL to parse for query parameters
+     * @returns {{hasQueryParams: boolean, queryParamMap: Object, pathname: string}} - Pathname, query parameter map, and if query params exist
+     */
+    function getPathnameAndQueryParams(url) {
+        const queryIndex = url.indexOf('?');
+        const hasQueryParams = queryIndex >= 0;
+        const pathname = hasQueryParams ? url.substring(0, queryIndex) : url;
+        const queryString = hasQueryParams ? url.substring(queryIndex + 1) : '';
+        const queryParamMap = queryString.length === 0 ? {} : queryString.split('&').reduce((queryParamObj, query) => {
+            const unparsedKeyVal = query.split('=');
+            const key = decodeURIComponent(unparsedKeyVal[0]);
+            const val = decodeURIComponent(unparsedKeyVal[1]);
+
+            queryParamObj[key] = val;
+
+            return queryParamObj;
+        }, {});
+
+        return {
+            pathname,
+            queryParamMap,
+            hasQueryParams: hasQueryParams && queryString.length > 0
+        };
+    }
+
     function urlIsMocked(url) {
         return urlResponseMap.hasOwnProperty(url);
     }
