@@ -331,6 +331,7 @@ in the [JSDoc](https://d-pow.github.io/MockRequests/module-mock-requests-MockReq
 ##### getResponse(url)
 ##### deleteMockUrlResponse(urlNotMeantToBeMocked)
 ##### clearAllMocks()
+##### mapStaticMockConfigToDynamic(staticConfig)
 ##### OriginalXHR()
 ##### originalFetch()
 

@@ -16,6 +16,7 @@
  * @property {function} getResponse - {@link module:mock-requests~MockRequests.getResponse}
  * @property {function} deleteMockUrlResponse - {@link module:mock-requests~MockRequests.deleteMockUrlResponse}
  * @property {function} clearAllMocks - {@link module:mock-requests~MockRequests.clearAllMocks}
+ * @property {function} mapStaticMockConfigToDynamic - {@link module:mock-requests~MockRequests.mapStaticMockConfigToDynamic}
  * @property {function} OriginalXHR - {@link module:mock-requests~MockRequests.OriginalXHR}
  * @property {function} originalFetch - {@link module:mock-requests~MockRequests.originalFetch}
  */
@@ -58,14 +59,7 @@ const MockRequests = (/** @returns {MockRequestsImport} */ function MockRequests
      * @memberOf module:mock-requests~MockRequests
      */
     function configure(apiUrlResponseConfig = {}, overwritePreviousConfig = true) {
-        const newUrlResponseMap = Object.keys(apiUrlResponseConfig).reduce((mockResponses, key) => {
-            mockResponses[key] = {
-                response: deepCopyObject(apiUrlResponseConfig[key]),
-                dynamicResponseModFn: null,
-                delay: null
-            };
-            return mockResponses;
-        }, {});
+        const newUrlResponseMap = mapStaticMockConfigToDynamic(apiUrlResponseConfig);
 
         if (overwritePreviousConfig) {
             urlResponseMap = newUrlResponseMap;
@@ -182,6 +176,27 @@ const MockRequests = (/** @returns {MockRequestsImport} */ function MockRequests
      */
     function deepCopyObject(obj) {
         return JSON.parse(JSON.stringify(obj));
+    }
+
+    /**
+     * Reformats a static URL-response config object to match the dynamic MockResponseConfig object
+     *
+     * @param {Object.<string, Object>} staticConfig - URL-staticResponse map
+     * @returns {Object<string, MockResponseConfig>} - URL-MockResponseConfig object with any dynamic configurations applied to all URLs
+     * @memberOf module:mock-requests~MockRequests
+     */
+    function mapStaticMockConfigToDynamic(staticConfig) {
+        return Object.keys(staticConfig).reduce((dynamicMockConfig, staticUrl) => {
+            const staticResponse = deepCopyObject(staticConfig[staticUrl]);
+
+            dynamicMockConfig[staticUrl] = {
+                response: staticResponse,
+                dynamicResponseModFn: null,
+                delay: null
+            };
+
+            return dynamicMockConfig;
+        }, {});
     }
 
     /**
@@ -370,6 +385,7 @@ const MockRequests = (/** @returns {MockRequestsImport} */ function MockRequests
         getResponse,
         deleteMockUrlResponse,
         clearAllMocks,
+        mapStaticMockConfigToDynamic,
         OriginalXHR,
         originalFetch
     };
