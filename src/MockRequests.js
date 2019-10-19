@@ -256,7 +256,11 @@ const MockRequests = (/** @returns {MockRequestsImport} */ function MockRequests
     }
 
     function urlIsMocked(url) {
-        return urlResponseMap.hasOwnProperty(url);
+        const urlIsMocked = urlResponseMap.hasOwnProperty(url);
+        const { pathname, hasQueryParams } = getPathnameAndQueryParams(url);
+        const pathnameIsMocked = urlResponseMap.hasOwnProperty(pathname);
+
+        return urlIsMocked || (hasQueryParams && pathnameIsMocked && urlResponseMap[pathname].parseQueryParams);
     }
 
     /**
