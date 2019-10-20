@@ -1,3 +1,4 @@
+import { kitsuTitleSearchUrl } from 'utils/Constants';
 import {
     kimiNoNaWaUrl,
     narutoUrl,
@@ -12,6 +13,7 @@ import {
     fullmetalResponse,
     attackOnTitanResponse
 } from './StaticResponses';
+import { chooseMockBasedOnQuery } from './DynamicResponses';
 
 export const searchMocksConfig = {
     [kimiNoNaWaUrl]: kimiNoNaWaResponse,
@@ -19,4 +21,11 @@ export const searchMocksConfig = {
     [bleachUrl]: bleachResponse,
     [fullmetalUrl]: fullmetalResponse,
     [attackOnTitanUrl]: attackOnTitanResponse
+};
+
+export const dynamicSearchConfigFromQueries = {
+    [kitsuTitleSearchUrl]: {
+        dynamicResponseModFn: chooseMockBasedOnQuery,
+        usePathnameForAllQueries: true
+    }
 };
