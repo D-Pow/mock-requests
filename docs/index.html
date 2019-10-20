@@ -33,7 +33,7 @@
 
 <nav >
     
-    <h2><a href="index.html">Home</a></h2><h2><a href="./demo" >Demo</a></h2><h3>Modules</h3><ul><li><a href="module-mock-requests.html">mock-requests</a></li></ul><h3>Namespaces</h3><ul><li><a href="module-mock-requests-MockRequests.html">MockRequests</a><ul class='methods'><li data-type='method'><a href="module-mock-requests-MockRequests.html#.configure">configure</a></li><li data-type='method'><a href="module-mock-requests-MockRequests.html#.configureDynamicResponses">configureDynamicResponses</a></li><li data-type='method'><a href="module-mock-requests-MockRequests.html#.setMockUrlResponse">setMockUrlResponse</a></li><li data-type='method'><a href="module-mock-requests-MockRequests.html#.setDynamicMockUrlResponse">setDynamicMockUrlResponse</a></li><li data-type='method'><a href="module-mock-requests-MockRequests.html#.getResponse">getResponse</a></li><li data-type='method'><a href="module-mock-requests-MockRequests.html#.deleteMockUrlResponse">deleteMockUrlResponse</a></li><li data-type='method'><a href="module-mock-requests-MockRequests.html#.clearAllMocks">clearAllMocks</a></li><li data-type='method'><a href="module-mock-requests-MockRequests.html#.originalFetch">originalFetch</a></li></ul></li></ul>
+    <h2><a href="index.html">Home</a></h2><h2><a href="./demo" >Demo</a></h2><h3>Modules</h3><ul><li><a href="module-mock-requests.html">mock-requests</a></li></ul><h3>Namespaces</h3><ul><li><a href="module-mock-requests-MockRequests.html">MockRequests</a><ul class='methods'><li data-type='method'><a href="module-mock-requests-MockRequests.html#.configure">configure</a></li><li data-type='method'><a href="module-mock-requests-MockRequests.html#.configureDynamicResponses">configureDynamicResponses</a></li><li data-type='method'><a href="module-mock-requests-MockRequests.html#.setMockUrlResponse">setMockUrlResponse</a></li><li data-type='method'><a href="module-mock-requests-MockRequests.html#.setDynamicMockUrlResponse">setDynamicMockUrlResponse</a></li><li data-type='method'><a href="module-mock-requests-MockRequests.html#.getResponse">getResponse</a></li><li data-type='method'><a href="module-mock-requests-MockRequests.html#.deleteMockUrlResponse">deleteMockUrlResponse</a></li><li data-type='method'><a href="module-mock-requests-MockRequests.html#.clearAllMocks">clearAllMocks</a></li><li data-type='method'><a href="module-mock-requests-MockRequests.html#.mapStaticConfigToDynamic">mapStaticConfigToDynamic</a></li><li data-type='method'><a href="module-mock-requests-MockRequests.html#.originalFetch">originalFetch</a></li></ul></li></ul>
 </nav>
 
 <div id="main">
@@ -91,135 +91,160 @@ usage of async functions with mocks.</p>
 <p>This library was made for the purpose of allowing developers to be able to
 continue to write their code as normal even when their APIs are down, not set up yet, or
 don't have internet at all.
-In particular, most other network-mocking libraries are not user friendly in that they
-<strong>force users to re-write</strong> their source code to use mocks and then <strong>change it back later</strong> in order
-to use real network requests. This library differs from all the others in that it allows
-you to continue writing code <strong>as normal</strong> while still using mock network activity.</p>
+In particular, most other network-mocking libraries are not user friendly in that they either
+<em>force users to re-write</em> their source code to use mocks and then <em>change it back later</em> in order
+to use real network requests or involve <em>complex setup</em> using local servers and proxies. This library
+differs from the others in that it allows you to continue <strong>writing code as normal</strong> while still
+using mock network activity.</p>
 <p>Specific benefits provided by this library that aren't offered in others:</p>
 <ul>
-<li>You don't have to replace your usage of async calls with mocks.
-This means no more replacing <code>fetch</code> with <code>Promise.resolve(desiredResponse)</code>!</li>
-<li>You don't have to do any painful configuration, such as running your own server, to host mock data.
+<li>You <strong>don't have to replace your usage of async calls with mocks</strong>.
+This means no more replacing <code>fetch</code> with <code>Promise.resolve(mockResponse)</code>!</li>
+<li>There is <strong>no painful configuration</strong>, such as running your own server, to host mock data.
 This also means no need to change URLs from <code>website.com/api</code> to <code>localhost/api</code>.</li>
-<li>No confusing interfaces or multi-step procedures to getting started. Simply configure it <em>once</em> and you're good to go.</li>
-<li>This is designed to work along with third-party libraries, including <a href="https://github.com/axios/axios">Axios</a>,
+<li>No confusing interfaces or multi-step procedures to getting started. Simply <strong>configure it once</strong> and you're good to go.</li>
+<li>This is designed to <strong>work along with third-party libraries</strong>, including <a href="https://github.com/axios/axios">Axios</a>,
 so they function as normal while still giving you the mocks you want.</li>
-<li>This can easily be used alongside <code>jest</code> for testing! As long as <code>fetch</code> and <code>XMLHttpRequest</code> are defined in
+<li>This can easily be <strong>used with</strong> <code>jest</code> for testing! As long as <code>fetch</code> and/or <code>XMLHttpRequest</code> are defined in
 a test setup file, you can use this library as normal to mock all async responses.</li>
-<li><strong>Dynamically update mock responses</strong> based on request payloads and the previous mock response object in order to
-mimic back-end alterations of data.</li>
-<li>Configurable outside the src folder such that the <strong>mock code isn't bundled with production code</strong>.</li>
-<li>Customizable mock response resolution delay to <strong>mimic natural network interactions</strong>.</li>
+<li>Easily <strong>mix mocks with actual API calls</strong> so you can use both functional and non-functional endpoints simultaneously.</li>
+<li>Configurable outside the src folder such that <strong>mock code isn't bundled with production code</strong>.</li>
+<li><strong>Dynamically update mock responses</strong> based on request payloads, previous mock responses, and query parameters in
+order to mimic normal back-end alterations of data.</li>
+<li>Query parameter parsing so you can <strong>mock all URLs with the same pathname</strong> to the same dynamic response function.</li>
+<li>Customizable mock response resolution delay to <strong>mimic natural network resolution times</strong>.</li>
 </ul>
 <p><a name="installation"></a></p>
 <h2>Installation</h2>
+<ul>
+<li>
 <p>Using npm (see the <a href="https://www.npmjs.com/package/mock-requests">npm package</a>):</p>
-<p><code>npm i -D mock-requests</code></p>
-<p>Using locally installed repo with git:</p>
-<p><code>git clone &lt;this repo&gt;</code></p>
+<p><code>npm install --save-dev mock-requests</code></p>
+</li>
+<li>
+<p>Using git:</p>
+<ul>
+<li>
+<p>Via npm:</p>
+<p><code>npm install --save-dev https://github.com/D-Pow/MockRequests.git</code></p>
+</li>
+<li>
+<p>With locally installed repo:</p>
+<p><code>git clone https://github.com/D-Pow/MockRequests.git</code></p>
 <p>package.json:</p>
 <p><code>&quot;mock-requests&quot;: &quot;file:&lt;pathToCloneLocation&gt;/MockRequests</code></p>
+</li>
+</ul>
+</li>
+</ul>
 <p><a name="usage"></a></p>
 <h2>Usage</h2>
-<p>API docs can be viewed <a href="https://d-pow.github.io/MockRequests/module-mock-requests-MockRequests.html">here</a>.</p>
+<p>API docs can be viewed in the <a href="https://d-pow.github.io/MockRequests/module-mock-requests-MockRequests.html">JSDoc</a> along with
+a <a href="https://d-pow.github.io/MockRequests/demo/">live demo</a>.</p>
 <p>This library wraps <code>XMLHttpRequest</code> and <code>fetch</code> with a wrapper that allows
 for mock responses to be returned instead of actually making async requests.
 If a URL is configured with a mock response, then <code>XMLHttpRequest</code> and <code>fetch</code> will
 return the configured mock response when opened with that URL. Otherwise, when opened
 with a URL that isn't configured with a mock response, the standard async request is made.</p>
 <p>This was designed to be used in such a way that wherever you configure it, the entire app
-experiences the effects. This means you could configure it in one file and then all files
+experiences the effects. This means you could configure it in one file and then all other code
 that make async requests to those configured URLs will receive the mock responses instead,
 even without importing <code>MockRequests</code>.</p>
 <p>Furthermore, it is designed to be used specifically when some APIs are not functioning correctly
 and mocks are necessary to replace those responses for continuing your work. In this regard,
 it is also great to use when the back-end API is still being developed but you want to work on the
 front-end, or when you don't have internet at all but still need to get work done.</p>
-<p>This library also supports <strong>dynamic responses</strong> so that you can mimic the actions of your back-end
-services. Simply add dynamic-update functions to your config and call <code>MockRequests</code>'s dynamic
-configuration functions, and everything else flows as normal.</p>
 <p><a name="examples"></a></p>
 <h2>Examples</h2>
-<p>Note how in the below examples, the production-bound code doesn't change between
+<p>Note how in the below examples, the <strong>production-bound code doesn't change</strong> between
 mocking and using network calls.</p>
 <p><a name="example-static"></a></p>
 <h3>Static responses</h3>
+<h4>Standard configuration</h4>
 <p>To configure global app usage of <code>MockRequests</code>, simply call <code>configure()</code> with an object containing URL-responseObject
 mappings.</p>
-<pre class="prettyprint source lang-javascript"><code>const myApiUrl = 'https://mywebsite.com/api/vx/someApi';
-const anotherUrl = '192.168.0.1';
-
-// This is the only code you need to add to use this library
-// Add in the file described by &quot;Separating mocks from source
-// code&quot; below
+<pre class="prettyprint source lang-javascript"><code>// This is the only code you need to add to use this library
+// Add in the MockConfig.js file described by &quot;Separating mocks
+// from source code&quot; section
 import MockRequests from 'mock-requests';
+import {
+    myApiUrl,   // 'https://example.com/api/vx/someApi'
+    anotherUrl  // '192.168.0.1'
+} from '../src/services/Urls.js';
+
+const myApiMockResponse = { someJson: 'responseObject' };
+const anotherUrlMockResponse = '&lt;html>some other type of response&lt;/html>';
+
 MockRequests.configure({
-    [myApiUrl]: { data: 'myJsonResponseObject' },
-    [anotherUrl]: '&lt;html>some other type of response&lt;/html>'
+    [myApiUrl]: myApiMockResponse,
+    [anotherUrl]: anotherUrlMockResponse
 });
 
 // ...source code
 
-// Using your async requests.
-// Note that this part DOESN'T CHANGE between using mocks and actual data
-// from your service
-const mockedHtmlResponse = await fetch(myApiUrl, {...configOptions})
-                                .then(res => res.json());
-useResponseContentAsNormal(mockedHtmlResponse);
+// Using your async requests in source code
+// This stays the same regardless of if you're using mocks or the actual endpoint
+const jsonResponse = await fetch(myApiUrl).then(res => res.json());
+const htmlResponse = await fetch(anotherUrl).then(res => res.text());
+
+useResponseContentAsNormal(jsonResponse);
+useResponseContentAsNormal(htmlResponse);
 </code></pre>
 <p>Alternatively, you could configure URL-response content individually:</p>
-<pre class="prettyprint source lang-javascript"><code>const myApi = 'https://myotherapi.thatIforgotOriginally/api/vx/doStuff';
+<pre class="prettyprint source lang-javascript"><code>// same URLs and mock responses from above
 
 import MockRequests from 'mock-requests';
-MockRequests.setMockUrlResponse(myApi, { data: 'myOtherResponse' });
+
+MockRequests.setMockUrlResponse(myApiUrl, myApiMockResponse);
+MockRequests.setMockUrlResponse(anotherUrl, anotherUrlMockResponse);
+</code></pre>
+<h4>Mixing mocks with actual API calls</h4>
+<p>In the event that some APIs are not functioning correctly but others are, you can configure
+the non-functioning APIs using <code>MockRequests</code> and then leave the other APIs as-is for normal responses:</p>
+<pre class="prettyprint source lang-javascript"><code>import MockRequests from 'mock-requests';
+import {
+    myNonFunctioningApi,
+    myFunctioningApi
+} from '../src/services/Urls.js';
+
+MockRequests.setMockUrlResponse(myNonFunctioningApi, /* mock response */);
 
 // ...source code
 
-const response = await fetch(myApi, {...whateverOptions});
-
-useResponseContent(response);
-</code></pre>
-<p>In the event that some APIs are not functioning correctly but others are, you can configure
-the non-functioning APIs using <code>MockRequests</code> and then leave the other APIs as-is for proper responses:</p>
-<pre class="prettyprint source lang-javascript"><code>const myNonFunctioningApi = 'https://myapi.com/api/vx/notFunctioningRightNow';
-const myFunctioningApi = 'https://myapi.com/api/vx/isFunctioningProperly';
-
-MockRequests.setMockUrlResponse(myNonFunctioningApi, { data: 'myOtherResponse' });
-
-// ...
-
 // Will receive mock
-const mockedResponse = await fetch(myNonFunctioningApi, {...whateverOptions});
+const mockedResponse = await fetch(myNonFunctioningApi).then(res => res.json());
 // Will receive actual API response
-const realApiResponse = await fetch(myFunctioningApi, {...whateverOptions});
+const realApiResponse = await fetch(myFunctioningApi).then(res => res.json());
 
 useResponseContent(mockedResponse);
 useResponseContent(realApiResponse);
 </code></pre>
 <p><a name="example-dynamic"></a></p>
 <h3>Dynamic responses</h3>
-<p>This library also supports dynamically updating your mocked APIs responses, so as to mimic actual
+<h4>Dynamically modifying subsequent responses</h4>
+<p>This library also supports dynamically updating your mocked APIs' responses, so as to mimic actual
 back-end systems. To utilize this feature, you'll need to call the dynamic counterparts of
 <code>configure/setMockUrlResponse</code> (<code>configureDynamicResponses/setDynamicMockUrlResponse</code>) along with
 a slightly modified config object that has <code>response</code> and <code>dynamicResponseModFn</code> fields:</p>
-<pre class="prettyprint source lang-javascript"><code>const myApiUrl = 'https://example.com/someApi/1';
+<pre class="prettyprint source lang-javascript"><code>import MockRequests from 'mock-requests';
+import { myApiUrl } from '../src/services/Urls.js';
 
-import MockRequests from 'mock-requests';
-
-const myMockResponse = {
+const initialMockResponse = {
     data: ['a', 'b', 'c', 'd', 'e'],
     value: 7
 };
 const dynamicConfig1 = {
     [myApiUrl]: {
-        // The desired response is now nested inside the `response` property
-        response: myMockResponse,
+        // The desired response is now nested inside the `response` property.
+        // This will be the initial default value of the `response` parameter
+        // in the function below.
+        response: initialMockResponse,
         // The dynamicResponseModFn takes in the request and previous
         // response as arguments to produce the new response.
         // The new response **must** be returned from this function.
-        // Feel free to modify the response parameter as it will be deep-copied later
+        // Feel free to modify `response` as it will be deep-copied later.
         dynamicResponseModFn: (request, response) => {
-            // You can mix both request and response data to generate new response
+            // Mix both request and response data to generate new response
             response.data = response.data.concat(request.addLettersArray);
             response.value += request.valueModification;
 
@@ -229,7 +254,7 @@ const dynamicConfig1 = {
 };
 MockRequests.configureDynamicResponses(dynamicConfig1);
 
-// ... whatever other file you call `fetch` in
+// ...source code
 
 const payload = {
     addLettersArray: ['f', 'g'],
@@ -238,26 +263,61 @@ const payload = {
 const myDynamicallyModifiedResponse = await fetch(myApiUrl, {
     body: JSON.stringify(payload)
 }).then(res => res.json());
+
 console.log(myDynamicallyModifiedResponse)
-/* Will output
+
+/* Will output:
 {
     data: ['a', 'b', 'c', 'd', 'e', 'f', 'g'],
     value: 12
-};
+}
 */
 </code></pre>
+<h4>Mocking families of URLs using query parameters</h4>
+<p>Additionally, the <code>dynamicResponseModFn</code> will receive an object containing query parameters from the request URL,
+which means you also have the option to generate dynamic responses based on those.</p>
+<p>If you want to mock all URLs with the same pathname but different query parameters, simply add <code>usePathnameForAllQueries: true</code>
+to your dynamic mock configuration.</p>
+<p>Regardless of if you set <code>usePathnameForAllQueries</code> or not, <code>dynamicResponseModFn</code> will still receive the <code>queryParamMap</code>.</p>
+<pre class="prettyprint source lang-javascript"><code>import {
+    searchApiPathname  // 'https://example.com/search'  e.g. search?q=weather
+} from '../src/services/Urls.js';
+
+MockRequests.setDynamicMockUrlResponse(searchApiPathname, {
+    dynamicResponseModFn: (request, response, queryParamMap) => {
+        const searchQuery = decodeURIComponent(queryParamMap.q);
+        return `You searched for ${searchQuery}`;
+    },
+    usePathnameForAllQueries: true
+});
+
+// ...source code
+
+const searchUrl = `${searchApiPathname}?q=${encodeURIComponent(searchQuery)}`;
+const response = await fetch(searchUrl);
+const dynamicResponseBasedOnQueryParam = await response.text();
+
+console.log(dynamicResponseBasedOnQueryParam);
+
+/* Will output:
+'You searched for weather'
+*/
+</code></pre>
+<h4>Delaying mock response resolutions</h4>
 <p>There is also a <code>delay</code> option you can use if you want to mimic network delays:</p>
-<pre class="prettyprint source lang-javascript"><code>MockRequests.setDynamicMockUrlResponse(myApiUrl, {    // or configureDynamicResponses
+<pre class="prettyprint source lang-javascript"><code>// or configureDynamicResponses({ [myApiUrl]: {...} })
+MockRequests.setDynamicMockUrlResponse(myApiUrl, {
     response: myMockResponse,
-    dynamicResponseModFn: (req, res) => {/*...*/},
+    dynamicResponseModFn: (req, res, queries) => {/* ... */},
     delay: 1500   // will make fetch take 1.5 seconds to resolve myApiUrl
 });
 </code></pre>
-<p>Because the configuration/setter functions take in a simple url-response mapping,
+<h4>Sample usage with different logins</h4>
+<p>Finally, because the configuration/setter functions take in a simple url-response mapping,
 using different mocks at different times becomes incredibly user-friendly. For example,
-a particularly great use case for this library would be if your data changes based on
-which user is logged in. In this case, after defining each user's mock responses, you
-could nest them in a single <code>loginMocks</code> object and simply choose which login to use:</p>
+if your data changes based on which user is logged in, then the <code>MockRequests</code> API is
+particularly easy to work with. In this case, after defining each user's mock responses,
+you could nest them in a single <code>loginMocks</code> object and simply choose which login to use:</p>
 <pre class="prettyprint source lang-javascript"><code>const bobMocks = {
     [homepageUrl]: bobHomepageMock,
     [friendsUrl]: bobFriendsMock
@@ -270,10 +330,46 @@ const loginMocks = {
     bob: bobMocks,
     alice: aliceMocks
 };
+
 // Today, I want to be Alice
 MockRequests.configure(loginMocks.alice);
 // no, wait, I'll be Bob instead
 MockRequests.configure(loginMocks.bob);
+</code></pre>
+<h4>Other utility functions</h4>
+<p>For convenience, a <code>mapStaticConfigToDynamic()</code> function has been included to make converting the above
+static version of <code>loginMocks</code> to the dynamic counterpart easier:</p>
+<pre class="prettyprint source lang-javascript"><code>// Example 1
+// Convert a static URL-response mock to dynamic and add delay to home page
+const dynamicBobMocks = MockRequests.mapStaticConfigToDynamic(bobMocks);
+dynamicBobMocks[homepageUrl].delay = 1500;
+MockRequests.configureDynamicResponses(dynamicBobMocks);
+
+// Example 2
+// Convert all loginMocks entries to dynamic counterparts
+const dynamicLoginMocks = Object.keys(loginMocks).reduce((dynamicConfigs, user) => {
+    dynamicConfigs[user] = MockRequests.mapStaticConfigToDynamic(loginMocks[user]);
+    return dynamicConfigs;
+}, {});
+MockRequests.configureDynamicResponses(dynamicLoginMocks.bob);
+
+// Example 3
+// Merge user-agnostic dynamic mocks with static loginMocks
+const dynamicMocks = {
+    [searchApiPathname]: {
+        dynamicResponseModFn: (req, res, queries) => {
+            /* ... same as search query above */
+        }
+    }
+};
+const staticDynamicMerged = Object.keys(loginMocks).reduce((dynamicConfigs, user) => {
+    dynamicConfigs[user] = {
+        ...MockRequests.mapStaticConfigToDynamic(loginMocks[user]),
+        ...dynamicMocks
+    };
+    return dynamicConfigs;
+}, {});
+MockRequests.configureDynamicResponses(staticDynamicMerged.bob);
 </code></pre>
 <p><a name="separate-from-source"></a></p>
 <h2>Separating mocks from source code</h2>
@@ -289,8 +385,8 @@ the setup:</p>
 </code></pre>
 <p>where <code>MockConfig.js</code> does all the <code>mock-requests</code> configuration, e.g.</p>
 <pre class="prettyprint source lang-javascript"><code>import MockRequests from 'mock-requests';
+import { myStaticApiUrl, myDynamicApiUrl } from '../src/services/Urls.js';
 // Imports from mocks/ directory
-import { myStaticApiUrl, myDynamicApiUrl } from './Urls';
 import { myStaticApiResponse } from './StaticResponses';
 import { myDynamicApiConfig } from './DynamicResponseConfigs';
 
@@ -343,6 +439,7 @@ in the <a href="https://d-pow.github.io/MockRequests/module-mock-requests-MockRe
 <h5>getResponse(url)</h5>
 <h5>deleteMockUrlResponse(urlNotMeantToBeMocked)</h5>
 <h5>clearAllMocks()</h5>
+<h5>mapStaticConfigToDynamic(staticConfig)</h5>
 <h5>OriginalXHR()</h5>
 <h5>originalFetch()</h5>
 <p>Note that <code>OriginalXHR</code> and <code>originalFetch</code> will use the original <code>XMLHttpRequest</code> and <code>fetch</code> respectively,
