@@ -1,4 +1,4 @@
 import MockRequests from 'mock-requests';
-import { searchMocks } from './UrlResponseMappings';
+import { searchMocksConfig } from './UrlResponseMappings';
 
-MockRequests.configure(searchMocks);
+MockRequests.configure(searchMocksConfig);

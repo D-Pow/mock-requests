@@ -13,7 +13,7 @@ import {
     attackOnTitanResponse
 } from './StaticResponses';
 
-export const searchMocks = {
+export const searchMocksConfig = {
     [kimiNoNaWaUrl]: kimiNoNaWaResponse,
     [narutoUrl]: narutoResponse,
     [bleachUrl]: bleachResponse,
