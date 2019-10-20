@@ -101,16 +101,19 @@ To configure global app usage of `MockRequests`, simply call `configure()` with 
 mappings.
 
 ```javascript
-const myApiUrl = 'https://mywebsite.com/api/vx/someApi';
+const myApiUrl = 'https://example.com/api/vx/someApi';
 const anotherUrl = '192.168.0.1';
+
+const myApiMockResponse = { someJson: 'responseObject' };
+const anotherUrlMockResponse = '<html>some other type of response</html>';
 
 // This is the only code you need to add to use this library
 // Add in the file described by "Separating mocks from source
 // code" below
 import MockRequests from 'mock-requests';
 MockRequests.configure({
-    [myApiUrl]: { data: 'myJsonResponseObject' },
-    [anotherUrl]: '<html>some other type of response</html>'
+    [myApiUrl]: myApiMockResponse,
+    [anotherUrl]: anotherUrlMockResponse
 });
 
 // ...source code
@@ -118,41 +121,39 @@ MockRequests.configure({
 // Using your async requests.
 // Note that this part DOESN'T CHANGE between using mocks and actual data
 // from your service
-const mockedHtmlResponse = await fetch(myApiUrl, {...configOptions})
-                                .then(res => res.json());
-useResponseContentAsNormal(mockedHtmlResponse);
+const jsonResponse = await fetch(myApiUrl).then(res => res.json());
+const htmlResponse = await fetch(anotherUrl).then(res => res.text());
+
+useResponseContentAsNormal(jsonResponse);
+useResponseContentAsNormal(htmlResponse);
 ```
 
 Alternatively, you could configure URL-response content individually:
 
 ```javascript
-const myApi = 'https://myotherapi.thatIforgotOriginally/api/vx/doStuff';
+// same URLs and mock responses from above
 
 import MockRequests from 'mock-requests';
-MockRequests.setMockUrlResponse(myApi, { data: 'myOtherResponse' });
 
-// ...source code
-
-const response = await fetch(myApi, {...whateverOptions});
-
-useResponseContent(response);
+MockRequests.setMockUrlResponse(myApiUrl, myApiMockResponse);
+MockRequests.setMockUrlResponse(anotherUrl, anotherUrlMockResponse);
 ```
 
 In the event that some APIs are not functioning correctly but others are, you can configure
 the non-functioning APIs using `MockRequests` and then leave the other APIs as-is for proper responses:
 
 ```javascript
-const myNonFunctioningApi = 'https://myapi.com/api/vx/notFunctioningRightNow';
-const myFunctioningApi = 'https://myapi.com/api/vx/isFunctioningProperly';
+const myNonFunctioningApi = 'https://example.com/api/vx/notFunctioningRightNow';
+const myFunctioningApi = 'https://example.com/api/vx/isFunctioningProperly';
 
-MockRequests.setMockUrlResponse(myNonFunctioningApi, { data: 'myOtherResponse' });
+MockRequests.setMockUrlResponse(myNonFunctioningApi, { someJson: 'responseObject' });
 
-// ...
+// ...source code
 
 // Will receive mock
-const mockedResponse = await fetch(myNonFunctioningApi, {...whateverOptions});
+const mockedResponse = await fetch(myNonFunctioningApi).then(res => res.json());
 // Will receive actual API response
-const realApiResponse = await fetch(myFunctioningApi, {...whateverOptions});
+const realApiResponse = await fetch(myFunctioningApi).then(res => res.json());
 
 useResponseContent(mockedResponse);
 useResponseContent(realApiResponse);
@@ -194,7 +195,7 @@ const dynamicConfig1 = {
 };
 MockRequests.configureDynamicResponses(dynamicConfig1);
 
-// ... whatever other file you call `fetch` in
+// ...source code
 
 const payload = {
     addLettersArray: ['f', 'g'],
@@ -203,12 +204,14 @@ const payload = {
 const myDynamicallyModifiedResponse = await fetch(myApiUrl, {
     body: JSON.stringify(payload)
 }).then(res => res.json());
+
 console.log(myDynamicallyModifiedResponse)
-/* Will output
+
+/* Will output:
 {
     data: ['a', 'b', 'c', 'd', 'e', 'f', 'g'],
     value: 12
-};
+}
 */
 ```
 
