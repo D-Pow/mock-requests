@@ -91,4 +91,14 @@ describe('Dynamic modifications with query parameters', () => {
         MockRequests.setDynamicMockUrlResponse(mockUrl3, dynamicConfigWithoutQueryParsing[mockUrl3]);
         await testSamePathnameIsSeparate();
     });
+
+    it('should pass the queryParamMap regardless of the value of usePathnameForAllQueries', async () => {
+        MockRequests.setDynamicMockUrlResponse(mockUrl1, {
+            dynamicResponseModFn: (request, response, queryParamMap) => {
+                expect(Object.keys(queryParamMap).length).toEqual(3);
+            }
+        });
+
+        await fetch(mockUrl1);
+    });
 });
