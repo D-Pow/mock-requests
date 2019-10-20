@@ -205,7 +205,7 @@ describe('Dynamic response modifications', () => {
         await fetch(mockUrl3);
     });
 
-    it('should have the ability to remove dynamic response-changing functions', async () => {
+    it('should have the ability to overwrite dynamic responses with successive set/configure calls', async () => {
         MockRequests.configureDynamicResponses(dynamicConfig1);
 
         const mockPayloadRound1 = {
