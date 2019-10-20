@@ -46,6 +46,7 @@ a test setup file, you can use this library as normal to mock all async response
 mimic back-end alterations of data.
 * Configurable outside the src folder such that the **mock code isn't bundled with production code**.
 * Customizable mock response resolution delay to **mimic natural network interactions**.
+* Query parameter parsing so you can **mock all URLs with the same pathname** to the same dynamic response function.
 
 <a name="installation"></a>
 ## Installation
@@ -217,12 +218,42 @@ console.log(myDynamicallyModifiedResponse)
 */
 ```
 
+Additionally, the `dynamicResponseModFn` will receive an object containing query parameters from the request URL,
+which means you also have the option to generate dynamic responses based on those.
+
+If you want to mock all URLs with the same pathname but different query parameters, simply add `usePathnameForAllQueries: true`
+to your dynamic mock configuration (below).
+
+Regardless of if you set `usePathnameForAllQueries` or not, `dynamicResponseModFn` will still receive the `queryParamMap`.
+
+```javascript
+const searchApiPathname = 'https://example.com/search'; // e.g. search?q=weather
+
+MockRequests.setDynamicMockUrlResponse(searchApiPathname, {
+    dynamicResponseModFn: (request, response, queryParamMap) => {
+        const searchQuery = decodeURIComponent(queryParamMap.q);
+        return `You searched for ${searchQuery}`;
+    },
+    usePathnameForAllQueries: true
+});
+
+// ...source code
+
+const searchUrl = `${searchApiPathname}?q=${encodeURIComponent(searchQuery)}`;
+const dynamicResponseBasedOnQueryParam = await fetch(searchUrl).then(res => res.text());
+
+console.log(dynamicResponseBasedOnQueryParam);
+/* Will output:
+'You searched for weather'
+*/
+```
+
 There is also a `delay` option you can use if you want to mimic network delays:
 
 ```javascript
 MockRequests.setDynamicMockUrlResponse(myApiUrl, {    // or configureDynamicResponses
     response: myMockResponse,
-    dynamicResponseModFn: (req, res) => {/*...*/},
+    dynamicResponseModFn: (req, res, queries) => {/* ... */},
     delay: 1500   // will make fetch take 1.5 seconds to resolve myApiUrl
 });
 ```
