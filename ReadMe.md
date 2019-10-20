@@ -66,7 +66,7 @@ package.json:
 <a name="usage"></a>
 ## Usage
 
-API docs can be viewed in the JSDoc [here](https://d-pow.github.io/MockRequests/module-mock-requests-MockRequests.html) along with
+API docs can be viewed in the [JSDoc](https://d-pow.github.io/MockRequests/module-mock-requests-MockRequests.html) along with
 a [live demo](https://d-pow.github.io/MockRequests/demo/).
 
 This library wraps `XMLHttpRequest` and `fetch` with a wrapper that allows
