@@ -31,6 +31,7 @@ declare namespace MockRequests {
     export function getResponse(url: string): any;
     export function deleteMockUrlResponse(url: string): boolean;
     export function clearAllMocks(): void;
+    export function mapStaticConfigToDynamic(staticConfig: object): object;
     export const OriginalXHR: unknown;
     export const originalFetch: unknown;
 }

@@ -16,7 +16,7 @@
  * @property {function} getResponse - {@link module:mock-requests~MockRequests.getResponse}
  * @property {function} deleteMockUrlResponse - {@link module:mock-requests~MockRequests.deleteMockUrlResponse}
  * @property {function} clearAllMocks - {@link module:mock-requests~MockRequests.clearAllMocks}
- * @property {function} mapStaticMockConfigToDynamic - {@link module:mock-requests~MockRequests.mapStaticMockConfigToDynamic}
+ * @property {function} mapStaticConfigToDynamic - {@link module:mock-requests~MockRequests.mapStaticConfigToDynamic}
  * @property {function} OriginalXHR - {@link module:mock-requests~MockRequests.OriginalXHR}
  * @property {function} originalFetch - {@link module:mock-requests~MockRequests.originalFetch}
  */
@@ -61,7 +61,7 @@ const MockRequests = (/** @returns {MockRequestsImport} */ function MockRequests
      * @memberOf module:mock-requests~MockRequests
      */
     function configure(apiUrlResponseConfig = {}, overwritePreviousConfig = true) {
-        const newUrlResponseMap = mapStaticMockConfigToDynamic(apiUrlResponseConfig);
+        const newUrlResponseMap = mapStaticConfigToDynamic(apiUrlResponseConfig);
 
         if (overwritePreviousConfig) {
             urlResponseMap = newUrlResponseMap;
@@ -238,7 +238,7 @@ const MockRequests = (/** @returns {MockRequestsImport} */ function MockRequests
      * @returns {Object<string, MockResponseConfig>} - URL-MockResponseConfig object with default configuration fields
      * @memberOf module:mock-requests~MockRequests
      */
-    function mapStaticMockConfigToDynamic(staticConfig) {
+    function mapStaticConfigToDynamic(staticConfig) {
         return Object.keys(staticConfig).reduce((dynamicMockConfig, staticUrl) => {
             dynamicMockConfig[staticUrl] = createConfigObj({ response: staticConfig[staticUrl] });
 
@@ -484,7 +484,7 @@ const MockRequests = (/** @returns {MockRequestsImport} */ function MockRequests
         getResponse,
         deleteMockUrlResponse,
         clearAllMocks,
-        mapStaticMockConfigToDynamic,
+        mapStaticConfigToDynamic,
         OriginalXHR,
         originalFetch
     };
