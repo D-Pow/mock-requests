@@ -146,6 +146,33 @@ const MockRequests = (/** @returns {MockRequestsImport} */ function MockRequests
     }
 
     /**
+     * Deletes the URL and respective mock object
+     *
+     * @param url
+     * @returns {boolean}
+     * @memberOf module:mock-requests~MockRequests
+     */
+    function deleteMockUrlResponse(url) {
+        const config = getConfig(url);
+
+        if (config.parseQueryParams) {
+            const { pathname } = getPathnameAndQueryParams(url);
+            return delete urlResponseMap[pathname];
+        }
+
+        return delete urlResponseMap[url];
+    }
+
+    /**
+     * Deletes all entries in the MockRequests configuration
+     *
+     * @memberOf module:mock-requests~MockRequests
+     */
+    function clearAllMocks() {
+        urlResponseMap = {};
+    }
+
+    /**
      * Gets the config object for a specified URL or its pathname if the URL itself isn't mocked
      *
      * @param {string} url
@@ -192,33 +219,6 @@ const MockRequests = (/** @returns {MockRequestsImport} */ function MockRequests
         mockResponseConfig.parseQueryParams = Boolean(parseQueryParams);
 
         return mockResponseConfig;
-    }
-
-    /**
-     * Deletes the URL and respective mock object
-     *
-     * @param url
-     * @returns {boolean}
-     * @memberOf module:mock-requests~MockRequests
-     */
-    function deleteMockUrlResponse(url) {
-        const config = getConfig(url);
-
-        if (config.parseQueryParams) {
-            const { pathname } = getPathnameAndQueryParams(url);
-            return delete urlResponseMap[pathname];
-        }
-
-        return delete urlResponseMap[url];
-    }
-
-    /**
-     * Deletes all entries in the MockRequests configuration
-     *
-     * @memberOf module:mock-requests~MockRequests
-     */
-    function clearAllMocks() {
-        urlResponseMap = {};
     }
 
     /**
