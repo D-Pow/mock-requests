@@ -22,7 +22,7 @@ if (process.env.MOCK === 'true') {
         attackOnTitanSearchQuery
     ];
 
-    console.log(`Mocks are turned on for the following search queries: \n"${
+    console.log(`Mocks for XHR requests are turned on for the following search queries: \n"${
         mockedSearchQueries.join('"\n"')
     }"`);
 }
