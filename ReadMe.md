@@ -178,12 +178,14 @@ const myMockResponse = {
 };
 const dynamicConfig1 = {
     [myApiUrl]: {
-        // The desired response is now nested inside the `response` property
+        // The desired response is now nested inside the `response` property.
+        // Note that whatever is set here (`myMockResponse` in this example) will be
+        // the initial default value of the response parameter in the function below.
         response: myMockResponse,
         // The dynamicResponseModFn takes in the request and previous
         // response as arguments to produce the new response.
         // The new response **must** be returned from this function.
-        // Feel free to modify the response parameter as it will be deep-copied later
+        // Feel free to modify the response parameter as it will be deep-copied later.
         dynamicResponseModFn: (request, response) => {
             // You can mix both request and response data to generate new response
             response.data = response.data.concat(request.addLettersArray);
@@ -225,7 +227,7 @@ MockRequests.setDynamicMockUrlResponse(myApiUrl, {    // or configureDynamicResp
 });
 ```
 
-Because the configuration/setter functions take in a simple url-response mapping,
+Finally, because the configuration/setter functions take in a simple url-response mapping,
 using different mocks at different times becomes incredibly user-friendly. For example,
 a particularly great use case for this library would be if your data changes based on
 which user is logged in. In this case, after defining each user's mock responses, you
