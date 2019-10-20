@@ -28,7 +28,7 @@ function dynamicModFn(request, response, queryParamMap) {
 const dynamicConfigWithQueryParsing = {
     [mockUrlPathname]: {
         dynamicResponseModFn: dynamicModFn,
-        parseQueryParams: true
+        usePathnameForAllQueries: true
     }
 };
 const dynamicConfigWithoutQueryParsing = {
@@ -48,7 +48,7 @@ describe('Dynamic modifications with query parameters', () => {
         MockRequests.clearAllMocks();
     });
 
-    it('should treat URLs with the same pathname identically if parseQueryParams is true', async () => {
+    it('should treat URLs with the same pathname identically if usePathnameForAllQueries is true', async () => {
         const testSamePathnameIsIdentical = async () => {
             const queriesAndHash = await fetch(mockUrl1).then(res => res.json());
             const onlyQueries = await fetch(mockUrl2).then(res => res.json());
@@ -68,7 +68,7 @@ describe('Dynamic modifications with query parameters', () => {
         await testSamePathnameIsIdentical();
     });
 
-    it('should treat URLs with the same pathname separately if parseQueryParams is false', async () => {
+    it('should treat URLs with the same pathname separately if usePathnameForAllQueries is false', async () => {
         const testSamePathnameIsSeparate = async () => {
             const mock1Response = await fetch(mockUrl1).then(res => res.json());
             const mock2Response = await fetch(mockUrl2).then(res => res.json());
