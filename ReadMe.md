@@ -51,17 +51,22 @@ mimic back-end alterations of data.
 <a name="installation"></a>
 ## Installation
 
-Using npm (see the [npm package](https://www.npmjs.com/package/mock-requests)):
+* Using npm (see the [npm package](https://www.npmjs.com/package/mock-requests)):
 
-`npm i -D mock-requests`
+    `npm install --save-dev mock-requests`
 
-Using locally installed repo with git:
+* Using git:
 
-`git clone <this repo>`
+    * Via npm:
 
-package.json:
+        `npm install --save-dev https://github.com/D-Pow/MockRequests.git`
+    * With locally installed repo:
 
-`"mock-requests": "file:<pathToCloneLocation>/MockRequests`
+        `git clone https://github.com/D-Pow/MockRequests.git`
+
+        package.json:
+
+        `"mock-requests": "file:<pathToCloneLocation>/MockRequests`
 
 <a name="usage"></a>
 ## Usage
