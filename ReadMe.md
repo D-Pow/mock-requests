@@ -98,6 +98,8 @@ mocking and using network calls.
 <a name="example-static"></a>
 ### Static responses
 
+#### Standard configuration
+
 To configure global app usage of `MockRequests`, simply call `configure()` with an object containing URL-responseObject
 mappings.
 
@@ -140,6 +142,8 @@ MockRequests.setMockUrlResponse(myApiUrl, myApiMockResponse);
 MockRequests.setMockUrlResponse(anotherUrl, anotherUrlMockResponse);
 ```
 
+#### Mixing mocks with actual API calls
+
 In the event that some APIs are not functioning correctly but others are, you can configure
 the non-functioning APIs using `MockRequests` and then leave the other APIs as-is for proper responses:
 
@@ -162,6 +166,8 @@ useResponseContent(realApiResponse);
 
 <a name="example-dynamic"></a>
 ### Dynamic responses
+
+#### Dynamically modifying subsequent responses
 
 This library also supports dynamically updating your mocked APIs responses, so as to mimic actual
 back-end systems. To utilize this feature, you'll need to call the dynamic counterparts of
@@ -218,6 +224,8 @@ console.log(myDynamicallyModifiedResponse)
 */
 ```
 
+#### Mocking families of URLs using query parameters
+
 Additionally, the `dynamicResponseModFn` will receive an object containing query parameters from the request URL,
 which means you also have the option to generate dynamic responses based on those.
 
@@ -248,6 +256,8 @@ console.log(dynamicResponseBasedOnQueryParam);
 */
 ```
 
+#### Delaying mock response resolutions
+
 There is also a `delay` option you can use if you want to mimic network delays:
 
 ```javascript
@@ -257,6 +267,8 @@ MockRequests.setDynamicMockUrlResponse(myApiUrl, {    // or configureDynamicResp
     delay: 1500   // will make fetch take 1.5 seconds to resolve myApiUrl
 });
 ```
+
+#### Sample usage with different logins
 
 Finally, because the configuration/setter functions take in a simple url-response mapping,
 using different mocks at different times becomes incredibly user-friendly. For example,
@@ -282,6 +294,8 @@ MockRequests.configure(loginMocks.alice);
 // no, wait, I'll be Bob instead
 MockRequests.configure(loginMocks.bob);
 ```
+
+#### Other utility functions
 
 For convenience, a `mapStaticConfigToDynamic()` function has been included to make converting the above
 static version of `loginMocks` to a dynamic version easier:
