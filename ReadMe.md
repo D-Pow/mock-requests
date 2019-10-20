@@ -283,6 +283,35 @@ MockRequests.configure(loginMocks.alice);
 MockRequests.configure(loginMocks.bob);
 ```
 
+For convenience, a `mapStaticConfigToDynamic()` function has been included to make converting the above
+static version of `loginMocks` to a dynamic version easier:
+
+```javascript
+// Example 1: Convert a static URL-response mock to dynamic in order to add delay to home page
+const dynamicBobMocks = MockRequests.mapStaticConfigToDynamic(bobMocks);
+dynamicBobMocks[homepageUrl].delay = 1500;
+MockRequests.configureDynamicResponses(dynamicBobMocks);
+
+// Example 2: Convert all loginMocks entries to dynamic
+const dynamicLoginMocks = Object.keys(loginMocks).reduce((dynamicConfigs, user) => {
+    dynamicConfigs[user] = MockRequests.mapStaticConfigToDynamic(loginMocks[user]);
+    return dynamicConfigs;
+}, {});
+MockRequests.configureDynamicResponses(dynamicLoginMocks.bob);
+
+// Example 3: Merge user-agnostic dynamic mocks with static loginMocks
+const dynamicMocks = {
+    [searchApiPathname]: {
+        dynamicResponseModFn: (req, res, queries) => {/* ... same as search query above */}
+    }
+};
+const staticMergedWithDynamic = Object.keys(loginMocks).reduce((dynamicConfigs, user) => {
+    dynamicConfigs[user] = { ...MockRequests.mapStaticConfigToDynamic(loginMocks[user]), ...dynamicMocks};
+    return dynamicConfigs;
+}, {});
+MockRequests.configureDynamicResponses(staticMergedWithDynamic.bob);
+```
+
 <a name="separate-from-source"></a>
 ## Separating mocks from source code
 
