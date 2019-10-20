@@ -27,26 +27,28 @@ usage of async functions with mocks.
 This library was made for the purpose of allowing developers to be able to
 continue to write their code as normal even when their APIs are down, not set up yet, or
 don't have internet at all.
-In particular, most other network-mocking libraries are not user friendly in that they
-**force users to re-write** their source code to use mocks and then **change it back later** in order
-to use real network requests. This library differs from all the others in that it allows
-you to continue writing code **as normal** while still using mock network activity.
+In particular, most other network-mocking libraries are not user friendly in that they either
+*force users to re-write* their source code to use mocks and then *change it back later* in order
+to use real network requests or involve *complex setup* using local servers and proxies. This library
+differs from the others in that it allows you to continue **writing code as normal** while still
+using mock network activity.
 
 Specific benefits provided by this library that aren't offered in others:
-* You don't have to replace your usage of async calls with mocks.
-This means no more replacing `fetch` with `Promise.resolve(desiredResponse)`!
-* You don't have to do any painful configuration, such as running your own server, to host mock data.
+* You **don't have to replace your usage of async calls with mocks**.
+This means no more replacing `fetch` with `Promise.resolve(mockResponse)`!
+* There is **no painful configuration**, such as running your own server, to host mock data.
 This also means no need to change URLs from `website.com/api` to `localhost/api`.
-* No confusing interfaces or multi-step procedures to getting started. Simply configure it *once* and you're good to go.
-* This is designed to work along with third-party libraries, including [Axios](https://github.com/axios/axios),
+* No confusing interfaces or multi-step procedures to getting started. Simply **configure it once** and you're good to go.
+* This is designed to **work along with third-party libraries**, including [Axios](https://github.com/axios/axios),
 so they function as normal while still giving you the mocks you want.
-* This can easily be used alongside `jest` for testing! As long as `fetch` and `XMLHttpRequest` are defined in
+* This can easily be **used with** `jest` for testing! As long as `fetch` and/or `XMLHttpRequest` are defined in
 a test setup file, you can use this library as normal to mock all async responses.
-* **Dynamically update mock responses** based on request payloads and the previous mock response object in order to
-mimic back-end alterations of data.
-* Configurable outside the src folder such that the **mock code isn't bundled with production code**.
-* Customizable mock response resolution delay to **mimic natural network interactions**.
+* Easily **mix mocks with actual API calls** so you can use both functional and non-functional endpoints simultaneously.
+* Configurable outside the src folder such that **mock code isn't bundled with production code**.
+* **Dynamically update mock responses** based on request payloads, previous mock responses, and query parameters in
+order to mimic normal back-end alterations of data.
 * Query parameter parsing so you can **mock all URLs with the same pathname** to the same dynamic response function.
+* Customizable mock response resolution delay to **mimic natural network resolution times**.
 
 <a name="installation"></a>
 ## Installation
@@ -81,7 +83,7 @@ return the configured mock response when opened with that URL. Otherwise, when o
 with a URL that isn't configured with a mock response, the standard async request is made.
 
 This was designed to be used in such a way that wherever you configure it, the entire app
-experiences the effects. This means you could configure it in one file and then all files
+experiences the effects. This means you could configure it in one file and then all other code
 that make async requests to those configured URLs will receive the mock responses instead,
 even without importing `MockRequests`.
 
@@ -90,14 +92,10 @@ and mocks are necessary to replace those responses for continuing your work. In 
 it is also great to use when the back-end API is still being developed but you want to work on the
 front-end, or when you don't have internet at all but still need to get work done.
 
-This library also supports **dynamic responses** so that you can mimic the actions of your back-end
-services. Simply add dynamic-update functions to your config and call `MockRequests`'s dynamic
-configuration functions, and everything else flows as normal.
-
 <a name="examples"></a>
 ## Examples
 
-Note how in the below examples, the production-bound code doesn't change between
+Note how in the below examples, the **production-bound code doesn't change** between
 mocking and using network calls.
 
 <a name="example-static"></a>
@@ -110,8 +108,8 @@ mappings.
 
 ```javascript
 // This is the only code you need to add to use this library
-// Add in the file described by "Separating mocks from source
-// code" below
+// Add in the MockConfig.js file described by "Separating mocks
+// from source code" section
 import MockRequests from 'mock-requests';
 import {
     myApiUrl,   // 'https://example.com/api/vx/someApi'
@@ -128,9 +126,8 @@ MockRequests.configure({
 
 // ...source code
 
-// Using your async requests.
-// Note that this part DOESN'T CHANGE between using mocks and actual data
-// from your service
+// Using your async requests in source code
+// This stays the same regardless of if you're using mocks or the actual endpoint
 const jsonResponse = await fetch(myApiUrl).then(res => res.json());
 const htmlResponse = await fetch(anotherUrl).then(res => res.text());
 
@@ -152,7 +149,7 @@ MockRequests.setMockUrlResponse(anotherUrl, anotherUrlMockResponse);
 #### Mixing mocks with actual API calls
 
 In the event that some APIs are not functioning correctly but others are, you can configure
-the non-functioning APIs using `MockRequests` and then leave the other APIs as-is for proper responses:
+the non-functioning APIs using `MockRequests` and then leave the other APIs as-is for normal responses:
 
 ```javascript
 import MockRequests from 'mock-requests';
@@ -179,7 +176,7 @@ useResponseContent(realApiResponse);
 
 #### Dynamically modifying subsequent responses
 
-This library also supports dynamically updating your mocked APIs responses, so as to mimic actual
+This library also supports dynamically updating your mocked APIs' responses, so as to mimic actual
 back-end systems. To utilize this feature, you'll need to call the dynamic counterparts of
 `configure/setMockUrlResponse` (`configureDynamicResponses/setDynamicMockUrlResponse`) along with
 a slightly modified config object that has `response` and `dynamicResponseModFn` fields:
@@ -188,20 +185,20 @@ a slightly modified config object that has `response` and `dynamicResponseModFn`
 import MockRequests from 'mock-requests';
 import { myApiUrl } from '../src/services/Urls.js';
 
-const myMockResponse = {
+const initialMockResponse = {
     data: ['a', 'b', 'c', 'd', 'e'],
     value: 7
 };
 const dynamicConfig1 = {
     [myApiUrl]: {
         // The desired response is now nested inside the `response` property.
-        // Note that whatever is set here (`myMockResponse` in this example) will be
-        // the initial default value of the response parameter in the function below.
-        response: myMockResponse,
+        // This will be the initial default value of the `response` parameter
+        // in the function below.
+        response: initialMockResponse,
         // The dynamicResponseModFn takes in the request and previous
         // response as arguments to produce the new response.
         // The new response **must** be returned from this function.
-        // Feel free to modify the response parameter as it will be deep-copied later.
+        // Feel free to modify `response` as it will be deep-copied later.
         dynamicResponseModFn: (request, response) => {
             // You can mix both request and response data to generate new response
             response.data = response.data.concat(request.addLettersArray);
@@ -239,7 +236,7 @@ Additionally, the `dynamicResponseModFn` will receive an object containing query
 which means you also have the option to generate dynamic responses based on those.
 
 If you want to mock all URLs with the same pathname but different query parameters, simply add `usePathnameForAllQueries: true`
-to your dynamic mock configuration (below).
+to your dynamic mock configuration.
 
 Regardless of if you set `usePathnameForAllQueries` or not, `dynamicResponseModFn` will still receive the `queryParamMap`.
 
@@ -262,6 +259,7 @@ const searchUrl = `${searchApiPathname}?q=${encodeURIComponent(searchQuery)}`;
 const dynamicResponseBasedOnQueryParam = await fetch(searchUrl).then(res => res.text());
 
 console.log(dynamicResponseBasedOnQueryParam);
+
 /* Will output:
 'You searched for weather'
 */
@@ -283,9 +281,9 @@ MockRequests.setDynamicMockUrlResponse(myApiUrl, {    // or configureDynamicResp
 
 Finally, because the configuration/setter functions take in a simple url-response mapping,
 using different mocks at different times becomes incredibly user-friendly. For example,
-a particularly great use case for this library would be if your data changes based on
-which user is logged in. In this case, after defining each user's mock responses, you
-could nest them in a single `loginMocks` object and simply choose which login to use:
+if your data changes based on which user is logged in, then the `MockRequests` API is
+particularly easy to work with. In this case, after defining each user's mock responses,
+you could nest them in a single `loginMocks` object and simply choose which login to use:
 
 ```javascript
 const bobMocks = {
@@ -300,6 +298,7 @@ const loginMocks = {
     bob: bobMocks,
     alice: aliceMocks
 };
+
 // Today, I want to be Alice
 MockRequests.configure(loginMocks.alice);
 // no, wait, I'll be Bob instead
@@ -309,7 +308,7 @@ MockRequests.configure(loginMocks.bob);
 #### Other utility functions
 
 For convenience, a `mapStaticConfigToDynamic()` function has been included to make converting the above
-static version of `loginMocks` to a dynamic version easier:
+static version of `loginMocks` to the dynamic counterpart easier:
 
 ```javascript
 // Example 1: Convert a static URL-response mock to dynamic in order to add delay to home page
@@ -317,7 +316,7 @@ const dynamicBobMocks = MockRequests.mapStaticConfigToDynamic(bobMocks);
 dynamicBobMocks[homepageUrl].delay = 1500;
 MockRequests.configureDynamicResponses(dynamicBobMocks);
 
-// Example 2: Convert all loginMocks entries to dynamic
+// Example 2: Convert all loginMocks entries to dynamic counterparts
 const dynamicLoginMocks = Object.keys(loginMocks).reduce((dynamicConfigs, user) => {
     dynamicConfigs[user] = MockRequests.mapStaticConfigToDynamic(loginMocks[user]);
     return dynamicConfigs;
@@ -327,11 +326,16 @@ MockRequests.configureDynamicResponses(dynamicLoginMocks.bob);
 // Example 3: Merge user-agnostic dynamic mocks with static loginMocks
 const dynamicMocks = {
     [searchApiPathname]: {
-        dynamicResponseModFn: (req, res, queries) => {/* ... same as search query above */}
+        dynamicResponseModFn: (req, res, queries) => {
+            /* ... same as search query above */
+        }
     }
 };
 const staticMergedWithDynamic = Object.keys(loginMocks).reduce((dynamicConfigs, user) => {
-    dynamicConfigs[user] = { ...MockRequests.mapStaticConfigToDynamic(loginMocks[user]), ...dynamicMocks};
+    dynamicConfigs[user] = {
+        ...MockRequests.mapStaticConfigToDynamic(loginMocks[user]),
+        ...dynamicMocks
+    };
     return dynamicConfigs;
 }, {});
 MockRequests.configureDynamicResponses(staticMergedWithDynamic.bob);
