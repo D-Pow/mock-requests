@@ -235,6 +235,36 @@ describe('Dynamic response modifications', () => {
         expect(modifiedResponseRound3).toEqual(null);
     });
 
+    it('should save and use previous dynamic responses after each call', async () => {
+        MockRequests.configureDynamicResponses(dynamicConfig1);
+
+        const mockPayloadRound1 = {
+            addLettersArray: ['f', 'g'],
+            valueModification: 5
+        };
+        const modifiedResponseRound1 = await fetch(mockUrl1, {
+            body: JSON.stringify(mockPayloadRound1)
+        }).then(res => res.json());
+        const expectedResponseRound1 = {
+            data: ['a', 'b', 'c', 'd', 'e', 'f', 'g'],
+            value: 12
+        };
+        expect(modifiedResponseRound1).toEqual(expectedResponseRound1);
+
+        const mockPayloadRound2 = {
+            addLettersArray: ['h', 'i'],
+            valueModification: 3
+        };
+        const modifiedResponseRound2 = await fetch(mockUrl1, {
+            body: JSON.stringify(mockPayloadRound2)
+        }).then(res => res.json());
+        const expectedResponseRound2 = {
+            data: ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i'],
+            value: 15
+        };
+        expect(modifiedResponseRound2).toEqual(expectedResponseRound2);
+    });
+
     it('should have the ability to delay the resolution of the network call with fetch', async () => {
         MockRequests.configureDynamicResponses(dynamicConfigWithDelay);
         const { response, dynamicResponseModFn } =  dynamicConfigWithDelay[mockUrl1];
