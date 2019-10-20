@@ -109,16 +109,18 @@ To configure global app usage of `MockRequests`, simply call `configure()` with 
 mappings.
 
 ```javascript
-const myApiUrl = 'https://example.com/api/vx/someApi';
-const anotherUrl = '192.168.0.1';
-
-const myApiMockResponse = { someJson: 'responseObject' };
-const anotherUrlMockResponse = '<html>some other type of response</html>';
-
 // This is the only code you need to add to use this library
 // Add in the file described by "Separating mocks from source
 // code" below
 import MockRequests from 'mock-requests';
+import {
+    myApiUrl,   // 'https://example.com/api/vx/someApi'
+    anotherUrl  // '192.168.0.1'
+} from '../src/services/Urls.js';
+
+const myApiMockResponse = { someJson: 'responseObject' };
+const anotherUrlMockResponse = '<html>some other type of response</html>';
+
 MockRequests.configure({
     [myApiUrl]: myApiMockResponse,
     [anotherUrl]: anotherUrlMockResponse
@@ -153,8 +155,11 @@ In the event that some APIs are not functioning correctly but others are, you ca
 the non-functioning APIs using `MockRequests` and then leave the other APIs as-is for proper responses:
 
 ```javascript
-const myNonFunctioningApi = 'https://example.com/api/vx/notFunctioningRightNow';
-const myFunctioningApi = 'https://example.com/api/vx/isFunctioningProperly';
+import MockRequests from 'mock-requests';
+import {
+    myNonFunctioningApi,
+    myFunctioningApi
+} from '../src/services/Urls.js';
 
 MockRequests.setMockUrlResponse(myNonFunctioningApi, { someJson: 'responseObject' });
 
@@ -180,9 +185,8 @@ back-end systems. To utilize this feature, you'll need to call the dynamic count
 a slightly modified config object that has `response` and `dynamicResponseModFn` fields:
 
 ```javascript
-const myApiUrl = 'https://example.com/someApi/1';
-
 import MockRequests from 'mock-requests';
+import { myApiUrl } from '../src/services/Urls.js';
 
 const myMockResponse = {
     data: ['a', 'b', 'c', 'd', 'e'],
@@ -240,7 +244,9 @@ to your dynamic mock configuration (below).
 Regardless of if you set `usePathnameForAllQueries` or not, `dynamicResponseModFn` will still receive the `queryParamMap`.
 
 ```javascript
-const searchApiPathname = 'https://example.com/search'; // e.g. search?q=weather
+import {
+    searchApiPathname   // 'https://example.com/search'  e.g. search?q=weather
+} from '../src/services/Urls.js';
 
 MockRequests.setDynamicMockUrlResponse(searchApiPathname, {
     dynamicResponseModFn: (request, response, queryParamMap) => {
@@ -351,8 +357,8 @@ where `MockConfig.js` does all the `mock-requests` configuration, e.g.
 
 ```javascript
 import MockRequests from 'mock-requests';
+import { myStaticApiUrl, myDynamicApiUrl } from '../src/services/Urls.js';
 // Imports from mocks/ directory
-import { myStaticApiUrl, myDynamicApiUrl } from './Urls';
 import { myStaticApiResponse } from './StaticResponses';
 import { myDynamicApiConfig } from './DynamicResponseConfigs';
 
