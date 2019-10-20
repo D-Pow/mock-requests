@@ -158,7 +158,7 @@ import {
     myFunctioningApi
 } from '../src/services/Urls.js';
 
-MockRequests.setMockUrlResponse(myNonFunctioningApi, { someJson: 'responseObject' });
+MockRequests.setMockUrlResponse(myNonFunctioningApi, /* mock response */);
 
 // ...source code
 
@@ -200,7 +200,7 @@ const dynamicConfig1 = {
         // The new response **must** be returned from this function.
         // Feel free to modify `response` as it will be deep-copied later.
         dynamicResponseModFn: (request, response) => {
-            // You can mix both request and response data to generate new response
+            // Mix both request and response data to generate new response
             response.data = response.data.concat(request.addLettersArray);
             response.value += request.valueModification;
 
@@ -242,7 +242,7 @@ Regardless of if you set `usePathnameForAllQueries` or not, `dynamicResponseModF
 
 ```javascript
 import {
-    searchApiPathname   // 'https://example.com/search'  e.g. search?q=weather
+    searchApiPathname  // 'https://example.com/search'  e.g. search?q=weather
 } from '../src/services/Urls.js';
 
 MockRequests.setDynamicMockUrlResponse(searchApiPathname, {
@@ -256,7 +256,8 @@ MockRequests.setDynamicMockUrlResponse(searchApiPathname, {
 // ...source code
 
 const searchUrl = `${searchApiPathname}?q=${encodeURIComponent(searchQuery)}`;
-const dynamicResponseBasedOnQueryParam = await fetch(searchUrl).then(res => res.text());
+const response = await fetch(searchUrl);
+const dynamicResponseBasedOnQueryParam = await response.text();
 
 console.log(dynamicResponseBasedOnQueryParam);
 
@@ -270,7 +271,8 @@ console.log(dynamicResponseBasedOnQueryParam);
 There is also a `delay` option you can use if you want to mimic network delays:
 
 ```javascript
-MockRequests.setDynamicMockUrlResponse(myApiUrl, {    // or configureDynamicResponses
+// or configureDynamicResponses({ [myApiUrl]: {...} })
+MockRequests.setDynamicMockUrlResponse(myApiUrl, {
     response: myMockResponse,
     dynamicResponseModFn: (req, res, queries) => {/* ... */},
     delay: 1500   // will make fetch take 1.5 seconds to resolve myApiUrl
@@ -311,19 +313,22 @@ For convenience, a `mapStaticConfigToDynamic()` function has been included to ma
 static version of `loginMocks` to the dynamic counterpart easier:
 
 ```javascript
-// Example 1: Convert a static URL-response mock to dynamic in order to add delay to home page
+// Example 1
+// Convert a static URL-response mock to dynamic and add delay to home page
 const dynamicBobMocks = MockRequests.mapStaticConfigToDynamic(bobMocks);
 dynamicBobMocks[homepageUrl].delay = 1500;
 MockRequests.configureDynamicResponses(dynamicBobMocks);
 
-// Example 2: Convert all loginMocks entries to dynamic counterparts
+// Example 2
+// Convert all loginMocks entries to dynamic counterparts
 const dynamicLoginMocks = Object.keys(loginMocks).reduce((dynamicConfigs, user) => {
     dynamicConfigs[user] = MockRequests.mapStaticConfigToDynamic(loginMocks[user]);
     return dynamicConfigs;
 }, {});
 MockRequests.configureDynamicResponses(dynamicLoginMocks.bob);
 
-// Example 3: Merge user-agnostic dynamic mocks with static loginMocks
+// Example 3
+// Merge user-agnostic dynamic mocks with static loginMocks
 const dynamicMocks = {
     [searchApiPathname]: {
         dynamicResponseModFn: (req, res, queries) => {
@@ -331,14 +336,14 @@ const dynamicMocks = {
         }
     }
 };
-const staticMergedWithDynamic = Object.keys(loginMocks).reduce((dynamicConfigs, user) => {
+const staticDynamicMerged = Object.keys(loginMocks).reduce((dynamicConfigs, user) => {
     dynamicConfigs[user] = {
         ...MockRequests.mapStaticConfigToDynamic(loginMocks[user]),
         ...dynamicMocks
     };
     return dynamicConfigs;
 }, {});
-MockRequests.configureDynamicResponses(staticMergedWithDynamic.bob);
+MockRequests.configureDynamicResponses(staticDynamicMerged.bob);
 ```
 
 <a name="separate-from-source"></a>
