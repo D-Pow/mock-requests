@@ -115,10 +115,6 @@ const MockRequests = (/** @returns {MockRequestsImport} */ function MockRequests
      *
      * @param {string} url - URL to mock
      * @param {MockResponseConfig} mockResponseConfig - Config object with the fields desired to be configured
-     * @param {*} mockResponseConfig.response - Mock response to be resolved
-     * @param {function} mockResponseConfig.dynamicResponseModFn - Function to update response object from previous request/response values
-     * @param {number} mockResponseConfig.delay - Optional resolution delay time
-     * @param {boolean} mockResponseConfig.parseQueryParams - Optional flag to treat all URLs with the same pathname as one URL
      * @memberOf module:mock-requests~MockRequests
      */
     function setDynamicMockUrlResponse(url, mockResponseConfig) {
@@ -173,10 +169,6 @@ const MockRequests = (/** @returns {MockRequestsImport} */ function MockRequests
      * values as necessary.
      *
      * @param {MockResponseConfig} mockResponseConfig - Config object with the fields desired to be configured
-     * @param {*} mockResponseConfig.response - Mock response to be resolved
-     * @param {function} mockResponseConfig.dynamicResponseModFn - Function to update response object from previous request/response values
-     * @param {number} mockResponseConfig.delay - Optional resolution delay time
-     * @param {boolean} mockResponseConfig.parseQueryParams - Optional flag to treat all URLs with the same pathname as one URL
      * @returns {MockResponseConfig}
      */
     function createConfigObj({ response, dynamicResponseModFn, delay, parseQueryParams } = {}) {
@@ -240,10 +232,10 @@ const MockRequests = (/** @returns {MockRequestsImport} */ function MockRequests
     }
 
     /**
-     * Reformats a static URL-response config object to match the dynamic MockResponseConfig object
+     * Reformats a static URL-response config object to match the dynamic MockResponseConfig object structure
      *
      * @param {Object.<string, Object>} staticConfig - URL-staticResponse map
-     * @returns {Object<string, MockResponseConfig>} - URL-MockResponseConfig object with any dynamic configurations applied to all URLs
+     * @returns {Object<string, MockResponseConfig>} - URL-MockResponseConfig object with default configuration fields
      * @memberOf module:mock-requests~MockRequests
      */
     function mapStaticMockConfigToDynamic(staticConfig) {
