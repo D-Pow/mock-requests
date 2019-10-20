@@ -232,7 +232,7 @@ describe('Dynamic response modifications', () => {
         const modifiedResponseRound3 = await fetch(mockUrl1, {
             body: 'some other type of payload'
         }).then(res => res.json());
-        expect(modifiedResponseRound3).toEqual(nowStaticResponse);
+        expect(modifiedResponseRound3).toEqual(null);
     });
 
     it('should have the ability to delay the resolution of the network call with fetch', async () => {

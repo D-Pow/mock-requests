@@ -78,12 +78,7 @@ const MockRequests = (/** @returns {MockRequestsImport} */ function MockRequests
      */
     function configureDynamicResponses(dynamicApiUrlResponseConfig = {}, overwritePreviousConfig = true) {
         const newUrlResponseMap = Object.keys(dynamicApiUrlResponseConfig).reduce((mockResponses, url) => {
-            const config = {
-                response: deepCopyObject(dynamicApiUrlResponseConfig[url].response),
-                dynamicResponseModFn: dynamicApiUrlResponseConfig[url].dynamicResponseModFn,
-                delay: dynamicApiUrlResponseConfig[url].delay,
-                parseQueryParams: Boolean(dynamicApiUrlResponseConfig[url].parseQueryParams)
-            };
+            const config = createConfigObj(dynamicApiUrlResponseConfig[url]);
 
             if (config.parseQueryParams) {
                 const { pathname } = getPathnameAndQueryParams(url);
@@ -110,10 +105,7 @@ const MockRequests = (/** @returns {MockRequestsImport} */ function MockRequests
      * @memberOf module:mock-requests~MockRequests
      */
     function setMockUrlResponse(url, response = null) {
-        const mockResponseConfig = urlResponseMap[url] ? urlResponseMap[url] : mapStaticMockConfigToDynamic({});
-
-        mockResponseConfig.response = deepCopyObject(response);
-        urlResponseMap[url] = mockResponseConfig;
+        urlResponseMap[url] = createConfigObj({ response });
     }
 
     /**
@@ -122,36 +114,20 @@ const MockRequests = (/** @returns {MockRequestsImport} */ function MockRequests
      *
      * @param {string} url - URL to mock
      * @param {MockResponseConfig} mockResponseConfig - Config object with the fields desired to be configured
-     * @param {Object|string|number|boolean} mockResponseConfig.response - Mock response to be resolved
+     * @param {*} mockResponseConfig.response - Mock response to be resolved
      * @param {function} mockResponseConfig.dynamicResponseModFn - Function to update response object from previous request/response values
      * @param {number} mockResponseConfig.delay - Optional resolution delay time
      * @param {boolean} mockResponseConfig.parseQueryParams - Optional flag to treat all URLs with the same pathname as one URL
      * @memberOf module:mock-requests~MockRequests
      */
-    function setDynamicMockUrlResponse(url, { response, dynamicResponseModFn, delay, parseQueryParams } = {}) {
-        const mockResponseConfig = getConfig(url) || mapStaticMockConfigToDynamic({});
+    function setDynamicMockUrlResponse(url, mockResponseConfig) {
+        const config = createConfigObj(mockResponseConfig);
 
-        if (response) {
-            mockResponseConfig.response = deepCopyObject(response);
-        }
-
-        if (dynamicResponseModFn && typeof dynamicResponseModFn === 'function') {
-            mockResponseConfig.dynamicResponseModFn = dynamicResponseModFn;
-        } else {
-            mockResponseConfig.dynamicResponseModFn = null;
-        }
-
-        if (delay) {
-            mockResponseConfig.delay = delay;
-        }
-
-        mockResponseConfig.parseQueryParams = Boolean(parseQueryParams);
-
-        if (mockResponseConfig.parseQueryParams) {
+        if (config.parseQueryParams) {
             const { pathname } = getPathnameAndQueryParams(url);
-            urlResponseMap[pathname] = mockResponseConfig;
+            urlResponseMap[pathname] = config;
         } else {
-            urlResponseMap[url] = mockResponseConfig;
+            urlResponseMap[url] = config;
         }
     }
 
@@ -189,6 +165,40 @@ const MockRequests = (/** @returns {MockRequestsImport} */ function MockRequests
         const config = urlResponseMap[url] || urlResponseMap[pathname];
 
         return config;
+    }
+
+    /**
+     * Create the default MockResponseConfig object structure, ensuring all fields exist and populating with default
+     * values as necessary.
+     *
+     * @param {MockResponseConfig} mockResponseConfig - Config object with the fields desired to be configured
+     * @param {*} mockResponseConfig.response - Mock response to be resolved
+     * @param {function} mockResponseConfig.dynamicResponseModFn - Function to update response object from previous request/response values
+     * @param {number} mockResponseConfig.delay - Optional resolution delay time
+     * @param {boolean} mockResponseConfig.parseQueryParams - Optional flag to treat all URLs with the same pathname as one URL
+     * @returns {MockResponseConfig}
+     */
+    function createConfigObj({ response, dynamicResponseModFn, delay, parseQueryParams } = {}) {
+        const mockResponseConfig = {
+            response: null,
+            dynamicResponseModFn: null,
+            delay: null,
+            parseQueryParams: false
+        };
+
+        mockResponseConfig.response = deepCopyObject(response);
+
+        if (dynamicResponseModFn && typeof dynamicResponseModFn === 'function') {
+            mockResponseConfig.dynamicResponseModFn = dynamicResponseModFn;
+        }
+
+        if (delay) {
+            mockResponseConfig.delay = delay;
+        }
+
+        mockResponseConfig.parseQueryParams = Boolean(parseQueryParams);
+
+        return mockResponseConfig;
     }
 
     /**
@@ -237,14 +247,7 @@ const MockRequests = (/** @returns {MockRequestsImport} */ function MockRequests
      */
     function mapStaticMockConfigToDynamic(staticConfig) {
         return Object.keys(staticConfig).reduce((dynamicMockConfig, staticUrl) => {
-            const staticResponse = deepCopyObject(staticConfig[staticUrl]);
-
-            dynamicMockConfig[staticUrl] = {
-                response: staticResponse,
-                dynamicResponseModFn: null,
-                delay: null,
-                parseQueryParams: false
-            };
+            dynamicMockConfig[staticUrl] = createConfigObj({ response: staticConfig[staticUrl] });
 
             return dynamicMockConfig;
         }, {});
