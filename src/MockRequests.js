@@ -30,6 +30,7 @@ const MockRequests = (/** @returns {MockRequestsImport} */ function MockRequests
      * @typedef {function} DynamicResponseModFn
      * @param {*} request - Payload passed to the async function
      * @param {*} response - Previous response object to be modified
+     * @param {Object} queryParamMap - Key-value map of query parameters from the request URL. Hash content will be stored in 'hash' key.
      * @returns {*} modifiedResponse - Updated response to be saved in the mock response map
      * @memberOf module:mock-requests~MockRequests
      */

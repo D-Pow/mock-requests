@@ -11,8 +11,9 @@ declare namespace MockRequests {
         urlResponseConfig: {
             [url: string]: {
                 response?: any;
-                dynamicResponseModFn?: (request: any, response: any) => any;
+                dynamicResponseModFn?: (request: any, response: any, queryParamMap: object) => any;
                 delay?: number;
+                parseQueryParams?: boolean;
             }
         },
         overwritePreviousConfig?: boolean
@@ -22,8 +23,9 @@ declare namespace MockRequests {
         url: string,
         responseConfig: {
             response?: any;
-            dynamicResponseModFn?: (request: any, response: any) => any;
+            dynamicResponseModFn?: (request: any, response: any, queryParamMap: object) => any;
             delay?: number;
+            parseQueryParams?: boolean;
         }
     ): void;
     export function getResponse(url: string): any;
