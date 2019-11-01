@@ -14,14 +14,16 @@
     "url": "https://github.com/D-Pow/MockRequests.git"
   },
   "scripts": {
-    "jsdoc": "jsdoc -R ./ReadMe.md -c config/jsdoc.config.json",
     "build": "webpack --mode production && npm run jsdoc",
     "test": "jest --coverage tests",
+    "jsdoc": "jsdoc -R ./ReadMe.md -c config/jsdoc.config.json",
     "publish": "cd dist && npm publish"
   },
   "devDependencies": {
     "@babel/core": "^7.5.5",
     "@babel/plugin-proposal-object-rest-spread": "^7.5.5",
+    "@babel/plugin-transform-regenerator": "^7.4.5",
+    "@babel/plugin-transform-runtime": "^7.6.2",
     "@babel/plugin-transform-template-literals": "^7.4.4",
     "@babel/polyfill": "^7.4.4",
     "@babel/preset-env": "^7.5.5",
