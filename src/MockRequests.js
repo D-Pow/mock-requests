@@ -22,28 +22,41 @@ const MockRequests = (() => {
      */
     /**
      * @typedef {Object} MockResponseConfig
-     * @property {Object} response - Mock response to be returned
-     * @property {DynamicResponseModFn} dynamicResponseModFn - Function to dynamically change the response object based on previous request/response
-     * @property {number} delay - Optional network mock resolution time
-     * @property {boolean} usePathnameForAllQueries - Optional flag to treat all URLs with the same pathname identically
+     * @property {Object} [response=null] - Mock response to be returned
+     * @property {DynamicResponseModFn} [dynamicResponseModFn=null] - Function to dynamically change the response object based on previous request/response
+     * @property {number} [delay=0] - Optional network mock resolution time
+     * @property {boolean} [usePathnameForAllQueries=false] - Optional flag to treat all URLs with the same pathname identically
      * @memberOf module:mock-requests~MockRequests
      */
 
     /**
-     * Key (URL string) - Value (mock response) pairs for network mocks
+     * Key (URL string) - Value ({@link MockResponseConfig}) pairs for network mocks
      *
      * @type {Object.<string, MockResponseConfig>}
      */
     let urlResponseMap = {};
 
+    /**
+     * Original XMLHttpRequest class, as defined in the browser
+     *
+     * @type {(Object|undefined)}
+     * @memberOf module:mock-requests~MockRequests
+     */
     let OriginalXHR;
+
+    /**
+     * Original fetch function, as defined in the browser
+     *
+     * @type {(Function|undefined)}
+     * @memberOf module:mock-requests~MockRequests
+     */
     let originalFetch;
 
     /**
      * Initialize the mock with response objects.
      *
      * @param  {Object.<string, Object>} apiUrlResponseConfig - Config object containing URL strings as keys and respective mock response objects as values
-     * @param {boolean} [overwritePreviousConfig=true] - If the map from a previous configure call should be maintained (true) or not (false)
+     * @param {boolean} [overwritePreviousConfig=true] - If the map from a previous configure call should be overwritten by this call (true) or not (false)
      * @memberOf module:mock-requests~MockRequests
      */
     function configure(apiUrlResponseConfig = {}, overwritePreviousConfig = true) {
@@ -59,7 +72,7 @@ const MockRequests = (() => {
     /**
      * Initialize the mock with response objects and their dynamic update functions
      *
-     * @param {Object<string, MockResponseConfig>} dynamicApiUrlResponseConfig
+     * @param {Object<string, MockResponseConfig>} dynamicApiUrlResponseConfig - URL-MockResponseConfig mappings
      * @param {boolean} [overwritePreviousConfig=true] - If the map from a previous configure call should be overwritten by this call (true) or not (false)
      * @memberOf module:mock-requests~MockRequests
      */
@@ -117,7 +130,7 @@ const MockRequests = (() => {
     /**
      * Get the mock response object associated with the passed URL
      *
-     * @param {string} url
+     * @param {string} url - URL that was previously mocked
      * @returns {*} - Configured response object
      * @memberOf module:mock-requests~MockRequests
      */
@@ -134,8 +147,8 @@ const MockRequests = (() => {
     /**
      * Deletes the URL and respective mock object
      *
-     * @param url
-     * @returns {boolean}
+     * @param {string} url - URL that was previously mocked
+     * @returns {boolean} - Value returned from `delete Object.url`
      * @memberOf module:mock-requests~MockRequests
      */
     function deleteMockUrlResponse(url) {
@@ -162,7 +175,7 @@ const MockRequests = (() => {
      * Gets the config object for a specified URL or its pathname if the URL itself isn't mocked
      *
      * @param {string} url
-     * @returns {MockResponseConfig|undefined}
+     * @returns {(MockResponseConfig|undefined)}
      */
     function getConfig(url) {
         const isMocked = urlIsMocked(url);
@@ -184,11 +197,11 @@ const MockRequests = (() => {
      * @param {MockResponseConfig} mockResponseConfig - Config object with the fields desired to be configured
      * @returns {MockResponseConfig}
      */
-    function createConfigObj({ response, dynamicResponseModFn, delay, usePathnameForAllQueries } = {}) {
+    function createConfigObj({ response = null, dynamicResponseModFn = null, delay = 0, usePathnameForAllQueries = false } = {}) {
         const mockResponseConfig = {
             response: null,
             dynamicResponseModFn: null,
-            delay: null,
+            delay: 0,
             usePathnameForAllQueries: false
         };
 
@@ -210,7 +223,7 @@ const MockRequests = (() => {
     /**
      * Deep copies a JS object
      *
-     * @param {Object} obj
+     * @param {Object} [obj=null]
      * @returns {Object}
      */
     function deepCopyObject(obj = null) {
@@ -238,7 +251,7 @@ const MockRequests = (() => {
      * @param {*} response
      */
     function castToString(response) {
-        return typeof response === typeof {} ? JSON.stringify(response) : `${response}`;
+        return (typeof response === typeof {}) ? JSON.stringify(response) : `${response}`;
     }
 
     /**
@@ -416,6 +429,10 @@ const MockRequests = (() => {
         }
     }
 
+    /**
+     * Overwrites the fetch() function with a wrapper that mocks
+     * the response value after the configured delay has passed.
+     */
     function overwriteFetch() {
         originalFetch = fetch;
 
@@ -447,20 +464,6 @@ const MockRequests = (() => {
     if (window.fetch) {
         overwriteFetch();
     }
-
-    /**
-     * Original XMLHttpRequest class, as defined in the browser
-     *
-     * @class OriginalXHR
-     * @augments XMLHttpRequest
-     * @memberOf module:mock-requests~MockRequests
-     */
-    /**
-     * Original fetch function, as defined in the browser
-     *
-     * @function originalFetch
-     * @memberOf module:mock-requests~MockRequests
-     */
 
     return {
         configure,
