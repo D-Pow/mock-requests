@@ -1,6 +1,6 @@
 import MockRequests from '../src/MockRequests';
 
-jest.useFakeTimers();
+global.setTimeout = jest.fn((func, time) => func());
 
 const mockUrl1 = 'https://example.com/someApi/1';
 const mockUrl2 = 'https://example.com/someApi/2';
@@ -269,19 +269,13 @@ describe('Dynamic response modifications', () => {
         MockRequests.configureDynamicResponses(dynamicConfigWithDelay);
         const { response, dynamicResponseModFn } =  dynamicConfigWithDelay[mockUrl1];
         let done = false;
-        const mockedNetworkPromise = fetch(mockUrl1).then(res => {
+        const responseBody = await fetch(mockUrl1).then(res => {
             done = true;
             return res.json();
         });
-
-        expect(done).toBe(false);
-        expect(setTimeout).toHaveBeenCalled();
-
-        jest.runAllTimers();
-
-        const responseBody = await mockedNetworkPromise;
         const expectedModifiedResponse = dynamicResponseModFn(null, response);
 
+        expect(setTimeout).toHaveBeenCalledWith(expect.anything(), dynamicConfigWithDelay[mockUrl1].delay);
         expect(responseBody).toEqual(expectedModifiedResponse);
         expect(done).toBe(true);
     });
@@ -300,9 +294,7 @@ describe('Dynamic response modifications', () => {
         };
         mockXhr.send();
 
-        expect(done).toBe(false);
-        expect(setTimeout).toHaveBeenCalled();
-
-        jest.runAllTimers();
+        expect(done).toBe(true);
+        expect(setTimeout).toHaveBeenCalledWith(expect.anything(), dynamicConfigWithDelay[mockUrl1].delay);
     });
 });
