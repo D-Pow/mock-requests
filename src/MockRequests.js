@@ -435,25 +435,38 @@ const MockRequests = (() => {
      * the response value after the configured delay has passed.
      */
     function overwriteFetch() {
-        originalFetch = fetch;
+        originalFetch = window.fetch;
 
-        fetch = function(url, options) {
+        window.fetch = function(resource, init) {
+            const isUsingRequestObject = typeof resource === typeof {};
+            const url = isUsingRequestObject ? resource.url : resource;
+
             if (urlIsMocked(url)) {
-                const requestPayload = (options && options.hasOwnProperty('body') && options.body)
-                    ? attemptParseJson(options.body)
-                    : undefined;
-                const responseBody = getResponseAndDynamicallyUpdate(url, requestPayload);
-                const response = {
-                    json: () => Promise.resolve(responseBody),
-                    text: () => Promise.resolve(castToString(responseBody))
-                };
+                return (async () => {
+                    const options = isUsingRequestObject ? await resource.text() : init;
+                    const requestPayload = (options && options.hasOwnProperty('body') && options.body)
+                        ? attemptParseJson(options.body)
+                        : undefined;
+                    const responseBody = getResponseAndDynamicallyUpdate(url, requestPayload);
+                    const response = {
+                        json: () => Promise.resolve(responseBody),
+                        text: () => Promise.resolve(castToString(responseBody)),
+                        status: 200,
+                        statusText: '',
+                        ok: true,
+                        headers: new Headers({ status: '200' }),
+                        redirected: false,
+                        type: 'basic',
+                        url
+                    };
 
-                return new Promise(res => {
-                    const resolveAfterDelay = withOptionalDelay(getConfig(url).delay, res);
-                    resolveAfterDelay(response);
-                });
+                    return await new Promise(resolve => {
+                        const resolveAfterDelay = withOptionalDelay(getConfig(url).delay, resolve);
+                        resolveAfterDelay(response);
+                    });
+                })();
             } else {
-                return originalFetch(url, options);
+                return originalFetch(resource, init);
             }
         }
     }
