@@ -380,18 +380,21 @@ const MockRequests = (() => {
      * e.g. status = 200 and statusText = 'OK'
      */
     function overwriteXmlHttpRequestObject() {
-        OriginalXHR = XMLHttpRequest;
+        OriginalXHR = window.XMLHttpRequest;
 
-        XMLHttpRequest = function() {
+        window.XMLHttpRequest = function() {
             const xhr = new OriginalXHR();
+            const originalOpen = xhr.open;
+            const originalSend = xhr.send;
+            let xhrUrl;
 
             function mockXhrRequest(requestPayload) {
-                const mockedResponse = getResponseAndDynamicallyUpdate(xhr.url, requestPayload);
+                const mockedResponse = getResponseAndDynamicallyUpdate(xhrUrl, requestPayload);
                 const mockedValues = {
                     readyState: 4,
                     response: mockedResponse,
                     responseText: castToString(mockedResponse),
-                    responseUrl: xhr.url,
+                    responseUrl: xhrUrl,
                     status: 200,
                     statusText: 'OK',
                     timeout: 0
@@ -408,20 +411,18 @@ const MockRequests = (() => {
                 Object.defineProperties(xhr, properties);
             }
 
-            xhr.originalOpen = xhr.open;
-            xhr.open = function(method, url, ...args) {
-                xhr.url = url;
-                xhr.originalOpen(method, url, ...args);
+            xhr.open = function(method, url, async, user, password) {
+                xhrUrl = url;
+                originalOpen(method, url, async, user, password);
             };
 
-            xhr.originalSend = xhr.send;
             xhr.send = function(requestPayload) {
-                if (urlIsMocked(xhr.url)) {
+                if (urlIsMocked(xhrUrl)) {
                     mockXhrRequest(requestPayload);
-                    const resolveAfterDelay = withOptionalDelay(getConfig(xhr.url).delay, xhr.onreadystatechange);
+                    const resolveAfterDelay = withOptionalDelay(getConfig(xhrUrl).delay, xhr.onreadystatechange);
                     resolveAfterDelay();
                 } else {
-                    xhr.originalSend(requestPayload);
+                    originalSend(requestPayload);
                 }
             };
 
