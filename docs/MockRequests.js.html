@@ -33,7 +33,7 @@
 
 <nav >
     
-    <h2><a href="index.html">Home</a></h2><h2><a href="./demo" >Demo</a></h2><h3>Modules</h3><ul><li><a href="module-mock-requests.html">mock-requests</a></li></ul><h3>Namespaces</h3><ul><li><a href="module-mock-requests-MockRequests.html">MockRequests</a><ul class='methods'><li data-type='method'><a href="module-mock-requests-MockRequests.html#.configure">configure</a></li><li data-type='method'><a href="module-mock-requests-MockRequests.html#.configureDynamicResponses">configureDynamicResponses</a></li><li data-type='method'><a href="module-mock-requests-MockRequests.html#.setMockUrlResponse">setMockUrlResponse</a></li><li data-type='method'><a href="module-mock-requests-MockRequests.html#.setDynamicMockUrlResponse">setDynamicMockUrlResponse</a></li><li data-type='method'><a href="module-mock-requests-MockRequests.html#.getResponse">getResponse</a></li><li data-type='method'><a href="module-mock-requests-MockRequests.html#.deleteMockUrlResponse">deleteMockUrlResponse</a></li><li data-type='method'><a href="module-mock-requests-MockRequests.html#.clearAllMocks">clearAllMocks</a></li><li data-type='method'><a href="module-mock-requests-MockRequests.html#.mapStaticConfigToDynamic">mapStaticConfigToDynamic</a></li><li data-type='method'><a href="module-mock-requests-MockRequests.html#.originalFetch">originalFetch</a></li></ul></li></ul>
+    <h2><a href="index.html">Home</a></h2><h2><a href="./demo" >Demo</a></h2><h3>Modules</h3><ul><li><a href="module-mock-requests.html">mock-requests</a></li></ul><h3>Namespaces</h3><ul><li><a href="module-mock-requests-MockRequests.html">MockRequests</a><ul class='methods'><li data-type='method'><a href="module-mock-requests-MockRequests.html#.configure">configure</a></li><li data-type='method'><a href="module-mock-requests-MockRequests.html#.configureDynamicResponses">configureDynamicResponses</a></li><li data-type='method'><a href="module-mock-requests-MockRequests.html#.setMockUrlResponse">setMockUrlResponse</a></li><li data-type='method'><a href="module-mock-requests-MockRequests.html#.setDynamicMockUrlResponse">setDynamicMockUrlResponse</a></li><li data-type='method'><a href="module-mock-requests-MockRequests.html#.getResponse">getResponse</a></li><li data-type='method'><a href="module-mock-requests-MockRequests.html#.deleteMockUrlResponse">deleteMockUrlResponse</a></li><li data-type='method'><a href="module-mock-requests-MockRequests.html#.clearAllMocks">clearAllMocks</a></li><li data-type='method'><a href="module-mock-requests-MockRequests.html#.mapStaticConfigToDynamic">mapStaticConfigToDynamic</a></li></ul></li></ul>
 </nav>
 
 <div id="main">
@@ -72,28 +72,41 @@ const MockRequests = (() => {
      */
     /**
      * @typedef {Object} MockResponseConfig
-     * @property {Object} response - Mock response to be returned
-     * @property {DynamicResponseModFn} dynamicResponseModFn - Function to dynamically change the response object based on previous request/response
-     * @property {number} delay - Optional network mock resolution time
-     * @property {boolean} usePathnameForAllQueries - Optional flag to treat all URLs with the same pathname identically
+     * @property {Object} [response=null] - Mock response to be returned
+     * @property {DynamicResponseModFn} [dynamicResponseModFn=null] - Function to dynamically change the response object based on previous request/response
+     * @property {number} [delay=0] - Optional network mock resolution time
+     * @property {boolean} [usePathnameForAllQueries=false] - Optional flag to treat all URLs with the same pathname identically
      * @memberOf module:mock-requests~MockRequests
      */
 
     /**
-     * Key (URL string) - Value (mock response) pairs for network mocks
+     * Key (URL string) - Value ({@link MockResponseConfig}) pairs for network mocks
      *
      * @type {Object.&lt;string, MockResponseConfig>}
      */
     let urlResponseMap = {};
 
+    /**
+     * Original XMLHttpRequest class, as defined in the browser
+     *
+     * @type {(Object|undefined)}
+     * @memberOf module:mock-requests~MockRequests
+     */
     let OriginalXHR;
+
+    /**
+     * Original fetch function, as defined in the browser
+     *
+     * @type {(Function|undefined)}
+     * @memberOf module:mock-requests~MockRequests
+     */
     let originalFetch;
 
     /**
      * Initialize the mock with response objects.
      *
      * @param  {Object.&lt;string, Object>} apiUrlResponseConfig - Config object containing URL strings as keys and respective mock response objects as values
-     * @param {boolean} [overwritePreviousConfig=true] - If the map from a previous configure call should be maintained (true) or not (false)
+     * @param {boolean} [overwritePreviousConfig=true] - If the map from a previous configure call should be overwritten by this call (true) or not (false)
      * @memberOf module:mock-requests~MockRequests
      */
     function configure(apiUrlResponseConfig = {}, overwritePreviousConfig = true) {
@@ -109,7 +122,7 @@ const MockRequests = (() => {
     /**
      * Initialize the mock with response objects and their dynamic update functions
      *
-     * @param {Object&lt;string, MockResponseConfig>} dynamicApiUrlResponseConfig
+     * @param {Object&lt;string, MockResponseConfig>} dynamicApiUrlResponseConfig - URL-MockResponseConfig mappings
      * @param {boolean} [overwritePreviousConfig=true] - If the map from a previous configure call should be overwritten by this call (true) or not (false)
      * @memberOf module:mock-requests~MockRequests
      */
@@ -167,7 +180,7 @@ const MockRequests = (() => {
     /**
      * Get the mock response object associated with the passed URL
      *
-     * @param {string} url
+     * @param {string} url - URL that was previously mocked
      * @returns {*} - Configured response object
      * @memberOf module:mock-requests~MockRequests
      */
@@ -184,8 +197,8 @@ const MockRequests = (() => {
     /**
      * Deletes the URL and respective mock object
      *
-     * @param url
-     * @returns {boolean}
+     * @param {string} url - URL that was previously mocked
+     * @returns {boolean} - Value returned from `delete Object.url`
      * @memberOf module:mock-requests~MockRequests
      */
     function deleteMockUrlResponse(url) {
@@ -212,7 +225,7 @@ const MockRequests = (() => {
      * Gets the config object for a specified URL or its pathname if the URL itself isn't mocked
      *
      * @param {string} url
-     * @returns {MockResponseConfig|undefined}
+     * @returns {(MockResponseConfig|undefined)}
      */
     function getConfig(url) {
         const isMocked = urlIsMocked(url);
@@ -234,11 +247,11 @@ const MockRequests = (() => {
      * @param {MockResponseConfig} mockResponseConfig - Config object with the fields desired to be configured
      * @returns {MockResponseConfig}
      */
-    function createConfigObj({ response, dynamicResponseModFn, delay, usePathnameForAllQueries } = {}) {
+    function createConfigObj({ response = null, dynamicResponseModFn = null, delay = 0, usePathnameForAllQueries = false } = {}) {
         const mockResponseConfig = {
             response: null,
             dynamicResponseModFn: null,
-            delay: null,
+            delay: 0,
             usePathnameForAllQueries: false
         };
 
@@ -260,7 +273,7 @@ const MockRequests = (() => {
     /**
      * Deep copies a JS object
      *
-     * @param {Object} obj
+     * @param {Object} [obj=null]
      * @returns {Object}
      */
     function deepCopyObject(obj = null) {
@@ -288,7 +301,7 @@ const MockRequests = (() => {
      * @param {*} response
      */
     function castToString(response) {
-        return typeof response === typeof {} ? JSON.stringify(response) : `${response}`;
+        return (typeof response === typeof {}) ? JSON.stringify(response) : `${response}`;
     }
 
     /**
@@ -417,18 +430,21 @@ const MockRequests = (() => {
      * e.g. status = 200 and statusText = 'OK'
      */
     function overwriteXmlHttpRequestObject() {
-        OriginalXHR = XMLHttpRequest;
+        OriginalXHR = window.XMLHttpRequest;
 
-        XMLHttpRequest = function() {
+        window.XMLHttpRequest = function() {
             const xhr = new OriginalXHR();
+            const originalOpen = xhr.open;
+            const originalSend = xhr.send;
+            let xhrUrl;
 
             function mockXhrRequest(requestPayload) {
-                const mockedResponse = getResponseAndDynamicallyUpdate(xhr.url, requestPayload);
+                const mockedResponse = getResponseAndDynamicallyUpdate(xhrUrl, requestPayload);
                 const mockedValues = {
                     readyState: 4,
                     response: mockedResponse,
                     responseText: castToString(mockedResponse),
-                    responseUrl: xhr.url,
+                    responseUrl: xhrUrl,
                     status: 200,
                     statusText: 'OK',
                     timeout: 0
@@ -445,20 +461,18 @@ const MockRequests = (() => {
                 Object.defineProperties(xhr, properties);
             }
 
-            xhr.originalOpen = xhr.open;
-            xhr.open = function(method, url, ...args) {
-                xhr.url = url;
-                xhr.originalOpen(method, url, ...args);
+            xhr.open = function(method, url, async, user, password) {
+                xhrUrl = url;
+                originalOpen(method, url, async, user, password);
             };
 
-            xhr.originalSend = xhr.send;
             xhr.send = function(requestPayload) {
-                if (urlIsMocked(xhr.url)) {
+                if (urlIsMocked(xhrUrl)) {
                     mockXhrRequest(requestPayload);
-                    const resolveAfterDelay = withOptionalDelay(getConfig(xhr.url).delay, xhr.onreadystatechange);
+                    const resolveAfterDelay = withOptionalDelay(getConfig(xhrUrl).delay, xhr.onreadystatechange);
                     resolveAfterDelay();
                 } else {
-                    xhr.originalSend(requestPayload);
+                    originalSend(requestPayload);
                 }
             };
 
@@ -466,26 +480,43 @@ const MockRequests = (() => {
         }
     }
 
+    /**
+     * Overwrites the fetch() function with a wrapper that mocks
+     * the response value after the configured delay has passed.
+     */
     function overwriteFetch() {
-        originalFetch = fetch;
+        originalFetch = window.fetch;
 
-        fetch = function(url, options) {
+        window.fetch = function(resource, init) {
+            const isUsingRequestObject = typeof resource === typeof {};
+            const url = isUsingRequestObject ? resource.url : resource;
+
             if (urlIsMocked(url)) {
-                const requestPayload = (options &amp;&amp; options.hasOwnProperty('body') &amp;&amp; options.body)
-                    ? attemptParseJson(options.body)
-                    : undefined;
-                const responseBody = getResponseAndDynamicallyUpdate(url, requestPayload);
-                const response = {
-                    json: () => Promise.resolve(responseBody),
-                    text: () => Promise.resolve(castToString(responseBody))
-                };
+                return (async () => {
+                    const options = isUsingRequestObject ? await resource.text() : init;
+                    const requestPayload = (options &amp;&amp; options.hasOwnProperty('body') &amp;&amp; options.body)
+                        ? attemptParseJson(options.body)
+                        : undefined;
+                    const responseBody = getResponseAndDynamicallyUpdate(url, requestPayload);
+                    const response = {
+                        json: () => Promise.resolve(responseBody),
+                        text: () => Promise.resolve(castToString(responseBody)),
+                        status: 200,
+                        statusText: '',
+                        ok: true,
+                        headers: new Headers({ status: '200' }),
+                        redirected: false,
+                        type: 'basic',
+                        url
+                    };
 
-                return new Promise(res => {
-                    const resolveAfterDelay = withOptionalDelay(getConfig(url).delay, res);
-                    resolveAfterDelay(response);
-                });
+                    return await new Promise(resolve => {
+                        const resolveAfterDelay = withOptionalDelay(getConfig(url).delay, resolve);
+                        resolveAfterDelay(response);
+                    });
+                })();
             } else {
-                return originalFetch(url, options);
+                return originalFetch(resource, init);
             }
         }
     }
@@ -497,20 +528,6 @@ const MockRequests = (() => {
     if (window.fetch) {
         overwriteFetch();
     }
-
-    /**
-     * Original XMLHttpRequest class, as defined in the browser
-     *
-     * @class OriginalXHR
-     * @augments XMLHttpRequest
-     * @memberOf module:mock-requests~MockRequests
-     */
-    /**
-     * Original fetch function, as defined in the browser
-     *
-     * @function originalFetch
-     * @memberOf module:mock-requests~MockRequests
-     */
 
     return {
         configure,

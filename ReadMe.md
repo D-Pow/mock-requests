@@ -444,9 +444,10 @@ cases where the browser doesn't support them).
 ## Final notes
 
 This mocks the usage of `XMLHttpRequest` and `fetch` such that the response is always valid.
-This means that, in particular for `XMLHttpRequest`, the following instance attributes are always
-set:
+This means that the instance attributes below are always set. If you want to change any of these, feel free to do
+so within `xhr.onreadystatechange`/`fetch().then(fn)`.
 
+For `XMLHttpRequest`:
 ```javascript
 xhr.readyState = 4;
 xhr.response = mockedResponse;
@@ -457,7 +458,18 @@ xhr.statusText = 'OK';
 xhr.timeout = 0;
 ```
 
-If you want to change any of these, feel free to do so within `xhr.onreadystatechange`.
+For `fetch().then(response => ...)`:
+```javascript
+response.status = 200;
+response.statusText = '';
+response.ok = true;
+response.headers = new Headers({ status: '200' });
+response.redirected = false;
+response.type = 'basic';
+```
+
+This library also works with other members of the [Fetch API](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API#Fetch_Interfaces),
+so you can alternatively use an instance of the `Request` class in your `fetch()` calls, e.g. `fetch(new Request(url, options))`.
 
 <a name="license"></a>
 ## License
