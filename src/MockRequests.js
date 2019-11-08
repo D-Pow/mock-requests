@@ -22,7 +22,7 @@ const MockRequests = (() => {
      */
     /**
      * @typedef {Object} MockResponseConfig
-     * @property {Object} [response=null] - Mock response to be returned
+     * @property {Object} [response=null] - Initial mock response to be returned/passed into dynamicResponseModFn
      * @property {DynamicResponseModFn} [dynamicResponseModFn=null] - Function to dynamically change the response object based on previous request/response
      * @property {number} [delay=0] - Optional network mock resolution time
      * @property {boolean} [usePathnameForAllQueries=false] - Optional flag to treat all URLs with the same pathname identically
