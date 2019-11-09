@@ -17,12 +17,7 @@ module.exports = {
                 test: /\.js$/,
                 exclude: /(node_modules|typings)/,
                 include: path.resolve(__dirname, 'src'),
-                use: {
-                    loader: 'babel-loader',
-                    options: {
-                        babelrc: true
-                    }
-                }
+                use: 'babel-loader'
             }
         ]
     },
