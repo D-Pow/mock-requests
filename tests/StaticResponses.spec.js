@@ -1,4 +1,4 @@
-import MockRequests from '../src/MockRequests';
+import MockRequests, { configure, getResponse, clearAllMocks } from '../src/MockRequests';
 
 const mockUrl1 = 'https://example.com';
 const mockUrl2 = 'https://other.example/someApi';
@@ -125,5 +125,19 @@ describe('StaticResponses', () => {
         mockXHR.onreadystatechange = jest.fn();
         mockXHR.send();
         expect(mockXHR.onreadystatechange).not.toHaveBeenCalled();
+    });
+
+    it('should work properly if importing individual functions instead of default import', async () => {
+        const expectedJson = mockConfig1[mockUrl1];
+        const expectedDataValue = expectedJson.data;
+
+        configure(mockConfig1);
+        expect(getResponse(mockUrl1).data).toEqual(expectedDataValue);
+
+        const response = await fetch(mockUrl1).then(res => res.json());
+        expect(response.data).toEqual(expectedDataValue);
+
+        clearAllMocks();
+        expect(getResponse(mockUrl1)).toBe(undefined);
     });
 });
