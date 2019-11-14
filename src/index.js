@@ -1,3 +1,2 @@
-import MockRequests from './MockRequests';
-
-export default MockRequests;
+export { default } from './MockRequests';
+export * from './MockRequests';

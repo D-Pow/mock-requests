@@ -493,3 +493,15 @@ const MockRequests = (() => {
 })();
 
 export default MockRequests;
+export const {
+    configure,
+    configureDynamicResponses,
+    setMockUrlResponse,
+    setDynamicMockUrlResponse,
+    getResponse,
+    deleteMockUrlResponse,
+    clearAllMocks,
+    mapStaticConfigToDynamic,
+    OriginalXHR,
+    originalFetch
+} = MockRequests;
