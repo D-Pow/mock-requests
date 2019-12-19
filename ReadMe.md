@@ -255,6 +255,7 @@ MockRequests.setDynamicMockUrlResponse(searchApiPathname, {
 
 // ...source code
 
+const searchQuery = getSearchFromTextInput(); // let's assume this is `weather`
 const searchUrl = `${searchApiPathname}?q=${encodeURIComponent(searchQuery)}`;
 const response = await fetch(searchUrl);
 const dynamicResponseBasedOnQueryParam = await response.text();
@@ -443,33 +444,36 @@ cases where the browser doesn't support them).
 <a name="final-notes"></a>
 ## Final notes
 
-This mocks the usage of `XMLHttpRequest` and `fetch` such that the response is always valid.
+1) This mocks the usage of `XMLHttpRequest` and `fetch` such that the response is always valid.
 This means that the instance attributes below are always set. If you want to change any of these, feel free to do
 so within `xhr.onreadystatechange`/`fetch().then(fn)`.
 
-For `XMLHttpRequest`:
-```javascript
-xhr.readyState = 4;
-xhr.response = mockedResponse;
-xhr.responseText = stringVersionOf(mockedResponse); // either JSON.stringify(mockedResponse) or `${mockedResponse}`
-xhr.responseUrl = urlPassedInXhrOpenMethod;
-xhr.status = 200;
-xhr.statusText = 'OK';
-xhr.timeout = 0;
-```
+    For `XMLHttpRequest`:
+    ```javascript
+    xhr.readyState = 4;
+    xhr.response = mockedResponse;
+    xhr.responseText = stringVersionOf(mockedResponse); // either JSON.stringify(mockedResponse) or `${mockedResponse}`
+    xhr.responseUrl = urlPassedInXhrOpenMethod;
+    xhr.status = 200;
+    xhr.statusText = 'OK';
+    xhr.timeout = 0;
+    ```
 
-For `fetch().then(response => ...)`:
-```javascript
-response.status = 200;
-response.statusText = '';
-response.ok = true;
-response.headers = new Headers({ status: '200' });
-response.redirected = false;
-response.type = 'basic';
-```
+    For `fetch().then(response => ...)`:
+    ```javascript
+    response.status = 200;
+    response.statusText = '';
+    response.ok = true;
+    response.headers = new Headers({ status: '200' });
+    response.redirected = false;
+    response.type = 'basic';
+    ```
 
-This library also works with other members of the [Fetch API](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API#Fetch_Interfaces),
+2) This library also works with other members of the [Fetch API](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API#Fetch_Interfaces),
 so you can alternatively use an instance of the `Request` class in your `fetch()` calls, e.g. `fetch(new Request(url, options))`.
+
+3) You may import either the `MockRequests` default export or any of its individual fields, e.g. <br />
+`import MockRequests, { setMockUrlResponse } from 'mock-requests';`
 
 <a name="license"></a>
 ## License
