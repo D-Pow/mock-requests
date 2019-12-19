@@ -28,7 +28,7 @@
     "@babel/polyfill": "^7.4.4",
     "@babel/preset-env": "^7.5.5",
     "babel-loader": "^8.0.6",
-    "copy-webpack-plugin": "^5.0.4",
+    "copy-webpack-plugin": "^5.1.1",
     "coveralls": "^3.0.6",
     "docdash": "^1.1.1",
     "jest": "^24.9.0",
