@@ -13,5 +13,5 @@ global.fetch = jest.fn(() => Promise.resolve({
 global.Headers = jest.fn();
 global.Request = jest.fn((url, options) => ({
     url,
-    text: () => Promise.resolve(options.body)
+    text: () => Promise.resolve(options ? options.body : '')
 }));

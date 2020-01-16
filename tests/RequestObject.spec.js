@@ -10,13 +10,19 @@ describe('Using Request with fetch', () => {
         MockRequests.configure(mockConfig);
 
         const expected = mockConfig[mockUrl];
-        const request = new Request(mockUrl, {
+
+        const requestWithoutBody = new Request(mockUrl);
+        const responseWithoutBody = await fetch(requestWithoutBody).then(res => res.json());
+
+        const requestWithBody = new Request(mockUrl, {
             method: 'POST',
             body: expected
         });
-        const response = await fetch(request).then(res => res.json());
+        const responseWithBody = await fetch(requestWithBody).then(res => res.json());
 
-        expect(typeof response).toEqual(typeof {});
-        expect(response.data).toEqual(expected.data);
+        expect(typeof responseWithoutBody).toEqual(typeof {});
+        expect(responseWithoutBody.data).toEqual(expected.data);
+        expect(typeof responseWithBody).toEqual(typeof {});
+        expect(responseWithBody.data).toEqual(expected.data);
     });
 });
