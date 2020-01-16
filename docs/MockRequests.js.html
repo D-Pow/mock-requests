@@ -492,10 +492,11 @@ const MockRequests = (() => {
 
             if (urlIsMocked(url)) {
                 return (async () => {
-                    const options = isUsingRequestObject ? await resource.text() : init;
-                    const requestPayload = (options &amp;&amp; options.hasOwnProperty('body') &amp;&amp; options.body)
-                        ? attemptParseJson(options.body)
-                        : undefined;
+                    const requestPayload = isUsingRequestObject
+                        ? await attemptParseJson(resource.text())
+                        : (init &amp;&amp; init.hasOwnProperty('body') &amp;&amp; init.body)
+                            ? attemptParseJson(init.body)
+                            : undefined;
                     const responseBody = getResponseAndDynamicallyUpdate(url, requestPayload);
                     const response = {
                         json: () => Promise.resolve(responseBody),
