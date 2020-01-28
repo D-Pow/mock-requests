@@ -101,4 +101,37 @@ describe('Dynamic modifications with query parameters', () => {
 
         await fetch(mockUrl1);
     });
+
+    it('should work for base pathname even if no parameters are passed', async () => {
+        const expectedRequest = { data: 'foo' };
+        const expectedResponse = { data: 'bar' };
+
+        async function testBlankPathname(url) {
+            MockRequests.clearAllMocks();
+            MockRequests.setDynamicMockUrlResponse(url, {
+                usePathnameForAllQueries: true,
+                dynamicResponseModFn: (request, response, queryParamMap) => {
+                    return {
+                        request,
+                        response: expectedResponse,
+                        queryParamMap
+                    };
+                }
+            });
+
+            const { request, response, queryParamMap } = await fetch(url, {
+                method: 'POST',
+                body: JSON.stringify(expectedRequest)
+            }).then(res => res.json());
+
+            expect(request.data).toEqual(expectedRequest.data);
+            expect(response.data).toBe(expectedResponse.data);
+            expect(Object.keys(queryParamMap).length).toEqual(0);
+        }
+
+        await testBlankPathname(mockUrlPathname);
+        await testBlankPathname(mockUrlPathname + '?');
+        await testBlankPathname(mockUrlPathname + '#');
+        await testBlankPathname(mockUrlPathname + '?#');
+    });
 });
