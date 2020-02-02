@@ -45,13 +45,23 @@
     ]
   },
   "keywords": [
-    "request",
-    "HTTP",
-    "requests",
-    "XMLHttpRequest",
-    "fetch",
+    "network",
     "mock",
+    "mocking",
     "mocks",
-    "network"
+    "mocker",
+    "fetch",
+    "fetch-mock",
+    "XMLHttpRequest",
+    "XMLHttpRequest-mock",
+    "request",
+    "requests",
+    "request-mock",
+    "XHR",
+    "xhr-mock",
+    "AJAX",
+    "ajax mock",
+    "HTTP",
+    "HTTPS"
   ]
 }
