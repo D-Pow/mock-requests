@@ -295,7 +295,7 @@ describe('Dynamic response modifications', () => {
             done = true;
             expect(mockXhr.response).toEqual(expectedModifiedResponse);
         };
-        mockXhr.send();
+        await mockXhr.send();
 
         expect(done).toBe(true);
         expect(setTimeout).toHaveBeenCalledWith(expect.anything(), dynamicConfigWithDelay[mockUrl1].delay);
@@ -315,5 +315,35 @@ describe('Dynamic response modifications', () => {
         mockXhr.send();
 
         expect(resolved).toBe(true);
+    });
+
+    it('should allow async dynamic response modification functions', async () => {
+        async function testAsyncDynamicFuncWithNetworkCall(asyncNetworkCall) {
+            MockRequests.clearAllMocks();
+            let resolved = false;
+
+            MockRequests.setDynamicMockUrlResponse(mockUrl1, {
+                dynamicResponseModFn: async () => {
+                    await Promise.resolve();
+                    resolved = true;
+                }
+            });
+
+            await asyncNetworkCall();
+
+            expect(resolved).toBe(true);
+        }
+
+        await testAsyncDynamicFuncWithNetworkCall(async () => await fetch(mockUrl1));
+        await testAsyncDynamicFuncWithNetworkCall(() => {
+            return new Promise(resolve => {
+                const mockXhr = new XMLHttpRequest();
+                mockXhr.open('GET', mockUrl1);
+                mockXhr.onreadystatechange = () => {
+                    resolve();
+                };
+                mockXhr.send();
+            });
+        });
     });
 });

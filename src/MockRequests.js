@@ -332,13 +332,13 @@ const MockRequests = (() => {
      * @param {*} requestPayload
      * @returns {*} - Configured response after the dynamic modification function has been run (if it exists)
      */
-    function getResponseAndDynamicallyUpdate(url, requestPayload) {
+    async function getResponseAndDynamicallyUpdate(url, requestPayload) {
         const mockResponseConfig = getConfig(url);
 
         if (mockResponseConfig.dynamicResponseModFn && typeof mockResponseConfig.dynamicResponseModFn === 'function') {
             const { queryParamMap } = getPathnameAndQueryParams(url);
             const newResponse = deepCopyObject(
-                mockResponseConfig.dynamicResponseModFn(
+                await mockResponseConfig.dynamicResponseModFn(
                     attemptParseJson(requestPayload),
                     mockResponseConfig.response,
                     queryParamMap
@@ -385,8 +385,8 @@ const MockRequests = (() => {
         XMLHttpRequest = function() {
             const xhr = new OriginalXHR();
 
-            function mockXhrRequest(requestPayload) {
-                const mockedResponse = getResponseAndDynamicallyUpdate(xhr.url, requestPayload);
+            async function mockXhrRequest(requestPayload) {
+                const mockedResponse = await getResponseAndDynamicallyUpdate(xhr.url, requestPayload);
                 const mockedValues = {
                     readyState: 4,
                     response: mockedResponse,
@@ -415,9 +415,9 @@ const MockRequests = (() => {
             };
 
             xhr.originalSend = xhr.send;
-            xhr.send = function(requestPayload) {
+            xhr.send = async function(requestPayload) {
                 if (urlIsMocked(xhr.url)) {
-                    mockXhrRequest(requestPayload);
+                    await mockXhrRequest(requestPayload);
                     const resolveAfterDelay = withOptionalDelay(getConfig(xhr.url).delay, xhr.onreadystatechange || (() => {}));
                     resolveAfterDelay();
                 } else {
@@ -447,7 +447,7 @@ const MockRequests = (() => {
                         : (init && init.hasOwnProperty('body') && init.body)
                             ? attemptParseJson(init.body)
                             : undefined;
-                    const responseBody = getResponseAndDynamicallyUpdate(url, requestPayload);
+                    const responseBody = await getResponseAndDynamicallyUpdate(url, requestPayload);
                     const response = {
                         json: () => Promise.resolve(responseBody),
                         text: () => Promise.resolve(castToString(responseBody)),
