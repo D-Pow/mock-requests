@@ -1,6 +1,6 @@
 {
     "source": {
-        "include": [ "src/MockRequests.js" ]
+        "include": [ "src/MockRequests.js", "bin/resolve-mocks.js" ]
     },
     "opts": {
         "destination": "./docs",
