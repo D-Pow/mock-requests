@@ -12,8 +12,14 @@ function getResolvedPathAsArray(mockPath) {
         return [];
     }
 
-    const resolvedDir = path.resolve(rootDir, mockPath);
-    return fs.existsSync(resolvedDir) ? [ resolvedDir ] : [];
+    const resolvedPath = path.resolve(rootDir, mockPath);
+    const pathExists = fs.existsSync(resolvedPath);
+
+    if (!pathExists) {
+        console.warn(resolvedPath + ' was not found and will not be configured by MockRequests.');
+    }
+
+    return pathExists ? [ resolvedPath ] : [];
 }
 
 /**
