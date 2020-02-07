@@ -128,16 +128,19 @@ describe('Dynamic response modifications', () => {
         expect(dynamicConfig1[mockUrl1].response).toEqual(originalConfig);
     });
 
-    it('should dynamically update the response object of XMLHttpRequest for URLs mocked without changing original config', () => {
+    it('should dynamically update the response object of XMLHttpRequest for URLs mocked without changing original config', async () => {
         const originalConfig = JSON.parse(JSON.stringify(dynamicConfig2[mockUrl2].response));
 
-        const testDynamicXhrResponse = (payload, expectedResult) => {
-            const mockXhr = new XMLHttpRequest();
-            mockXhr.open('POST', mockUrl2);
-            mockXhr.onreadystatechange = () => {
-                expect(mockXhr.response).toEqual(expectedResult);
-            };
-            mockXhr.send(payload);
+        const testDynamicXhrResponse = async (payload, expectedResult) => {
+            return new Promise(resolve => {
+                const mockXhr = new XMLHttpRequest();
+                mockXhr.open('POST', mockUrl2);
+                mockXhr.onreadystatechange = () => {
+                    expect(mockXhr.response).toEqual(expectedResult);
+                    resolve();
+                };
+                mockXhr.send(payload);
+            });
         };
 
         MockRequests.configureDynamicResponses(dynamicConfig2);
@@ -171,8 +174,8 @@ describe('Dynamic response modifications', () => {
             ]
         };
 
-        testDynamicXhrResponse(mockPayload1, expectedResponse1);
-        testDynamicXhrResponse(mockPayload2, expectedResponse2);
+        await testDynamicXhrResponse(mockPayload1, expectedResponse1);
+        await testDynamicXhrResponse(mockPayload2, expectedResponse2);
 
         expect(dynamicConfig2[mockUrl2].response).toEqual(originalConfig);
     });
