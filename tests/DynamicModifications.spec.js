@@ -300,4 +300,20 @@ describe('Dynamic response modifications', () => {
         expect(done).toBe(true);
         expect(setTimeout).toHaveBeenCalledWith(expect.anything(), dynamicConfigWithDelay[mockUrl1].delay);
     });
+
+    it('should still function if xhr.onreadystatechange is not defined', () => {
+        let resolved = false;
+
+        MockRequests.setDynamicMockUrlResponse(mockUrl1, {
+            dynamicResponseModFn: () => {
+                resolved = true;
+            }
+        });
+
+        const mockXhr = new XMLHttpRequest();
+        mockXhr.open('GET', mockUrl1);
+        mockXhr.send();
+
+        expect(resolved).toBe(true);
+    });
 });

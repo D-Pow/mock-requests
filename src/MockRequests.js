@@ -418,7 +418,7 @@ const MockRequests = (() => {
             xhr.send = function(requestPayload) {
                 if (urlIsMocked(xhr.url)) {
                     mockXhrRequest(requestPayload);
-                    const resolveAfterDelay = withOptionalDelay(getConfig(xhr.url).delay, xhr.onreadystatechange);
+                    const resolveAfterDelay = withOptionalDelay(getConfig(xhr.url).delay, xhr.onreadystatechange || (() => {}));
                     resolveAfterDelay();
                 } else {
                     xhr.originalSend(requestPayload);
