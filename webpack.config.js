@@ -28,6 +28,10 @@ module.exports = {
                 to: 'index.d.[ext]'
             },
             {
+                from: 'bin',
+                to: 'bin'
+            },
+            {
                 from: 'ReadMe.md',
                 to: '[name].[ext]'
             },
