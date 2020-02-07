@@ -350,8 +350,10 @@ MockRequests.configureDynamicResponses(staticDynamicMerged.bob);
 <a name="separate-from-source"></a>
 ## Separating mocks from source code
 
-To avoid packaging the mocks and `MockRequests` along with your source code, you can simply move your
-mock files to a separate folder and add a few extra lines to your `webpack.config.js` file. For example, if we have
+To avoid packaging `MockRequests` and mock-related code along with your production-bound source code, you can simply
+move your mock files to a separate folder and add a small modification to your webpack config object's `entry` array.
+Optionally, you can also add a similar modification to the `module.rules[jsRule].include` array, depending on your
+application's setup. Luckily, `MockRequests` comes bundled with a node script to make this easier. For example, if we have
 the setup:
 
 ```
@@ -360,6 +362,8 @@ MyApp
 |   ├─── (... source code)
 ├─── mocks/
 |   ├─── MockConfig.js
+|   ├─── StaticResponses.js
+|   ├─── DynamicResponseConfigs.js
 |   ├─── (... other mock files imported by MockConfig.js)
 ```
 
@@ -379,18 +383,14 @@ MockRequests.setDynamicMockUrlResponse(myDynamicApiUrl, myDynamicApiConfig);
 and your original `webpack.config.js` looked something similar to:
 
 ```javascript
-var srcDir = path.resolve(__dirname, 'src');
-var entryFiles = [ srcDir + '/index.js' ];
-var includeDir = [ srcDir ];
-
 module.exports = {
-    entry: entryFiles,
+    entry: [ '@babel/polyfill', './src/index.js' ],
     module: {
         rules: [
             {
                 test: /\.jsx?$/,
-                include: includeDir,
-                exclude: /node_modules/,
+                include: [ /src/ ],
+                exclude: [ /node_modules/ ],
                 loader: 'babel-loader'
             }
         ]
@@ -401,22 +401,38 @@ module.exports = {
 then all you would need to add to your `webpack.config.js` file would be something akin to:
 
 ```javascript
-if (process.env.MOCK === 'true') {
-    var mockDir = path.resolve(__dirname, 'mocks');
-    var mockEntryFiles = mockDir + '/MockConfig.js';
+// Returns an object containing arrays to spread in webpack's `include` and `entry` fields.
+// resolveMocks(mockDirectory, mockEntryFile, activateMocksBoolean)
+const resolveMocks = require('mock-requests/bin/resolve-mocks');
+const resolvedMocks = resolveMocks('mocks', 'mocks/MockConfig.js', process.env.MOCK === 'true');
 
-    // Update entry field and babel-loader's include field
-    entryFiles.push(mockEntryFiles);
-    includeDir.push(mockDir);
-    console.log('Network mocks activated by MockRequests\n');
+module.exports = {
+    entry: [ '@babel/polyfill', './src/index.js', ...resolvedMocks.entry ],
+    module: {
+        rules: [
+            {
+                test: /\.jsx?$/,
+                include: [ /src/, ...resolvedMocks.include ],
+                exclude: [ /node_modules/ ],
+                loader: 'babel-loader'
+            }
+        ]
+    }
 }
 ```
 
 and run using `MOCK=true npm start`.
 
-Doing so will have the net effect of loading the `mocks` directory with `babel-loader` and including
-`MockConfig.js` as entry code to be loaded in the browser only during development. This way, all
-mock-related code will be prevented from going into production.
+Doing so will have the net effect of adding the `MockConfig.js` file as an entry point to your app so that it's
+loaded along with the rest of your code. Optionally, if you're using the latest JavaScript features in your
+mock configuration files but want to run them on browsers that lack support, then you'll need those mock files transpiled
+by your loader as well; in that case, add the respective spread to the `include` field as well.
+
+Note that your webpack configuration won't have to change between activating and deactivating your mocks. The third
+parameter to `resolveMocks()` will determine if the mock files should be included or not (in this example, the condition
+is true only if `MOCK=true` is passed as a node environment variable when running `npm start`). If the argument passed
+resolves to a falsy value, then empty arrays will be returned, so no mock code will be injected into the built package.
+This way, all mock-related code will be prevented from going into production.
 
 <a name="api"></a>
 ## MockRequests API
