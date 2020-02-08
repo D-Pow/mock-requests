@@ -7,13 +7,31 @@ import { dynamicSearchConfigFromQueries } from './DynamicResponses';
  * queries to saved mock JSON responses. This illustrates two of the ways you can use MockRequests.
  */
 
-/**
- * 1. Configuring static URL-response object mappings
- */
-MockRequests.configure(staticUrlResponseConfig);
+const useStaticMock = true;
 
-/**
- * 2. Configuring dynamic URL responses, in this case using the queryParamMap to
- * determine which response to return
- */
-// MockRequests.configureDynamicResponses(dynamicSearchConfigFromQueries);
+if (useStaticMock) {
+    /**
+     * Example 1: Configuring static URL-response object mappings.
+     *
+     * Maps the full search URL to the mock response.
+     *
+     * e.g. "https://kitsu.io/api/edge/anime?filter[text]=naruto" -> `narutoResponse`
+     */
+    MockRequests.configure(staticUrlResponseConfig);
+} else {
+    /**
+     * Example 2: Configuring dynamic URL responses using the search query parameter.
+     *
+     * By setting the `usePathnameForAllQueries` flag, the `dynamicResponseModFn` will
+     * be used to determine which mock response should be returned based on the network
+     * requests' query parameter.
+     *
+     * e.g.
+     *     if (searchQuery === 'naruto') {
+     *         return narutoResponse;
+     *     } else if (!(searchQuery in mockConfig)) {
+     *         return MockRequests.originalFetch(searchUrl + searchQuery);
+     *     }
+     */
+    MockRequests.configureDynamicResponses(dynamicSearchConfigFromQueries);
+}
