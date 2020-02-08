@@ -1,3 +1,5 @@
+import MockRequests from 'mock-requests';
+import { getKitsuTitleSearchUrl } from 'utils/Functions';
 import {
     kitsuTitleSearchUrl,
     kimiNoNaWaSearchQuery,
@@ -24,7 +26,13 @@ const queryResponseMap = {
 
 const searchQueryParam = kitsuTitleSearchUrl.substring(kitsuTitleSearchUrl.indexOf('?') + 1, kitsuTitleSearchUrl.indexOf('='));
 
-export function chooseMockBasedOnQuery(request, response, queryParamMap) {
+export async function chooseMockBasedOnQuery(request, response, queryParamMap) {
     const searchQuery = decodeURIComponent(queryParamMap[searchQueryParam]);
+    const queryIsMocked = Object.keys(queryResponseMap).includes(searchQuery);
+
+    if (!queryIsMocked) {
+        return await MockRequests.originalFetch(getKitsuTitleSearchUrl(searchQuery)).then(res => res.json());
+    }
+
     return queryResponseMap[searchQuery];
 }
