@@ -4,6 +4,7 @@ const dotenv = require('dotenv');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
+const resolveMocks = require('mock-requests/bin/resolve-mocks');
 
 const outputPaths = {
     dev: '',
@@ -35,19 +36,7 @@ const cssRegex = /\.css$/;
 const sassRegex = /\.scss$/;
 const assetRegex = /\.(png|gif|jpe?g|svg|ico|pdf|tex|eot)$/;
 
-var srcDir = path.resolve(__dirname, 'src');
-var entryFiles = [ '@babel/polyfill', srcDir + '/index.js' ];
-var includeDir = [ srcDir ];
-
-if (process.env.MOCK === 'true') {
-    var mockDir = path.resolve(__dirname, 'mocks');
-    var mockEntryFiles = mockDir + '/MockConfig.js';
-
-    // Update entry field and babel-loader's include field
-    entryFiles.push(mockEntryFiles);
-    includeDir.push(mockDir);
-    console.log('Network mocks activated by MockRequests\n');
-}
+const resolvedMocks = resolveMocks('mocks', 'mocks/MockConfig.js', process.env.MOCK === 'true');
 
 module.exports = {
     module: {
@@ -55,7 +44,7 @@ module.exports = {
             {
                 test: jsRegex,
                 exclude: /node_modules/,
-                include: includeDir,
+                include: [ /src/, ...resolvedMocks.include ],
                 loader: 'babel-loader'
             },
             {
@@ -116,7 +105,7 @@ module.exports = {
         ]
     },
     entry: {
-        client: entryFiles,
+        client: [ '@babel/polyfill', './src/index.js', ...resolvedMocks.entry ],
         vendor: ['react', 'react-dom', 'prop-types']
     },
     output: {
