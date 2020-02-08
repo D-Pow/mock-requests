@@ -434,7 +434,7 @@ const MockRequests = (() => {
      * the response value after the configured delay has passed.
      */
     function overwriteFetch() {
-        originalFetch = window.fetch;
+        originalFetch = window.fetch.bind(window);
 
         window.fetch = function(resource, init) {
             const isUsingRequestObject = typeof resource === typeof {};
