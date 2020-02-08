@@ -26,7 +26,7 @@ import { kitsuSearchQueryParamKey, queryParamResponseMap } from './UrlResponseMa
 export async function chooseMockBasedOnQuery(request, response, queryParamMap) {
     // queryParamMap = { [kitsuSearchQueryParamKey]: 'what the user searched' }
     const searchQuery = decodeURIComponent(queryParamMap[kitsuSearchQueryParamKey]);
-    const queryIsMocked = Object.keys(queryParamResponseMap).includes(searchQuery);
+    const queryIsMocked = searchQuery in queryParamResponseMap;
 
     if (!queryIsMocked) {
         return await MockRequests.originalFetch(getKitsuTitleSearchUrl(searchQuery)).then(res => res.json());
