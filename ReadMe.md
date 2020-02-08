@@ -15,6 +15,7 @@ never have to change your source code to use mocks ever again.
 * [Examples](#examples)
     * [Static responses](#example-static)
     * [Dynamic responses](#example-dynamic)
+    * [Login mock selections](#example-logins)
 * [Separating mocks from source](#separate-from-source)
 * [MockRequests API](#api)
 * [Final notes](#final-notes)
@@ -277,7 +278,8 @@ MockRequests.setDynamicMockUrlResponse(myApiUrl, {
 });
 ```
 
-#### Sample usage with different logins
+<a name="example-logins"></a>
+### Sample usage with different logins
 
 Finally, because the configure/setMockUrlResponse functions take in a simple URL-response mapping,
 using different mocks at different times becomes incredibly user-friendly. For example,
