@@ -1,8 +1,9 @@
 import MockRequests from 'mock-requests';
+import { kitsuTitleSearchUrl } from 'services/Urls';
 import { getKitsuTitleSearchUrl } from 'utils/Functions';
 import { kitsuSearchQueryParamKey, queryParamResponseMap } from './UrlResponseMappings';
 
-export async function chooseMockBasedOnQuery(request, response, queryParamMap) {
+async function chooseMockBasedOnQuery(request, response, queryParamMap) {
     // queryParamMap = { [kitsuSearchQueryParamKey]: 'what the user searched' }
     const searchQuery = decodeURIComponent(queryParamMap[kitsuSearchQueryParamKey]);
     const queryIsMocked = Object.keys(queryParamResponseMap).includes(searchQuery);
@@ -13,3 +14,10 @@ export async function chooseMockBasedOnQuery(request, response, queryParamMap) {
 
     return queryParamResponseMap[searchQuery];
 }
+
+export const dynamicSearchConfigFromQueries = {
+    [kitsuTitleSearchUrl]: {
+        dynamicResponseModFn: chooseMockBasedOnQuery,
+        usePathnameForAllQueries: true
+    }
+};

@@ -1,8 +1,6 @@
 import MockRequests from 'mock-requests';
-import {
-    staticUrlResponseConfig,
-    dynamicSearchConfigFromQueries
-} from './UrlResponseMappings';
+import { staticUrlResponseConfig } from './UrlResponseMappings';
+import { dynamicSearchConfigFromQueries } from './DynamicResponses';
 
 /**
  * The below two configuration methods are identical in that they map the known search

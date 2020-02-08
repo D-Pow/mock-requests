@@ -14,7 +14,6 @@ import {
     fullmetalResponse,
     attackOnTitanResponse
 } from './StaticResponses';
-import { chooseMockBasedOnQuery } from './DynamicResponses';
 
 export const kitsuSearchQueryParamKey = kitsuTitleSearchUrl.substring(kitsuTitleSearchUrl.indexOf('?') + 1, kitsuTitleSearchUrl.indexOf('='));
 
@@ -31,10 +30,3 @@ export const staticUrlResponseConfig = Object.keys(queryParamResponseMap).reduce
 
     return fullUrlConfig;
 }, {});
-
-export const dynamicSearchConfigFromQueries = {
-    [kitsuTitleSearchUrl]: {
-        dynamicResponseModFn: chooseMockBasedOnQuery,
-        usePathnameForAllQueries: true
-    }
-};
