@@ -28,9 +28,9 @@ if (useStaticMock) {
      * requests' query parameter.
      *
      * e.g.
-     *     if (searchQuery === 'naruto') {
-     *         return narutoResponse;
-     *     } else if (!(searchQuery in mockConfig)) {
+     *     if (searchQuery in mockConfig) {
+     *         return mockConfig[searchQuery];
+     *     } else {
      *         return MockRequests.originalFetch(searchUrl + searchQuery);
      *     }
      */
