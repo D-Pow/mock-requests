@@ -1,6 +1,6 @@
 import MockRequests from 'mock-requests';
 import {
-    searchMocksConfig,
+    staticUrlResponseConfig,
     dynamicSearchConfigFromQueries
 } from './UrlResponseMappings';
 
@@ -12,7 +12,7 @@ import {
 /**
  * 1. Configuring static URL-response object mappings
  */
-MockRequests.configure(searchMocksConfig);
+MockRequests.configure(staticUrlResponseConfig);
 
 /**
  * 2. Configuring dynamic URL responses, in this case using the queryParamMap to
