@@ -1,10 +1,11 @@
 import MockRequests from 'mock-requests';
-import { kitsuTitleSearchUrl } from 'services/Urls';
 import { getKitsuTitleSearchUrl } from 'utils/Functions';
 import { kitsuSearchQueryParamKey, queryParamResponseMap } from './UrlResponseMappings';
 
 /**
  * Dynamic response function used to determine what response to return based on network request.
+ * Will serve as the `mockResponseConfig.dynamicResponseModFn` in the
+ * `MockRequests.configureDynamicResponses()` call.
  *
  * Here, we use the `queryParamMap` from the requested URL to determine if the title the user
  * searched for is mocked or not.
@@ -22,7 +23,7 @@ import { kitsuSearchQueryParamKey, queryParamResponseMap } from './UrlResponseMa
  * @returns {Promise<{}>} - The response for the network request.
  *     Either the mock response (if search value is mocked) or actual fetch request (if not mocked).
  */
-async function chooseMockBasedOnQuery(request, response, queryParamMap) {
+export async function chooseMockBasedOnQuery(request, response, queryParamMap) {
     // queryParamMap = { [kitsuSearchQueryParamKey]: 'what the user searched' }
     const searchQuery = decodeURIComponent(queryParamMap[kitsuSearchQueryParamKey]);
     const queryIsMocked = Object.keys(queryParamResponseMap).includes(searchQuery);
@@ -33,10 +34,3 @@ async function chooseMockBasedOnQuery(request, response, queryParamMap) {
 
     return queryParamResponseMap[searchQuery];
 }
-
-export const dynamicSearchConfigFromQueries = {
-    [kitsuTitleSearchUrl]: {
-        dynamicResponseModFn: chooseMockBasedOnQuery,
-        usePathnameForAllQueries: true
-    }
-};
