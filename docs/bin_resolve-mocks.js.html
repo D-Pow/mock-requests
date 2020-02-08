@@ -3,7 +3,7 @@
 <head>
     
     <meta charset="utf-8">
-    <title>mock-requests - Documentation</title>
+    <title>bin/resolve-mocks.js - Documentation</title>
     
     <meta name="description" content="MockRequests will mock both XMLHttpRequest and fetch such that any requested URL will return the specified mock object instead of actually making an async request. URLs not configured will be unaffected and still trigger an async request as normal." />
     
@@ -38,146 +38,76 @@
 
 <div id="main">
     
-    <h1 class="page-title">mock-requests</h1>
+    <h1 class="page-title">bin/resolve-mocks.js</h1>
     
 
     
 
 
 
-
-<section>
-
-<header>
     
-        
-            
-        
-    
-</header>
-
-<article>
-    
-        <div class="container-overview">
-        
-            
-                <div class="description">MockRequests will mock both XMLHttpRequest and fetch such that
-any requested URL will return the specified mock object instead
-of actually making an async request. URLs not configured will
-be unaffected and still trigger an async request as normal.</div>
-            
-
-            
-                
-
-
-
-
-<dl class="details">
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="src_MockRequests.js.html">src/MockRequests.js</a>, <a href="src_MockRequests.js.html#line1">line 1</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-            
-        
-        </div>
-    
-
-    
-
-    
-
-    
-    
-    
-
-     
-
-    
-        <h3 class="subsection-title">Namespaces</h3>
-
-        <dl>
-            <dt><a href="module-mock-requests-MockRequests.html">MockRequests</a></dt>
-            <dd></dd>
-        </dl>
-    
-
-    
-
-    
-
-    
-
-    
-</article>
-
-</section>
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>#!/usr/bin/env node
+
+"use strict";
+
+const fs = require('fs');
+const path = require('path');
+
+const rootDir = path.resolve('./');
+
+function getResolvedPathAsArray(mockPath) {
+    if (typeof mockPath !== typeof '') {
+        return [];
+    }
+
+    const resolvedPath = path.resolve(rootDir, mockPath);
+    const pathExists = fs.existsSync(resolvedPath);
+
+    if (!pathExists) {
+        console.warn(resolvedPath + ' was not found and will not be configured by MockRequests.');
+    }
+
+    return pathExists ? [ resolvedPath ] : [];
+}
+
+/**
+ * @module mock-requests/bin/resolve-mocks
+ */
+
+/**
+ * @typedef {Object} ResolvedMocks
+ * @property {string[]} include - Array containing mocks/ directory; spread it in `module.rules[jsLoader].include` webpack config field
+ * @property {string[]} entry - Array containing mock entry file; spread it in `entry` webpack config field
+ */
+
+/**
+ * Returns an object containing arrays of paths to pass into the webpack `module.rules[jsLoader].include`
+ * and `entry` configuration fields. The returned arrays should be spread inside the arrays already
+ * present in those configuration fields.
+ *
+ * This will return empty arrays if `activateMocks` is false so that the user doesn't have to modify the respective
+ * webpack config fields when activating/deactivating mocks.
+ *
+ * @param {string} mocksDir - Directory containing all mock-related code. Only needed if transpiling JS code containing mocks.
+ * @param {string} mockConfigFile - Entry JS file that configures all mocks.
+ * @param {boolean} activateMocks - If mocks should be activated/injected into build or not.
+ * @returns {ResolvedMocks} - Object containing arrays of files to spread in `entry` and `include` webpack config fields
+ */
+module.exports = function resolveMocks(mocksDir, mockConfigFile, activateMocks) {
+    if (activateMocks) {
+        console.log('Network mocks activated by MockRequests\n');
+    }
+
+    return {
+        include: activateMocks ? getResolvedPathAsArray(mocksDir) : [],
+        entry: activateMocks ? getResolvedPathAsArray(mockConfigFile) : []
+    };
+};
+</code></pre>
+        </article>
+    </section>
 
 
 
