@@ -18,12 +18,6 @@ import { chooseMockBasedOnQuery } from './DynamicResponses';
 
 export const kitsuSearchQueryParamKey = kitsuTitleSearchUrl.substring(kitsuTitleSearchUrl.indexOf('?') + 1, kitsuTitleSearchUrl.indexOf('='));
 
-const kimiNoNaWaUrl = getKitsuTitleSearchUrl(kimiNoNaWaSearchQuery);
-const narutoUrl = getKitsuTitleSearchUrl(narutoSearchQuery);
-const bleachUrl = getKitsuTitleSearchUrl(bleachSearchQuery);
-const fullmetalUrl = getKitsuTitleSearchUrl(fullmetalSearchQuery);
-const attackOnTitanUrl = getKitsuTitleSearchUrl(attackOnTitanSearchQuery);
-
 export const queryParamResponseMap = {
     [kimiNoNaWaSearchQuery]: kimiNoNaWaResponse,
     [narutoSearchQuery]: narutoResponse,
@@ -32,13 +26,11 @@ export const queryParamResponseMap = {
     [attackOnTitanSearchQuery]: attackOnTitanResponse
 };
 
-export const staticUrlResponseConfig = {
-    [kimiNoNaWaUrl]: kimiNoNaWaResponse,
-    [narutoUrl]: narutoResponse,
-    [bleachUrl]: bleachResponse,
-    [fullmetalUrl]: fullmetalResponse,
-    [attackOnTitanUrl]: attackOnTitanResponse
-};
+export const staticUrlResponseConfig = Object.keys(queryParamResponseMap).reduce((fullUrlConfig, searchQuery) => {
+    fullUrlConfig[getKitsuTitleSearchUrl(searchQuery)] = queryParamResponseMap[searchQuery];
+
+    return fullUrlConfig;
+}, {});
 
 export const dynamicSearchConfigFromQueries = {
     [kitsuTitleSearchUrl]: {
