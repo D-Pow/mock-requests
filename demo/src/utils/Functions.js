@@ -1,4 +1,4 @@
-import { kitsuTitleSearchUrl, myAnimeListSearchUrl } from 'utils/Constants';
+import { kitsuTitleSearchUrl, myAnimeListSearchUrl } from 'services/Urls';
 
 export const getSearchUrl = (domainUrl, searchText) => domainUrl + encodeURIComponent(searchText);
 

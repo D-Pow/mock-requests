@@ -1,7 +1,7 @@
 import MockRequests from 'mock-requests';
+import { kitsuTitleSearchUrl } from 'services/Urls';
 import { getKitsuTitleSearchUrl } from 'utils/Functions';
 import {
-    kitsuTitleSearchUrl,
     kimiNoNaWaSearchQuery,
     narutoSearchQuery,
     bleachSearchQuery,

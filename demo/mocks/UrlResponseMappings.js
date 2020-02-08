@@ -1,4 +1,4 @@
-import { kitsuTitleSearchUrl } from 'utils/Constants';
+import { kitsuTitleSearchUrl } from 'services/Urls';
 import {
     kimiNoNaWaUrl,
     narutoUrl,
