@@ -50,7 +50,7 @@ order to mimic back-end alterations of data.
 * Query parameter parsing so you can **mock all URLs with the same pathname** using the same dynamic response function.
 * Customizable **mock response delays** to mimic natural network resolution times.
 * **Mix mocks with real API calls** so you can use both functional and non-functional endpoints simultaneously.
-* Configurable outside the src folder such that **mock code isn't bundled with production code**.
+* Simple configuration to **split mock code from production code** and/or **activate mocks via terminal** (e.g. `MOCK=true npm start`).
 * No confusing interfaces or multi-step procedures to getting started. Simply **configure it once** and you're good to go.
 This becomes extremely useful if you want to **switch app-wide mocks between different logins** when developing.
 * **Greatly simplify API testing**. Just define `fetch` and/or `XMLHttpRequest` in a test setup file and configure
