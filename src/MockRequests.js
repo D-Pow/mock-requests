@@ -52,6 +52,16 @@ const MockRequests = (() => {
      */
     let originalFetch;
 
+    const globalScope = (
+        typeof window !== 'undefined'
+            ? window
+            : typeof self !== 'undefined'
+                ? self
+                : typeof global !== 'undefined'
+                    ? global
+                    : {}
+    );
+
     /**
      * Initialize the mock with response objects.
      *
@@ -434,9 +444,9 @@ const MockRequests = (() => {
      * the response value after the configured delay has passed.
      */
     function overwriteFetch() {
-        originalFetch = window.fetch.bind(window);
+        originalFetch = globalScope.fetch.bind(globalScope);
 
-        window.fetch = function(resource, init) {
+        globalScope.fetch = function(resource, init) {
             const isUsingRequestObject = typeof resource === typeof {};
             const url = isUsingRequestObject ? resource.url : resource;
 
@@ -471,11 +481,11 @@ const MockRequests = (() => {
         }
     }
 
-    if (window.XMLHttpRequest) {
+    if (globalScope.XMLHttpRequest) {
         overwriteXmlHttpRequestObject();
     }
 
-    if (window.fetch) {
+    if (globalScope.fetch) {
         overwriteFetch();
     }
 
