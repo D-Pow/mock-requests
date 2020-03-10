@@ -125,5 +125,19 @@ describe('Global field variabilities', () => {
 
             await testMockRequestsWorks(MockRequests);
         });
+
+        it('should work with `require()`', async () => {
+            global.global = global.window;
+            Object.defineProperty(global, 'window', {
+                get() {
+                    return undefined;
+                }
+            });
+
+            const module = require('../src/MockRequests');
+            const MockRequests = module.default;
+
+            await testMockRequestsWorks(MockRequests);
+        });
     });
 });
