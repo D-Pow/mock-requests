@@ -97,5 +97,37 @@ describe('Global field variabilities', () => {
             await testStaticResponses(MockRequests);
             await testDynamicResponses(MockRequests);
         }
+
+        it('should work if global scope is "self"', async () => {
+            global.self = global.window;
+            Object.defineProperty(global, 'window', {
+                get() {
+                    return undefined;
+                }
+            });
+
+            const module = await import('../src/MockRequests');
+            const MockRequests = module.default;
+
+            await testMockRequestsWorks(MockRequests);
+        });
+
+        it('should work if global scope is "global"', async () => {
+            global.global = global.window;
+            Object.defineProperty(global, 'window', {
+                get() {
+                    return undefined;
+                }
+            });
+
+            const module = await import('../src/MockRequests');
+            const MockRequests = module.default;
+
+            await testMockRequestsWorks(MockRequests);
+        });
+
+        it('should not do anything if no global scope', async () => {
+            // TODO
+        });
     });
 });
