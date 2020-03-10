@@ -125,9 +125,5 @@ describe('Global field variabilities', () => {
 
             await testMockRequestsWorks(MockRequests);
         });
-
-        it('should not do anything if no global scope', async () => {
-            // TODO
-        });
     });
 });

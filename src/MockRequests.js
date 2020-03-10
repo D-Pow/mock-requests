@@ -57,9 +57,7 @@ const MockRequests = (() => {
             ? window
             : typeof self !== 'undefined'
                 ? self
-                : typeof global !== 'undefined'
-                    ? global
-                    : {}
+                : global
     );
 
     /**
