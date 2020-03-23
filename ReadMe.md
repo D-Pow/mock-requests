@@ -490,7 +490,7 @@ cases where the browser doesn't support them).
 <a name="final-notes"></a>
 ## Final notes
 
-1) This mocks the usage of `XMLHttpRequest` and `fetch` such that the response is always valid.
+1. This mocks the usage of `XMLHttpRequest` and `fetch` such that the response is always valid.
 This means that the instance attributes below are always set. If you want to change any of these, feel free to do
 so within `xhr.onreadystatechange`/`fetch().then(fn)`.
 
@@ -515,15 +515,15 @@ so within `xhr.onreadystatechange`/`fetch().then(fn)`.
     response.type = 'basic';
     ```
 
-2) This library also works with other members of the [Fetch API](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API#Fetch_Interfaces),
+2. This library also works with other members of the [Fetch API](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API#Fetch_Interfaces),
 so you can alternatively use an instance of the `Request` class in your `fetch()` calls, e.g. `fetch(new Request(url, options))`.
 
-3) You may import either the `MockRequests` default export or any of its individual fields, e.g. <br />
+3. You may import either the `MockRequests` default export or any of its individual fields, e.g. <br />
 `import MockRequests, { setMockUrlResponse } from 'mock-requests';`
 
-4) This works with any environment that uses either `fetch` or `XMLHttpRequest`, regardless of if said
-environment is a browser, web/service worker, or a Node script. As long as they are defined natively or
-by polyfill, any usage of `fetch`/`XMLHttpRequest` request to a URL configured by `MockRequests` will be
+4. This works with any environment that uses either `fetch` or `XMLHttpRequest`, regardless of if said
+environment is a browser, web/service worker, or a Node script. As long as they are defined (natively or
+by polyfill), any usage of `fetch`/`XMLHttpRequest` request to a URL configured by `MockRequests` will be
 mocked appropriately. For example,
 
     ```javascript
