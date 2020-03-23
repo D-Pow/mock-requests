@@ -17,6 +17,8 @@ never have to change your source code to use mocks ever again.
     * [Dynamic responses](#example-dynamic)
     * [Login mock selections](#example-logins)
 * [Separating mocks from source](#separate-from-source)
+    * [Simple instructions](#simple-instructions)
+    * [Activating via terminal](#activating-via-terminal)
 * [MockRequests API](#api)
 * [Final notes](#final-notes)
 * [License](#license)
@@ -351,11 +353,30 @@ MockRequests.configureDynamicResponses(staticDynamicMerged.bob);
 <a name="separate-from-source"></a>
 ## Separating mocks from source code
 
-To avoid packaging `MockRequests` and mock-related code along with your production-bound source code, you can simply
-move your mock files to a separate folder and add a small modification to your webpack config object's `entry` array.
-Optionally, you can also add a similar modification to the `module.rules[jsRule].include` array, depending on your
-application's setup. Luckily, `MockRequests` comes bundled with a node script to make this easier. For example, if we have
-the setup:
+### Simple instructions
+
+In the simplest, bare-bones example, you could just import `MockRequests` into one of your entry JavaScript files
+(src/index.js, src/App.js, or similar) and configure your mocks there. As long as MockRequests was installed as a
+devDependency and you don't commit this code, it will never enter production.
+
+```javascript
+// src/index.js for React project
+import React from 'react';
+import ReactDOM from 'react-dom';
+import App from '/components/App';
+
+import MockRequests from 'mock-requests';
+
+MockRequests.configure(/* ... */);
+
+ReactDOM.render(<App />, document.getElementById('root'));
+```
+
+However, for larger apps with many network calls or for sharing mocks with other team members, typing and removing
+mocks can get quite cumbersome. To simplify this, you could simply move mock-related code to a separate `mocks/`
+folder and only import them when needed. This way, you can commit the mock code to your repo but, just like
+test code, it doesn't get deployed into production since it isn't in the src/ folder.
+For example, if we have the setup:
 
 ```
 MyApp
@@ -371,6 +392,7 @@ MyApp
 where `MockConfig.js` does all the `mock-requests` configuration, e.g.
 
 ```javascript
+// mocks/MockConfig.js
 import MockRequests from 'mock-requests';
 import { myStaticApiUrl, myDynamicApiUrl } from '../src/services/Urls.js';
 // Imports from mocks/ directory
@@ -381,27 +403,36 @@ MockRequests.setMockUrlResponse(myStaticApiUrl, myStaticApiResponse);
 MockRequests.setDynamicMockUrlResponse(myDynamicApiUrl, myDynamicApiConfig);
 ```
 
-and your original `webpack.config.js` looked something similar to:
+then in your src/index.js file, just import the MockConfig.js file to activate all mocks, and don't commit that
+code change to keep all of it out of production:
 
 ```javascript
-module.exports = {
-    entry: [ '@babel/polyfill', './src/index.js' ],
-    module: {
-        rules: [
-            {
-                test: /\.jsx?$/,
-                include: [ /src/ ],
-                exclude: [ /node_modules/ ],
-                loader: 'babel-loader'
-            }
-        ]
-    }
-}
+import React from 'react';
+import ReactDOM from 'react-dom';
+import App from '/components/App';
+
+import '../mocks/MockConfig';
+
+ReactDOM.render(<App />, document.getElementById('root'));
 ```
 
-then all you would need to add to your `webpack.config.js` file would be something akin to:
+### Activating via Terminal
+
+If you prefer not having to change source code to activate/deactivate mocks, then the guide below will explain how to
+activate mocks via terminal, e.g. `MOCK=true npm start`.
+
+1. Import the function from the built-in `mock-requests/bin/resolve-mocks.js` script to handle activating/deactivating
+mocks for you.
+2. Pass in the mocks/ directory, the MockConfig.js entry file, and a boolean that determines if mocks should be
+active or not (e.g. `process.env.MOCK === 'true'`). Returns a `resolvedMocks` object with `entry` and `include`
+arrays.
+3. Spread the `resolvedMocks.entry` array in your webpack config's `entry` field.
+4. (Optional) Spread the `resolvedMocks.include` array in your webpack config's `include` field if you need the
+mock files to be transformed by your JS-loader to run your app on an older browser.
 
 ```javascript
+// webpack.config.js
+
 // Returns an object containing arrays to spread in webpack's `include` and `entry` fields.
 // resolveMocks(mockDirectory, mockEntryFile, activateMocksBoolean)
 const resolveMocks = require('mock-requests/bin/resolve-mocks');
@@ -424,16 +455,14 @@ module.exports = {
 
 and run using `MOCK=true npm start`.
 
-Doing so will have the net effect of adding the `MockConfig.js` file as an entry point to your app so that it's
+Doing so will allow `MockRequests` to automatically decide whether the mock directory/file should be resolved.
+It will return empty arrays if the `activateMocksBoolean` is false or arrays filled with resolved paths if true.
+This way, your MockConfig.js file will be added as an entry point to your app only if desired and will be
 loaded along with the rest of your code. Optionally, if you're using the latest JavaScript features in your
 mock configuration files but want to run them on browsers that lack support, then you'll need those mock files transpiled
 by your loader as well; in that case, add the respective spread to the `include` field as well.
 
-Note that your webpack configuration won't have to change between activating and deactivating your mocks. The third
-parameter to `resolveMocks()` will determine if the mock files should be included or not (in this example, the condition
-is true only if `MOCK=true` is passed as a node environment variable when running `npm start`). If the argument passed
-resolves to a falsy value, then empty arrays will be returned, so no mock code will be injected into the built package.
-This way, all mock-related code will be prevented from going into production.
+In this way, you won't have to change source code between activating and deactivating mocks.
 
 <a name="api"></a>
 ## MockRequests API
