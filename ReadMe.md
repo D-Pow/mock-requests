@@ -353,6 +353,7 @@ MockRequests.configureDynamicResponses(staticDynamicMerged.bob);
 <a name="separate-from-source"></a>
 ## Separating mocks from source code
 
+<a name="simple-instructions"></a>
 ### Simple instructions
 
 In the simplest, bare-bones example, you could just import `MockRequests` into one of your entry JavaScript files
@@ -416,6 +417,7 @@ import '../mocks/MockConfig';
 ReactDOM.render(<App />, document.getElementById('root'));
 ```
 
+<a name="activating-via-terminal"></a>
 ### Activating via Terminal
 
 If you prefer not having to change source code to activate/deactivate mocks, then the guide below will explain how to
