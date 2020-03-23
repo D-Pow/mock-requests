@@ -105,7 +105,7 @@ module.exports = {
         ]
     },
     entry: {
-        client: [ '@babel/polyfill', './src/index.js', ...resolvedMocks.entry ],
+        client: [ 'core-js', 'isomorphic-fetch', './src/index.js', ...resolvedMocks.entry ],
         vendor: ['react', 'react-dom', 'prop-types']
     },
     output: {
