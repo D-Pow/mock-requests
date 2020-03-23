@@ -81,7 +81,12 @@ never have to change your source code to use mocks ever again.</p>
 <li><a href="#example-logins">Login mock selections</a></li>
 </ul>
 </li>
-<li><a href="#separate-from-source">Separating mocks from source</a></li>
+<li><a href="#separate-from-source">Separating mocks from source</a>
+<ul>
+<li><a href="#simple-instructions">Simple instructions</a></li>
+<li><a href="#activating-via-terminal">Activating via terminal</a></li>
+</ul>
+</li>
 <li><a href="#api">MockRequests API</a></li>
 <li><a href="#final-notes">Final notes</a></li>
 <li><a href="#license">License</a></li>
@@ -114,12 +119,14 @@ order to mimic back-end alterations of data.</li>
 <li>Query parameter parsing so you can <strong>mock all URLs with the same pathname</strong> using the same dynamic response function.</li>
 <li>Customizable <strong>mock response delays</strong> to mimic natural network resolution times.</li>
 <li><strong>Mix mocks with real API calls</strong> so you can use both functional and non-functional endpoints simultaneously.</li>
-<li>Configurable outside the src folder such that <strong>mock code isn't bundled with production code</strong>.</li>
+<li>Simple configuration to <strong>split mock code from production code</strong> and/or <strong>activate mocks via terminal</strong> (e.g. <code>MOCK=true npm start</code>).</li>
 <li>No confusing interfaces or multi-step procedures to getting started. Simply <strong>configure it once</strong> and you're good to go.
 This becomes extremely useful if you want to <strong>switch app-wide mocks between different logins</strong> when developing.</li>
 <li><strong>Greatly simplify API testing</strong>. Just define <code>fetch</code> and/or <code>XMLHttpRequest</code> in a test setup file and configure
 <code>MockRequests</code> with the responses you expect. It will handle all the heavy-lifting of mocking network responses for you
 so you don't have to repetitively use e.g. <code>fetch = jest.fn()</code>.</li>
+<li>Compatible with all JavaScript environments, including back-end Node scripts, as long as either <code>fetch</code> or
+<code>XMLHttpRequest</code> are defined and used in that environment (natively or by polyfill).</li>
 </ul>
 <p><a name="installation"></a></p>
 <h2>Installation</h2>
@@ -374,11 +381,27 @@ MockRequests.configureDynamicResponses(staticDynamicMerged.bob);
 </code></pre>
 <p><a name="separate-from-source"></a></p>
 <h2>Separating mocks from source code</h2>
-<p>To avoid packaging <code>MockRequests</code> and mock-related code along with your production-bound source code, you can simply
-move your mock files to a separate folder and add a small modification to your webpack config object's <code>entry</code> array.
-Optionally, you can also add a similar modification to the <code>module.rules[jsRule].include</code> array, depending on your
-application's setup. Luckily, <code>MockRequests</code> comes bundled with a node script to make this easier. For example, if we have
-the setup:</p>
+<p><a name="simple-instructions"></a></p>
+<h3>Simple instructions</h3>
+<p>In the simplest, bare-bones example, you could just import <code>MockRequests</code> into one of your entry JavaScript files
+(src/index.js, src/App.js, or similar) and configure your mocks there. As long as MockRequests was installed as a
+devDependency and you don't commit this code, it will never enter production.</p>
+<pre class="prettyprint source lang-javascript"><code>// src/index.js for React project
+import React from 'react';
+import ReactDOM from 'react-dom';
+import App from '/components/App';
+
+import MockRequests from 'mock-requests';
+
+MockRequests.configure(/* ... */);
+
+ReactDOM.render(&lt;App />, document.getElementById('root'));
+</code></pre>
+<p>However, for larger apps with many network calls or for sharing mocks with other team members, typing and removing
+mocks can get quite cumbersome. To simplify this, you could simply move mock-related code to a separate <code>mocks/</code>
+folder and only import them when needed. This way, you can commit the mock code to your repo but, just like
+test code, it doesn't get deployed into production since it isn't in the src/ folder.
+For example, if we have the setup:</p>
 <pre class="prettyprint source"><code>MyApp
 ├─── src/
 |   ├─── (... source code)
@@ -389,7 +412,8 @@ the setup:</p>
 |   ├─── (... other mock files imported by MockConfig.js)
 </code></pre>
 <p>where <code>MockConfig.js</code> does all the <code>mock-requests</code> configuration, e.g.</p>
-<pre class="prettyprint source lang-javascript"><code>import MockRequests from 'mock-requests';
+<pre class="prettyprint source lang-javascript"><code>// mocks/MockConfig.js
+import MockRequests from 'mock-requests';
 import { myStaticApiUrl, myDynamicApiUrl } from '../src/services/Urls.js';
 // Imports from mocks/ directory
 import { myStaticApiResponse } from './StaticResponses';
@@ -398,23 +422,33 @@ import { myDynamicApiConfig } from './DynamicResponseConfigs';
 MockRequests.setMockUrlResponse(myStaticApiUrl, myStaticApiResponse);
 MockRequests.setDynamicMockUrlResponse(myDynamicApiUrl, myDynamicApiConfig);
 </code></pre>
-<p>and your original <code>webpack.config.js</code> looked something similar to:</p>
-<pre class="prettyprint source lang-javascript"><code>module.exports = {
-    entry: [ '@babel/polyfill', './src/index.js' ],
-    module: {
-        rules: [
-            {
-                test: /\.jsx?$/,
-                include: [ /src/ ],
-                exclude: [ /node_modules/ ],
-                loader: 'babel-loader'
-            }
-        ]
-    }
-}
+<p>then in your src/index.js file, just import the MockConfig.js file to activate all mocks, and don't commit that
+code change to keep all of it out of production:</p>
+<pre class="prettyprint source lang-javascript"><code>import React from 'react';
+import ReactDOM from 'react-dom';
+import App from '/components/App';
+
+import '../mocks/MockConfig';
+
+ReactDOM.render(&lt;App />, document.getElementById('root'));
 </code></pre>
-<p>then all you would need to add to your <code>webpack.config.js</code> file would be something akin to:</p>
-<pre class="prettyprint source lang-javascript"><code>// Returns an object containing arrays to spread in webpack's `include` and `entry` fields.
+<p><a name="activating-via-terminal"></a></p>
+<h3>Activating via Terminal</h3>
+<p>If you prefer not having to change source code to activate/deactivate mocks, then the guide below will explain how to
+activate mocks via terminal, e.g. <code>MOCK=true npm start</code>.</p>
+<ol>
+<li>Import the function from the built-in <code>mock-requests/bin/resolve-mocks.js</code> script to handle activating/deactivating
+mocks for you.</li>
+<li>Pass in the mocks/ directory, the MockConfig.js entry file, and a boolean that determines if mocks should be
+active or not (e.g. <code>process.env.MOCK === 'true'</code>). Returns a <code>resolvedMocks</code> object with <code>entry</code> and <code>include</code>
+arrays.</li>
+<li>Spread the <code>resolvedMocks.entry</code> array in your webpack config's <code>entry</code> field.</li>
+<li>(Optional) Spread the <code>resolvedMocks.include</code> array in your webpack config's <code>include</code> field if you need the
+mock files to be transformed by your JS-loader to run your app on an older browser.</li>
+</ol>
+<pre class="prettyprint source lang-javascript"><code>// webpack.config.js
+
+// Returns an object containing arrays to spread in webpack's `include` and `entry` fields.
 // resolveMocks(mockDirectory, mockEntryFile, activateMocksBoolean)
 const resolveMocks = require('mock-requests/bin/resolve-mocks');
 const resolvedMocks = resolveMocks('mocks', 'mocks/MockConfig.js', process.env.MOCK === 'true');
@@ -434,15 +468,13 @@ module.exports = {
 }
 </code></pre>
 <p>and run using <code>MOCK=true npm start</code>.</p>
-<p>Doing so will have the net effect of adding the <code>MockConfig.js</code> file as an entry point to your app so that it's
+<p>Doing so will allow <code>MockRequests</code> to automatically decide whether the mock directory/file should be resolved.
+It will return empty arrays if the <code>activateMocksBoolean</code> is false or arrays filled with resolved paths if true.
+This way, your MockConfig.js file will be added as an entry point to your app only if desired and will be
 loaded along with the rest of your code. Optionally, if you're using the latest JavaScript features in your
 mock configuration files but want to run them on browsers that lack support, then you'll need those mock files transpiled
 by your loader as well; in that case, add the respective spread to the <code>include</code> field as well.</p>
-<p>Note that your webpack configuration won't have to change between activating and deactivating your mocks. The third
-parameter to <code>resolveMocks()</code> will determine if the mock files should be included or not (in this example, the condition
-is true only if <code>MOCK=true</code> is passed as a node environment variable when running <code>npm start</code>). If the argument passed
-resolves to a falsy value, then empty arrays will be returned, so no mock code will be injected into the built package.
-This way, all mock-related code will be prevented from going into production.</p>
+<p>In this way, you won't have to change source code between activating and deactivating mocks.</p>
 <p><a name="api"></a></p>
 <h2>MockRequests API</h2>
 <p>In order to make mocking your network calls simpler, config functions have been added to allow for
@@ -494,6 +526,17 @@ so you can alternatively use an instance of the <code>Request</code> class in yo
 <li>
 <p>You may import either the <code>MockRequests</code> default export or any of its individual fields, e.g. <br />
 <code>import MockRequests, { setMockUrlResponse } from 'mock-requests';</code></p>
+</li>
+<li>
+<p>This works with any environment that uses either <code>fetch</code> or <code>XMLHttpRequest</code>, regardless of if said
+environment is a browser, web/service worker, or a Node script. As long as they are defined (natively or
+by polyfill), any usage of <code>fetch</code>/<code>XMLHttpRequest</code> request to a URL configured by <code>MockRequests</code> will be
+mocked appropriately. For example,</p>
+<pre class="prettyprint source lang-javascript"><code>require('isomorphic-fetch');
+const MockRequests = require('mock-requests');
+
+// ... use fetch and MockRequests as normal
+</code></pre>
 </li>
 </ol>
 <p><a name="license"></a></p>
