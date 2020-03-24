@@ -33,7 +33,7 @@
     "html-webpack-plugin": "^3.2.0",
     "isomorphic-fetch": "^2.2.1",
     "mini-css-extract-plugin": "^0.6.0",
-    "mock-requests": "^1.1.13",
+    "mock-requests": "^1.2.0",
     "node-sass": "^4.13.1",
     "postcss-loader": "^3.0.0",
     "postcss-preset-env": "^6.7.0",
