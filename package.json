@@ -41,7 +41,8 @@
       "<rootDir>/config/jest.config.js"
     ],
     "modulePathIgnorePatterns": [
-      "<rootDir>/dist"
+      "<rootDir>/dist",
+      "<rootDir>/demo"
     ]
   },
   "keywords": [
