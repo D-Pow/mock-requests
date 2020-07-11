@@ -40,13 +40,13 @@
     "jest": "^25.3.0",
     "mini-css-extract-plugin": "^0.6.0",
     "mock-requests": "^1.2.0",
-    "node-sass": "^4.13.1",
+    "node-sass": "^4.14.1",
     "postcss-loader": "^3.0.0",
     "postcss-preset-env": "^6.7.0",
     "sass-loader": "^7.3.1",
     "webpack": "^4.29.6",
     "webpack-cli": "^3.3.0",
-    "webpack-dev-server": "^3.3.1"
+    "webpack-dev-server": "^3.11.0"
   },
   "jest": {
     "setupFiles": [
