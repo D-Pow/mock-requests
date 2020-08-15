@@ -42,6 +42,7 @@ function SearchBar(props) {
                         <button className={'btn btn-outline-secondary remove-focus-highlight'} onClick={() => props.handleSubmit()}>
                             {renderedDisplay}
                         </button>
+                        {/* only for demo, would not likely be done in normal apps */}
                         {process.env.MOCK && (
                             <React.Fragment>
                                 <button

@@ -13,6 +13,7 @@ import {
 
 let mockedSearchQueries = [];
 
+// only for demo, would not likely be done in normal apps
 if (process.env.MOCK === 'true') {
     mockedSearchQueries = [
         kimiNoNaWaSearchQuery,
