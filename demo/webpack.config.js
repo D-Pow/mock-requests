@@ -133,12 +133,14 @@ module.exports = {
             filename: `static/css/[name].[contenthash:8].css`,
             chunkFilename: `static/css/[name].[contenthash:8].chunk.css`
         }),
-        new CopyWebpackPlugin([
-            {
-                from: 'src/assets/favicon.ico',
-                to: 'static/assets/[name].[ext]'
-            }
-        ])
+        new CopyWebpackPlugin({
+            patterns: [
+                {
+                    from: 'src/assets/',
+                    to: 'static/assets/'
+                }
+            ]
+        })
     ],
     optimization: {
         splitChunks: {
