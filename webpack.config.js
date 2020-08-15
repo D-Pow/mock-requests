@@ -23,28 +23,21 @@ module.exports = {
         ]
     },
     plugins: [
-        new CopyWebpackPlugin([
-            {
-                from: 'typings/MockRequests.d.ts',
-                to: 'index.d.[ext]'
-            },
-            {
-                from: 'bin',
-                to: 'bin'
-            },
-            {
-                from: 'ReadMe.md',
-                to: '[name].[ext]'
-            },
-            {
-                from: 'package.json',
-                to: '[name].[ext]'
-            },
-            {
-                from: 'LICENSE.md',
-                to: '[name].[ext]'
-            }
-        ])
+        new CopyWebpackPlugin({
+            patterns: [
+                {
+                    from: 'typings/MockRequests.d.ts',
+                    to: 'index.d.[ext]'
+                },
+                {
+                    from: 'bin',
+                    to: 'bin'
+                },
+                'ReadMe.md',
+                'package.json',
+                'LICENSE.md'
+            ]
+        })
     ],
     devServer: {
         port: 3000,

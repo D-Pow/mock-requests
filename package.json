@@ -28,7 +28,7 @@
     "@babel/preset-env": "^7.5.5",
     "@babel/runtime": "^7.7.7",
     "babel-loader": "^8.0.6",
-    "copy-webpack-plugin": "^5.1.1",
+    "copy-webpack-plugin": "^6.0.3",
     "coveralls": "^3.0.6",
     "docdash": "^1.1.1",
     "jest": "^25.1.0",
