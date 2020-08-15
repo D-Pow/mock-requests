@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import Anchor from 'ui/Anchor';
 import { getMyAnimeListSearchUrl } from 'utils/Functions';
+import { imageIsMocked, mockedImageDataMappings } from '../../mocks/ImageDataMappings';
 
 function KitsuResultCard({ kitsuResult }) {
     if (!kitsuResult || !kitsuResult.attributes) {
@@ -18,10 +19,17 @@ function KitsuResultCard({ kitsuResult }) {
         }
     } = kitsuResult.attributes;
 
+    // only for demo, would not likely be done in normal apps.
+    // This *should* be done using `fetch(small).then(setImgSrcToResponse)`
+    // but Kitsu doesn't allow cross-origin fetch requests.
+    const imgSrc = (process.env.MOCK && imageIsMocked(small))
+        ? mockedImageDataMappings[small]
+        : small;
+
     return (
         <React.Fragment>
             <Anchor href={getMyAnimeListSearchUrl(canonicalTitle)}>
-                <img className={'align-self-center img-thumbnail'} src={small} alt={canonicalTitle} />
+                <img className={'align-self-center img-thumbnail'} src={imgSrc} alt={canonicalTitle} />
             </Anchor>
             <div className={'media-body align-self-center ml-2 mt-2'}>
                 <h5>

@@ -2,6 +2,7 @@ import MockRequests from 'mock-requests';
 import { kitsuTitleSearchUrl } from 'services/Urls';
 import { staticUrlResponseConfig } from './UrlResponseMappings';
 import { chooseMockBasedOnQuery } from './DynamicResponses';
+import { mockedImageDataMappings } from './ImageDataMappings';
 
 /**
  * The below two configuration methods are identical in that they map the known search
@@ -46,3 +47,9 @@ if (useStaticMock) {
         }
     });
 }
+
+/**
+ * Regardless of which method is used above, we can append more mocks without overwriting
+ * the above configuration by setting `overwritePreviousConfig` to false.
+ */
+MockRequests.configure(mockedImageDataMappings, false);
