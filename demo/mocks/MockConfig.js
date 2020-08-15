@@ -33,6 +33,11 @@ if (useStaticMock) {
      *     } else {
      *         return MockRequests.originalFetch(searchUrl + searchQuery);
      *     }
+     *
+     * Note that `chooseMockBasedOnQuery(request, response, queryParamMap)` will call
+     * `MockRequests.originalFetch()` if the query parameter isn't mocked.
+     * This allows mocks to be mixed with actual network calls through your own
+     * custom logic.
      */
     MockRequests.configureDynamicResponses({
         [kitsuTitleSearchUrl]: {
