@@ -7,6 +7,10 @@
 Mocks network requests with desired static and dynamic responses automatically so you
 never have to change your source code to use mocks ever again.
 
+#### Backed and Used by:
+
+* [<img src="https://cdn2.etrade.net/1/17092613100.0/aempros/content/dam/etrade/retail/en_US/images/global/logos/etrade-logo-rgb-144x22.svg" alt="E-Trade" />](https://us.etrade.com)
+
 ## Contents
 
 * [Features](#features)
