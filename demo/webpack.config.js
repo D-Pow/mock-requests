@@ -51,10 +51,7 @@ module.exports = {
                 test: sassRegex,
                 use: [
                     {
-                        loader: MiniCssExtractPlugin.loader,
-                        options: {
-                            hmr: process.env.NODE_ENV === 'development',
-                        }
+                        loader: MiniCssExtractPlugin.loader
                     },
                     'css-loader',
                     {
@@ -70,10 +67,7 @@ module.exports = {
                 test: cssRegex,
                 use: [
                     {
-                        loader: MiniCssExtractPlugin.loader,
-                        options: {
-                            hmr: process.env.NODE_ENV === 'development',
-                        }
+                        loader: MiniCssExtractPlugin.loader
                     },
                     'css-loader',
                     {
@@ -90,7 +84,7 @@ module.exports = {
                     {
                         loader: 'file-loader',
                         options: {
-                            name: `static/assets/[name]-[hash:8].[ext]`
+                            name: `static/assets/[name]-[contenthash:8].[ext]`
                         }
                     }
                 ]
@@ -110,8 +104,8 @@ module.exports = {
     },
     output: {
         path: path.resolve(__dirname, outputPath),
-        filename: `static/js/[name].[hash:8].bundle.js`,
-        chunkFilename: `static/js/[name].[hash:8].chunk.js`
+        filename: `static/js/[name].[contenthash:8].bundle.js`,
+        chunkFilename: `static/js/[name].[contenthash:8].chunk.js`
     },
     devServer: {
         port: 3000,
@@ -147,7 +141,7 @@ module.exports = {
             cacheGroups: {
                 vendor: {
                     test: /[\\/]node_modules[\\/]/,
-                    name: 'vendor',
+                    name: 'vendor-chunk',
                     chunks: 'all'
                 }
             },
