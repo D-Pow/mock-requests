@@ -10,7 +10,16 @@ module.exports = {
         filename: '[name].js',
         library: 'MockRequests',
         libraryTarget: 'umd',
-        globalObject: 'this'
+        globalObject: 'this',
+        environment: {
+            arrowFunction: false,
+            bigIntLiteral: false,
+            const: false,
+            destructuring: false,
+            dynamicImport: false,
+            forOf: false,
+            module: false
+        }
     },
     module: {
         rules: [
