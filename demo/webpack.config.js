@@ -105,7 +105,16 @@ module.exports = {
     output: {
         path: path.resolve(__dirname, outputPath),
         filename: `static/js/[name].[contenthash:8].bundle.js`,
-        chunkFilename: `static/js/[name].[contenthash:8].chunk.js`
+        chunkFilename: `static/js/[name].[contenthash:8].chunk.js`,
+        environment: {
+            arrowFunction: false,
+            bigIntLiteral: false,
+            const: false,
+            destructuring: false,
+            dynamicImport: false,
+            forOf: false,
+            module: false
+        }
     },
     devServer: {
         port: 3000,
