@@ -41,12 +41,12 @@ class MockRequestsWebpackPlugin {
             return;
         }
 
-        try {
-            console.log('Network mocks activated by mock-requests.\n');
+        console.log('Network mocks activated by mock-requests.\n');
 
-            const rules = compiler.options.module.rules;
+        const rules = compiler.options.module.rules;
 
-            compiler.hooks.entryOption.tap(this.constructor.name, (projectRootPath, entry) => {
+        compiler.hooks.entryOption.tap(this.constructor.name, (projectRootPath, entry) => {
+            try {
                 const firstEntryName = Object.keys(entry)[0];
                 const firstEntryList = entry[firstEntryName].import;
                 const mockDirAbsPath = this.getAbsPath(projectRootPath);
@@ -88,11 +88,11 @@ class MockRequestsWebpackPlugin {
                         );
                     }
                 }
-            });
-        } catch (e) {
-            console.error(this.pluginName, 'has only been verified for webpack@>=5. Try upgrading to fix the apparent issues');
-            console.error('Error:', e);
-        }
+            } catch (e) {
+                console.error(this.pluginName, 'has only been verified for webpack@>=5. Try upgrading to fix the apparent issues');
+                console.error('Error:', e);
+            }
+        });
     }
 }
 
