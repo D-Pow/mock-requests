@@ -34,45 +34,50 @@ class MockRequestsWebpackPlugin {
             return;
         }
 
-        console.log('Network mocks activated by mock-requests.\n');
+        try {
+            console.log('Network mocks activated by mock-requests.\n');
 
-        const rules = compiler.options.module.rules;
+            const rules = compiler.options.module.rules;
 
-        compiler.hooks.entryOption.tap(this.constructor.name, (projectRootPath, entry) => {
-            const firstEntryName = Object.keys(entry)[0];
-            const firstEntryList = entry[firstEntryName].import;
-            const mockDirAbsPath = this.getAbsPath(projectRootPath);
-            const mockEntryAbsPath = this.getAbsPath(projectRootPath, true);
+            compiler.hooks.entryOption.tap(this.constructor.name, (projectRootPath, entry) => {
+                const firstEntryName = Object.keys(entry)[0];
+                const firstEntryList = entry[firstEntryName].import;
+                const mockDirAbsPath = this.getAbsPath(projectRootPath);
+                const mockEntryAbsPath = this.getAbsPath(projectRootPath, true);
 
-            if (!firstEntryList.includes(mockEntryAbsPath)) {
-                firstEntryList.push(mockEntryAbsPath);
+                if (!firstEntryList.includes(mockEntryAbsPath)) {
+                    firstEntryList.push(mockEntryAbsPath);
 
-                const matchingRuleForMockEntryFile = rules.find(rule => {
-                    const ruleTest = rule.test;
+                    const matchingRuleForMockEntryFile = rules.find(rule => {
+                        const ruleTest = rule.test;
 
-                    if (ruleTest instanceof RegExp) {
-                        return ruleTest.test(this.mockEntryFile);
-                    } else if (Array.isArray(ruleTest)) {
-                        return ruleTest.some(testRegex => testRegex.test(this.mockEntryFile));
+                        if (ruleTest instanceof RegExp) {
+                            return ruleTest.test(this.mockEntryFile);
+                        } else if (Array.isArray(ruleTest)) {
+                            return ruleTest.some(testRegex => testRegex.test(this.mockEntryFile));
+                        }
+                    });
+
+                    if (matchingRuleForMockEntryFile) {
+                        const mockDirInclude = matchingRuleForMockEntryFile.include;
+
+                        if (mockDirInclude instanceof RegExp) {
+                            matchingRuleForMockEntryFile.include = [ mockDirInclude, mockDirAbsPath ];
+                        } else if (Array.isArray(mockDirInclude)) {
+                            mockDirInclude.push(mockDirAbsPath);
+                        }
+                    } else {
+                        throw new Error(
+                            `${this.pluginName}: Could not find a suitable \`module.rule.test\` for ${this.mockEntryFile}.`,
+                            `Try using either a RegExp or RegExp[] as a value for \`test\` to ensure proper transpilation of ${this.mocksDir}.`
+                        );
                     }
-                });
-
-                if (matchingRuleForMockEntryFile) {
-                    const mockDirInclude = matchingRuleForMockEntryFile.include;
-
-                    if (mockDirInclude instanceof RegExp) {
-                        matchingRuleForMockEntryFile.include = [ mockDirInclude, mockDirAbsPath ];
-                    } else if (Array.isArray(mockDirInclude)) {
-                        mockDirInclude.push(mockDirAbsPath);
-                    }
-                } else {
-                    console.warn(
-                        `${this.pluginName}: Could not find a suitable \`module.rule.test\` for ${this.mockEntryFile}.`,
-                        `Try using either a RegExp or RegExp[] as a value for \`test\` to ensure proper transpilation of ${this.mocksDir}.`
-                    );
                 }
-            }
-        });
+            });
+        } catch (e) {
+            console.error(this.pluginName, 'has only been verified for webpack@>=5. Try upgrading to fix the apparent issues');
+            console.error('Error:', e);
+        }
     }
 }
 
