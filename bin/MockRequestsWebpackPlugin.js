@@ -1,3 +1,4 @@
+const fs = require('fs');
 const path = require('path');
 const { WebpackPluginInstance, Compiler } = require('webpack');
 
@@ -23,7 +24,13 @@ class MockRequestsWebpackPlugin {
     }
 
     getAbsPath(context, includeEntryFile = false) {
-        return path.resolve(context, this.mocksDir, includeEntryFile ? this.mockEntryFile : '');
+        const absPath = path.resolve(context, this.mocksDir, includeEntryFile ? this.mockEntryFile : '');
+
+        if (!fs.existsSync(absPath)) {
+            return null;
+        }
+
+        return absPath;
     }
 
     /**
@@ -44,6 +51,14 @@ class MockRequestsWebpackPlugin {
                 const firstEntryList = entry[firstEntryName].import;
                 const mockDirAbsPath = this.getAbsPath(projectRootPath);
                 const mockEntryAbsPath = this.getAbsPath(projectRootPath, true);
+
+                if (!mockDirAbsPath) {
+                    throw new Error(`Could not find mock directory "${this.mocksDir}"`);
+                }
+
+                if (!mockEntryAbsPath) {
+                    throw new Error(`Could not find mock entry file "${this.mockEntryFile}"`);
+                }
 
                 if (!firstEntryList.includes(mockEntryAbsPath)) {
                     firstEntryList.push(mockEntryAbsPath);
