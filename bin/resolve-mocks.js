@@ -47,7 +47,7 @@ function getResolvedPathAsArray(mockPath) {
  */
 module.exports = function resolveMocks(mocksDir, mockConfigFile, activateMocks) {
     if (activateMocks) {
-        console.log('Network mocks activated by MockRequests\n');
+        console.log('Network mocks activated by mock-requests.\n');
     }
 
     return {
