@@ -27,6 +27,7 @@
     "@babel/polyfill": "^7.4.4",
     "@babel/preset-env": "^7.5.5",
     "@babel/runtime": "^7.7.7",
+    "@types/webpack": "^5.28.0",
     "babel-loader": "^8.0.6",
     "copy-webpack-plugin": "^6.0.3",
     "coveralls": "^3.0.6",
