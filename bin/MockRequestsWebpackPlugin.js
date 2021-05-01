@@ -60,33 +60,37 @@ class MockRequestsWebpackPlugin {
                     throw new Error(`Could not find mock entry file "${this.mockEntryFile}"`);
                 }
 
-                if (!firstEntryList.includes(mockEntryAbsPath)) {
-                    firstEntryList.push(mockEntryAbsPath);
+                if (firstEntryList.includes(mockEntryAbsPath)) {
+                    // Mock entry file has already been added to webpack config
+                    // Don't add it again if a rebuild is triggered
+                    return;
+                }
 
-                    const matchingRuleForMockEntryFile = rules.find(rule => {
-                        const ruleTest = rule.test;
+                firstEntryList.push(mockEntryAbsPath);
 
-                        if (ruleTest instanceof RegExp) {
-                            return ruleTest.test(this.mockEntryFile);
-                        } else if (Array.isArray(ruleTest)) {
-                            return ruleTest.some(testRegex => testRegex.test(this.mockEntryFile));
-                        }
-                    });
+                const matchingRuleForMockEntryFile = rules.find(rule => {
+                    const ruleTest = rule.test;
 
-                    if (matchingRuleForMockEntryFile) {
-                        const mockDirInclude = matchingRuleForMockEntryFile.include;
-
-                        if (mockDirInclude instanceof RegExp) {
-                            matchingRuleForMockEntryFile.include = [ mockDirInclude, mockDirAbsPath ];
-                        } else if (Array.isArray(mockDirInclude)) {
-                            mockDirInclude.push(mockDirAbsPath);
-                        }
-                    } else {
-                        throw new Error(
-                            `${this.pluginName}: Could not find a suitable \`module.rule.test\` for ${this.mockEntryFile}.`,
-                            `Try using either a RegExp or RegExp[] as a value for \`test\` to ensure proper transpilation of ${this.mocksDir}.`
-                        );
+                    if (ruleTest instanceof RegExp) {
+                        return ruleTest.test(this.mockEntryFile);
+                    } else if (Array.isArray(ruleTest)) {
+                        return ruleTest.some(testRegex => testRegex.test(this.mockEntryFile));
                     }
+                });
+
+                if (matchingRuleForMockEntryFile) {
+                    const mockDirInclude = matchingRuleForMockEntryFile.include;
+
+                    if (mockDirInclude instanceof RegExp) {
+                        matchingRuleForMockEntryFile.include = [ mockDirInclude, mockDirAbsPath ];
+                    } else if (Array.isArray(mockDirInclude)) {
+                        mockDirInclude.push(mockDirAbsPath);
+                    }
+                } else {
+                    throw new Error(
+                        `${this.pluginName}: Could not find a suitable \`module.rule.test\` for ${this.mockEntryFile}.`,
+                        `Try using either a RegExp or RegExp[] as a value for \`test\` to ensure proper transpilation of ${this.mocksDir}.`
+                    );
                 }
             } catch (e) {
                 console.error(this.pluginName, 'has only been verified for webpack@>=5. Try upgrading to fix the apparent issues');
