@@ -23,8 +23,8 @@ class MockRequestsWebpackPlugin {
         return this.constructor.name;
     }
 
-    getAbsPath(context, includeEntryFile = false) {
-        const absPath = path.resolve(context, this.mocksDir, includeEntryFile ? this.mockEntryFile : '');
+    getAbsPath(projectRootPath, includeEntryFile = false) {
+        const absPath = path.resolve(projectRootPath, this.mocksDir, includeEntryFile ? this.mockEntryFile : '');
 
         if (!fs.existsSync(absPath)) {
             return null;
@@ -105,7 +105,7 @@ class MockRequestsWebpackPlugin {
 
         const rules = compiler.options.module.rules;
 
-        compiler.hooks.entryOption.tap(this.constructor.name, (context, entry) => {
+        compiler.hooks.entryOption.tap(this.pluginName, (context, entry) => {
             if (typeof entry === typeof this.constructor) {
                 entry().then(resolvedEntry => this.injectMocksIntoWebpackConfig(context, rules, resolvedEntry));
             } else {
