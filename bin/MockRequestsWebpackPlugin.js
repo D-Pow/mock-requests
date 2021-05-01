@@ -93,8 +93,8 @@ class MockRequestsWebpackPlugin {
                     );
                 }
             } catch (e) {
-                console.error(this.pluginName, 'has only been verified for webpack@>=5. Try upgrading to fix the apparent issues');
-                console.error('Error:', e);
+                console.error('Error:', e.message);
+                console.error('Note:', this.pluginName, 'has only been verified for webpack@>=5. Webpack runtime issues may be fixed by upgrading.');
             }
         });
     }
