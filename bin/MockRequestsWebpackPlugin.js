@@ -106,7 +106,11 @@ class MockRequestsWebpackPlugin {
         const rules = compiler.options.module.rules;
 
         compiler.hooks.entryOption.tap(this.constructor.name, (context, entry) => {
-            this.injectMocksIntoWebpackConfig(context, rules, entry);
+            if (typeof entry === typeof this.constructor) {
+                entry().then(resolvedEntry => this.injectMocksIntoWebpackConfig(context, rules, resolvedEntry));
+            } else {
+                this.injectMocksIntoWebpackConfig(context, rules, entry);
+            }
         });
     }
 }
