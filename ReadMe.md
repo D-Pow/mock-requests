@@ -22,6 +22,7 @@ never have to change your source code to use mocks ever again.
     * [Login mock selections](#example-logins)
 * [Separating mocks from source](#separate-from-source)
     * [Simple instructions](#simple-instructions)
+    * [Bare-bones instructions](#bare-bones-instructions)
     * [Activating via terminal](#activating-via-terminal)
 * [MockRequests API](#api)
 * [Final notes](#final-notes)
@@ -358,7 +359,33 @@ MockRequests.configureDynamicResponses(staticDynamicMerged.bob);
 ## Separating mocks from source code
 
 <a name="simple-instructions"></a>
-### Simple instructions
+### Simple Instructions
+
+If you are using `webpack@>=5`, then simply import the `MockRequestsWebpackPlugin` and use via:
+
+```javascript
+// webpack.config.js
+
+const MockRequestsWebpackPlugin = require('mock-requests/bin/MockRequestsWebpackPlugin');
+
+module.exports = {
+    // ...
+    plugins: [
+        // ...
+         new MockRequestsWebpackPlugin(
+            'myMockDirectory',
+            'MockConfig.js', // mock entry file, nested inside `myMockDirectory/`
+            process.env.MOCK === 'true' // boolean to determine if you should activate mocks
+        ),
+        // ...
+    ]
+};
+```
+
+This will automatically transpile and activate mocks according to the entry directory, file, and your desired boolean of whether or not mocks should be activated.
+
+<a name="bare-bones-instructions"></a>
+### Bare-bones instructions
 
 In the simplest, bare-bones example, you could just import `MockRequests` into one of your entry JavaScript files
 (src/index.js, src/App.js, or similar) and configure your mocks there. As long as MockRequests was installed as a
