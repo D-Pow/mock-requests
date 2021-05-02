@@ -100,7 +100,7 @@ Otherwise, if a URL hasn't been configured with a mock response, the standard as
 experiences the effects. This means you could configure it in one file and then all other files
 that make network requests to the configured URLs will receive the mock responses instead,
 even without importing `MockRequests`. This makes it very easy to work on the front-end even if
-some APIs are down/haven't been developed yet, or if you have no internet access at all.
+some APIs are down, haven't been developed yet, or if you have no internet access at all.
 
 <a name="examples"></a>
 ## Examples
@@ -399,10 +399,10 @@ where `MockConfig.js` does all the `mock-requests` configuration, e.g.
 
 ```javascript
 // mocks/MockConfig.js
+
 import MockRequests from 'mock-requests';
 import { myStaticApiUrl, myDynamicApiUrl } from '../src/services/Urls.js';
-// Imports from mocks/ directory
-import { myStaticApiResponse } from './StaticResponses';
+import { myStaticApiResponse } from './StaticResponses'; // Other files in mocks/
 import { myDynamicApiConfig } from './DynamicResponseConfigs';
 
 MockRequests.setMockUrlResponse(myStaticApiUrl, myStaticApiResponse);
@@ -425,7 +425,7 @@ ReactDOM.render(<App />, document.getElementById('root'));
 <a name="plugin-instructions"></a>
 ### Webpack Plugin Instructions
 
-In order to avoid having to change source code to activate/deactivate mocks, `MockRequests` comes with a built-in plugin for projects using `webpack`. As such, assuming you have a separate directory of mocks and a single mock entry file (as described above), you can simply import the `MockRequestsWebpackPlugin` and use via:
+To avoid having to change your source code to activate/deactivate mocks (e.g. src/index.js above), `MockRequests` comes with a built-in plugin for projects using [webpack](https://webpack.js.org/). As such, assuming you have a separate directory of mocks and a single mock entry file (see above example), you can simply import the `MockRequestsWebpackPlugin` and use via:
 
 ```javascript
 // webpack.config.js
@@ -448,16 +448,16 @@ module.exports = {
 
 and run using `MOCK=true npm start`.
 
-Use of this plugin will automatically transpile your code (according to your previously-defined JS/TS rules) and activate mocks based on the boolean of whether or not mocks should be activated.
+Use of this plugin will automatically transpile your code (according to your webpack config's JS/TS rules) and activate mocks based on the boolean of whether or not mocks should be activated. This means you never have to change anything in `src/` or in webpack.config.js outside of this plugin.
 
-If the boolean condition resolves to `false`, then nothing will be added to your build output, keeping mock files out of the final production code. Overall, this means you don't have to add the `import ../mocks/MockConfig` line from the previous example in your main app entry file, rather you can toggle mocking via the CLI.
+If the boolean condition resolves to `false`, then nothing will be added to your build output, keeping mock files out of the final production code. In this example, our toggle is via CLI env variable, but it can be anything else of your choosing.
 
 <a name="custom-instructions"></a>
 ### Custom instructions
 
 If your project doesn't use webpack or if you prefer to have more control over the file-processing, then you could instead use the `resolve-mocks.js` script to generate the paths to the mock directory/entry-file manually.
 
-All you have to do is pass in the fields from the `MockRequestsWebpackPlugin` into the `resolveMocks()` function, and spread the resulting `entry`/`include` arrays where they should be processed. For example:
+All you have to do is pass in the same fields from the `MockRequestsWebpackPlugin` into the `resolveMocks()` function, and spread the resulting `entry`/`include` arrays where you want them processed. For example:
 
 ```javascript
 // webpack.config.js
@@ -484,7 +484,7 @@ module.exports = {
 
 and run using `MOCK=true npm start`.
 
-Doing so will result in the same outcome of the webpack plugin: transpilation of the `mocks/` directory (allowing you to write your mocks with the latest features while still supporting older browsers) as well as adding the mock entry file to your project -- all while still being toggled by the CLI. Like the plugin, the mocks won't be added to your build output unless the boolean condition resolves to `true`.
+Doing so will result in the same outcome of the webpack plugin: transpilation of the `mocks/` directory so you can write your mocks with the latest JS features, as well as adding the mock entry file to your build/run output dynamically -- all while still being toggled by the CLI. Like the plugin, the mocks won't be added to your build output unless the boolean condition resolves to `true`.
 
 <a name="api"></a>
 ## MockRequests API
