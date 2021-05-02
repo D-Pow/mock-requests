@@ -48,8 +48,11 @@ class MockRequestsWebpackPlugin {
                 throw new Error(`Could not find mock entry file "${this.mockEntryFile}"`);
             }
 
-            this.addMockEntryFileToConfigEntry(firstEntryList, mockEntryAbsPath);
-            this.addMockDirToModuleRule(moduleRules, mockDirAbsPath);
+            const addedNewEntry = this.addMockEntryFileToConfigEntry(firstEntryList, mockEntryAbsPath);
+
+            if (addedNewEntry) {
+                this.addMockDirToModuleRule(moduleRules, mockDirAbsPath);
+            }
         } catch (e) {
             console.error('Error:', e.message);
             console.error('Note:', this.pluginName, 'has only been verified for webpack@>=5. Webpack runtime issues may be fixed by upgrading.');
@@ -60,10 +63,12 @@ class MockRequestsWebpackPlugin {
         if (configEntryList.includes(mockEntryAbsPath)) {
             // Mock entry file has already been added to webpack config
             // Don't add it again if a rebuild is triggered
-            return;
+            return false;
         }
 
         configEntryList.push(mockEntryAbsPath);
+
+        return true;
     }
 
     addMockDirToModuleRule(moduleRules, mockDirAbsPath) {
