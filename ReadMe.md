@@ -21,9 +21,9 @@ never have to change your source code to use mocks ever again.
     * [Dynamic responses](#example-dynamic)
     * [Login mock selections](#example-logins)
 * [Separating mocks from source](#separate-from-source)
-    * [Simple instructions](#simple-instructions)
     * [Bare-bones instructions](#bare-bones-instructions)
-    * [Activating via terminal](#activating-via-terminal)
+    * [Webpack plugin instructions](#plugin-instructions)
+    * [Custom instructions](#custom-instructions)
 * [MockRequests API](#api)
 * [Final notes](#final-notes)
 * [License](#license)
@@ -358,32 +358,6 @@ MockRequests.configureDynamicResponses(staticDynamicMerged.bob);
 <a name="separate-from-source"></a>
 ## Separating mocks from source code
 
-<a name="simple-instructions"></a>
-### Simple Instructions
-
-If you are using `webpack@>=5`, then simply import the `MockRequestsWebpackPlugin` and use via:
-
-```javascript
-// webpack.config.js
-
-const MockRequestsWebpackPlugin = require('mock-requests/bin/MockRequestsWebpackPlugin');
-
-module.exports = {
-    // ...
-    plugins: [
-        // ...
-         new MockRequestsWebpackPlugin(
-            'myMockDirectory',
-            'MockConfig.js', // mock entry file, nested inside `myMockDirectory/`
-            process.env.MOCK === 'true' // boolean to determine if you should activate mocks
-        ),
-        // ...
-    ]
-};
-```
-
-This will automatically transpile and activate mocks according to the entry directory, file, and your desired boolean of whether or not mocks should be activated.
-
 <a name="bare-bones-instructions"></a>
 ### Bare-bones instructions
 
@@ -448,20 +422,42 @@ import '../mocks/MockConfig';
 ReactDOM.render(<App />, document.getElementById('root'));
 ```
 
-<a name="activating-via-terminal"></a>
-### Activating via Terminal
+<a name="plugin-instructions"></a>
+### Webpack Plugin Instructions
 
-If you prefer not having to change source code to activate/deactivate mocks, then the guide below will explain how to
-activate mocks via terminal, e.g. `MOCK=true npm start`.
+In order to avoid having to change source code to activate/deactivate mocks, `MockRequests` comes with a built-in plugin for projects using `webpack`. As such, assuming you have a separate directory of mocks and a single mock entry file (as described above), you can simply import the `MockRequestsWebpackPlugin` and use via:
 
-1. Import the function from the built-in `mock-requests/bin/resolve-mocks.js` script to handle activating/deactivating
-mocks for you.
-2. Pass in the mocks/ directory, the MockConfig.js entry file, and a boolean that determines if mocks should be
-active or not (e.g. `process.env.MOCK === 'true'`). Returns a `resolvedMocks` object with `entry` and `include`
-arrays.
-3. Spread the `resolvedMocks.entry` array in your webpack config's `entry` field.
-4. (Optional) Spread the `resolvedMocks.include` array in your webpack config's `include` field if you need the
-mock files to be transformed by your JS-loader to run your app on an older browser.
+```javascript
+// webpack.config.js
+const MockRequestsWebpackPlugin = require('mock-requests/bin/MockRequestsWebpackPlugin');
+
+module.exports = {
+    // ...
+    plugins: [
+        // ...
+         new MockRequestsWebpackPlugin(
+            'myMockDirectory', // Holds all mock-related files imported by the entry file.
+                               // Relative to the webpack "context" (i.e. project root).
+            'MockConfig.js', // Mock entry file, nested inside `myMockDirectory/`.
+            process.env.MOCK === 'true' // Whether or not mocks should be activated.
+        ),
+        // ...
+    ]
+};
+```
+
+and run using `MOCK=true npm start`.
+
+Use of this plugin will automatically transpile your code (according to your previously-defined JS/TS rules) and activate mocks based on the boolean of whether or not mocks should be activated.
+
+If the boolean condition resolves to `false`, then nothing will be added to your build output, keeping mock files out of the final production code. Overall, this means you don't have to add the `import ../mocks/MockConfig` line from the previous example in your main app entry file.
+
+<a name="custom-instructions"></a>
+### Custom instructions
+
+If your project doesn't use webpack or if you prefer to have more control over the file-processing, then you could instead use the `resolve-mocks.js` script to generate the paths to the mock directory/entry-file manually.
+
+All you have to do is pass in the fields from the `MockRequestsWebpackPlugin` into the `resolveMocks()` function, and spread the resulting `entry`/`include` arrays where they should be processed. For example:
 
 ```javascript
 // webpack.config.js
@@ -488,14 +484,7 @@ module.exports = {
 
 and run using `MOCK=true npm start`.
 
-Doing so will allow `MockRequests` to automatically decide whether the mock directory/file should be resolved.
-It will return empty arrays if the `activateMocksBoolean` is false or arrays filled with resolved paths if true.
-This way, your MockConfig.js file will be added as an entry point to your app only if desired and will be
-loaded along with the rest of your code. Optionally, if you're using the latest JavaScript features in your
-mock configuration files but want to run them on browsers that lack support, then you'll need those mock files transpiled
-by your loader as well; in that case, add the respective spread to the `include` field as well.
-
-In this way, you won't have to change source code between activating and deactivating mocks.
+Doing so will result in the same outcome of the webpack plugin: transpilation of the `mocks/` directory (allowing you to write your mocks with the latest features while still supporting older browsers) as well as adding the mock entry file to your project -- all while still being toggled by the CLI. Like the plugin, the mocks won't be added to your build output unless the boolean condition resolves to `true`.
 
 <a name="api"></a>
 ## MockRequests API
