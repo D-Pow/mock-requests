@@ -72,15 +72,31 @@ class MockRequestsWebpackPlugin {
     }
 
     addMockDirToModuleRule(moduleRules, mockDirAbsPath) {
-        const matchingRuleForMockEntryFile = moduleRules.find(rule => {
-            const ruleTest = rule.test;
-
+        const ruleTestMatchesMockDir = ruleTest => {
             if (ruleTest instanceof RegExp) {
                 return ruleTest.test(this.mockEntryFile);
+            } else if (typeof ruleTest === typeof '') {
+                return ruleTest.includes(this.mocksDir.replace(/\./g, ''));
+            } else if (typeof ruleTest === typeof this.constructor) {
+                return ruleTest(this.mocksDir) || ruleTest(this.mockEntryFile);
             } else if (Array.isArray(ruleTest)) {
-                return ruleTest.some(testRegex => testRegex.test(this.mockEntryFile));
+                return ruleTest.some(ruleTestMatchesMockDir);
+            } else { // is Object with and/or/not keys
+                const allAndConditionsMet = ruleTest.and
+                    ? ruleTest.and.reduce((matches, test) => matches && ruleTestMatchesMockDir(test), true)
+                    : true;
+                const anyOrConditionsMet = ruleTest.or
+                    ? ruleTest.or.some(ruleTestMatchesMockDir)
+                    : true;
+                const allNotConditionsMet = ruleTest.not
+                    ? ruleTest.not.reduce((matches, test) => matches && !ruleTestMatchesMockDir(test), true)
+                    : true;
+
+                return allAndConditionsMet && anyOrConditionsMet && allNotConditionsMet;
             }
-        });
+        };
+
+        const matchingRuleForMockEntryFile = moduleRules.find(rule => ruleTestMatchesMockDir(rule.test));
 
         if (matchingRuleForMockEntryFile) {
             const mockDirInclude = matchingRuleForMockEntryFile.include;
