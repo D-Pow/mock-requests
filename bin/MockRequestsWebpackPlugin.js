@@ -20,11 +20,24 @@ class MockRequestsWebpackPlugin {
      * @param {string} mocksDir - Directory of all mock files/logic, including the `mockEntryFile`.
      * @param {string} mockEntryFile - Entry file that calls `MockRequests.configure()`.
      * @param {boolean} activateMocks - If mocks determined by `mockEntryFile` should be activated or not.
+     * @param {Object} [options]
+     * @param {boolean} [options.pathsAreAbsolute=false] - If `mocksDir` and `mockEntryFile` are absolute paths instead of relative.
+     * @param {boolean} [options.transpileMocksDir=true] - If the files within `mocksDir` should be transpiled.
      */
-    constructor(mocksDir, mockEntryFile, activateMocks) {
+    constructor(
+        mocksDir,
+        mockEntryFile,
+        activateMocks,
+        {
+            pathsAreAbsolute = false,
+            transpileMocksDir = true
+        } = {}
+    ) {
         this.mocksDir = mocksDir;
         this.mockEntryFile = mockEntryFile;
         this.activateMocks = activateMocks;
+        this.pathsAreAbsolute = pathsAreAbsolute;
+        this.transpileMocksDir = transpileMocksDir;
     }
 
     get pluginName() {
@@ -32,7 +45,11 @@ class MockRequestsWebpackPlugin {
     }
 
     getAbsPath(projectRootPath, includeEntryFile = false) {
-        const absPath = path.resolve(projectRootPath, this.mocksDir, includeEntryFile ? this.mockEntryFile : '');
+        let absPath = path.resolve(projectRootPath, this.mocksDir, includeEntryFile ? this.mockEntryFile : '');
+
+        if (this.pathsAreAbsolute) {
+            absPath = includeEntryFile ? this.mockEntryFile : this.mocksDir;
+        }
 
         if (!fs.existsSync(absPath)) {
             return null;
@@ -82,6 +99,10 @@ class MockRequestsWebpackPlugin {
     }
 
     addMockDirToModuleRule(moduleRules, mockDirAbsPath, mockEntryAbsPath) {
+        if (!this.transpileMocksDir) {
+            return;
+        }
+
         const ruleTestMatchesMockDir = ruleTest => {
             if (ruleTest instanceof RegExp) {
                 return ruleTest.test(mockEntryAbsPath);
