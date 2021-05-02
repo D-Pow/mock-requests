@@ -15,9 +15,12 @@
   },
   "scripts": {
     "test": "jest --coverage tests",
+    "clean": "npx shx rm -rf dist docs",
     "build": "webpack --mode production",
+    "prebuild": "npm run clean",
     "postbuild": "npm run jsdoc",
-    "jsdoc": "jsdoc -R ./ReadMe.md -c config/jsdoc.config.json"
+    "jsdoc": "jsdoc -R ./ReadMe.md -c config/jsdoc.config.json",
+    "postjsdoc": "cd demo && npm run build"
   },
   "devDependencies": {
     "@babel/core": "^7.5.5",
@@ -35,6 +38,7 @@
     "docdash": "^1.1.1",
     "jest": "^25.1.0",
     "jsdoc": "^3.6.3",
+    "shelljs": "^0.8.4",
     "webpack": "^5.11.0",
     "webpack-cli": "^4.2.0"
   },
