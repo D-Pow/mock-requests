@@ -549,11 +549,12 @@ so you can alternatively use an instance of the `Request` class in your `fetch()
 `import MockRequests, { setMockUrlResponse } from 'mock-requests';`
 
 4. This works with any environment that uses either `fetch` or `XMLHttpRequest`, regardless of if said
-environment is a browser, web/service worker, or a Node script. As long as they are defined (natively or
-by polyfill), any usage of `fetch`/`XMLHttpRequest` request to a URL configured by `MockRequests` will be
-mocked appropriately. For example,
+environment is a browser, web/service worker, or a Node.js script. As long as `fetch` and/or `XMLHttpRequest` are defined (natively or
+by polyfill), any network request to a URL configured by `MockRequests` will be
+mocked appropriately. For example:
 
     ```javascript
+    // my-script.js - called via `node my-script.js`
     require('isomorphic-fetch');
     const MockRequests = require('mock-requests');
 
