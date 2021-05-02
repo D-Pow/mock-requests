@@ -22,7 +22,7 @@ never have to change your source code to use mocks ever again.
     * [Login mock selections](#example-logins)
 * [Separating mocks from source](#separate-from-source)
     * [Bare-bones instructions](#bare-bones-instructions)
-    * [Webpack plugin instructions](#plugin-instructions)
+    * [Webpack Plugin/Activating via CLI](#plugin-instructions)
     * [Custom instructions](#custom-instructions)
 * [MockRequests API](#api)
 * [Final notes](#final-notes)
@@ -423,7 +423,7 @@ ReactDOM.render(<App />, document.getElementById('root'));
 ```
 
 <a name="plugin-instructions"></a>
-### Webpack Plugin Instructions
+### Webpack Plugin/Activating via CLI
 
 To avoid having to change your source code to activate/deactivate mocks (e.g. src/index.js above), `MockRequests` comes with a built-in plugin for projects using [webpack](https://webpack.js.org/). As such, assuming you have a separate directory of mocks and a single mock entry file (see above example), you can simply import the `MockRequestsWebpackPlugin` and use via:
 
