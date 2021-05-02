@@ -450,7 +450,7 @@ and run using `MOCK=true npm start`.
 
 Use of this plugin will automatically transpile your code (according to your previously-defined JS/TS rules) and activate mocks based on the boolean of whether or not mocks should be activated.
 
-If the boolean condition resolves to `false`, then nothing will be added to your build output, keeping mock files out of the final production code. Overall, this means you don't have to add the `import ../mocks/MockConfig` line from the previous example in your main app entry file.
+If the boolean condition resolves to `false`, then nothing will be added to your build output, keeping mock files out of the final production code. Overall, this means you don't have to add the `import ../mocks/MockConfig` line from the previous example in your main app entry file, rather you can toggle mocking via the CLI.
 
 <a name="custom-instructions"></a>
 ### Custom instructions
