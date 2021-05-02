@@ -51,7 +51,7 @@ class MockRequestsWebpackPlugin {
             const addedNewEntry = this.addMockEntryFileToConfigEntry(firstEntryList, mockEntryAbsPath);
 
             if (addedNewEntry) {
-                this.addMockDirToModuleRule(moduleRules, mockDirAbsPath);
+                this.addMockDirToModuleRule(moduleRules, mockDirAbsPath, mockEntryAbsPath);
             }
         } catch (e) {
             console.error('Error:', e.message);
@@ -71,14 +71,14 @@ class MockRequestsWebpackPlugin {
         return true;
     }
 
-    addMockDirToModuleRule(moduleRules, mockDirAbsPath) {
+    addMockDirToModuleRule(moduleRules, mockDirAbsPath, mockEntryAbsPath) {
         const ruleTestMatchesMockDir = ruleTest => {
             if (ruleTest instanceof RegExp) {
-                return ruleTest.test(this.mockEntryFile);
+                return ruleTest.test(mockEntryAbsPath);
             } else if (typeof ruleTest === typeof '') {
-                return ruleTest.includes(this.mocksDir.replace(/\./g, ''));
+                return ruleTest.includes(mockDirAbsPath);
             } else if (typeof ruleTest === typeof this.constructor) {
-                return ruleTest(this.mocksDir) || ruleTest(this.mockEntryFile);
+                return ruleTest(this.mocksDir) || ruleTest(this.mockEntryFile) || ruleTest(mockDirAbsPath) || ruleTest(mockEntryAbsPath);
             } else if (Array.isArray(ruleTest)) {
                 return ruleTest.some(ruleTestMatchesMockDir);
             } else { // is Object with and/or/not keys
