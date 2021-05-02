@@ -20,7 +20,8 @@
     "prebuild": "npm run clean",
     "postbuild": "npm run jsdoc",
     "jsdoc": "jsdoc -R ./ReadMe.md -c config/jsdoc.config.json",
-    "postjsdoc": "cd demo && npm run build"
+    "postjsdoc": "npm run build:demo",
+    "build:demo": "cd demo && npm run build"
   },
   "devDependencies": {
     "@babel/core": "^7.5.5",
