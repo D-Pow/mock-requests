@@ -60,6 +60,8 @@ class MockRequestsWebpackPlugin {
 
             if (addedNewEntry) {
                 this.addMockDirToModuleRule(moduleRules, mockDirAbsPath, mockEntryAbsPath);
+
+                console.log('Network mocks activated by mock-requests.\n');
             }
         } catch (e) {
             console.error('Error:', e.message);
@@ -129,8 +131,6 @@ class MockRequestsWebpackPlugin {
         if (!this.activateMocks) {
             return;
         }
-
-        console.log('Network mocks activated by mock-requests.\n');
 
         const rules = compiler.options.module.rules;
 
