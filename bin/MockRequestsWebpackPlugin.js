@@ -8,14 +8,14 @@ const { WebpackPluginInstance, Compiler } = require('webpack');
 
 /**
  * Webpack plugin for automatically resolving the mock directory,
- * including transpiling all files within that directory as well as
- * adding the entry file to the build for the user.
+ * including transpiling all files it contains as well as adding
+ * the entry file within it to the build/run output for the user.
  *
  * @extends WebpackPluginInstance
  */
 class MockRequestsWebpackPlugin {
     /**
-     * Activates mock-requests based on the provided parameters
+     * Activates mock-requests based on the provided parameters.
      *
      * @param {string} mocksDir - Directory of all mock files/logic, including the `mockEntryFile`.
      * @param {string} mockEntryFile - Entry file that calls `MockRequests.configure()`.
@@ -49,11 +49,11 @@ class MockRequestsWebpackPlugin {
             const mockEntryAbsPath = this.getAbsPath(projectRootPath, true);
 
             if (!mockDirAbsPath) {
-                throw new Error(`Could not find mock directory "${this.mocksDir}"`);
+                throw new Error(`Could not find mock directory "${this.mocksDir}" from webpack context directory "${projectRootPath}"`);
             }
 
             if (!mockEntryAbsPath) {
-                throw new Error(`Could not find mock entry file "${this.mockEntryFile}"`);
+                throw new Error(`Could not find mock entry file "${this.mockEntryFile}" from webpack context directory "${projectRootPath}"`);
             }
 
             const addedNewEntry = this.addMockEntryFileToConfigEntry(firstEntryList, mockEntryAbsPath);
