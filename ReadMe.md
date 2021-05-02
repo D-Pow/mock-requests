@@ -17,13 +17,13 @@ never have to change your source code to use mocks ever again.
 * [Installation](#installation)
 * [Usage](#usage)
 * [Examples](#examples)
-    * [Static responses](#example-static)
-    * [Dynamic responses](#example-dynamic)
-    * [Login mock selections](#example-logins)
+    - [Static responses](#example-static)
+    - [Dynamic responses](#example-dynamic)
+    - [Login mock selections](#example-logins)
 * [Separating mocks from source](#separate-from-source)
-    * [Bare-bones instructions](#bare-bones-instructions)
-    * [Webpack Plugin/Activating via CLI](#plugin-instructions)
-    * [Custom instructions](#custom-instructions)
+    - [Bare-bones instructions](#bare-bones-instructions)
+    - [Webpack Plugin/Activating via CLI](#plugin-instructions)
+    - [Custom instructions](#custom-instructions)
 * [MockRequests API](#api)
 * [Final notes](#final-notes)
 * [License](#license)
@@ -75,10 +75,10 @@ so you don't have to repetitively use e.g. `fetch = jest.fn()`.
 
 * Using git:
 
-    * Via npm:
+    - Via npm:
 
         `npm install --save-dev https://github.com/D-Pow/MockRequests.git`
-    * With locally installed repo:
+    - With locally installed repo:
 
         `git clone https://github.com/D-Pow/MockRequests.git`
 
