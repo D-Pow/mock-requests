@@ -37,6 +37,7 @@ internet at all. It provides a quick, single point of entry that can be called o
 throughout your entire app.
 
 In particular, most other network-mocking libraries are not user friendly in that they either:
+
 * *Force users to re-write* their source code to use mocks and then *change it back later* in order
 to use real network requests, or
 * Involve *complex setup* using local servers and proxies, usually in ways that are app-specific and aren't easily
@@ -46,6 +47,7 @@ This library differs from the others in that it allows you to continue **writing
 using mock network activity.
 
 Specific benefits provided by this library that aren't offered in others:
+
 * You **never have to change your source code**. This means no more replacing
 `fetch()` with `Promise.resolve(mockResponse)`, and no changing URLs from `website.com/api` to `third-party-mocks.com/api`.
 * **No painful configuration** of complex node servers, proxies, or anything else to host mock data.
@@ -78,6 +80,7 @@ so you don't have to repetitively use e.g. `fetch = jest.fn()`.
     - Via npm:
 
         `npm install --save-dev https://github.com/D-Pow/MockRequests.git`
+
     - With locally installed repo:
 
         `git clone https://github.com/D-Pow/MockRequests.git`
