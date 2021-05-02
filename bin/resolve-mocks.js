@@ -23,7 +23,7 @@ function getResolvedPathAsArray(mockPath) {
 }
 
 /**
- * @module mock-requests/bin/resolve-mocks
+ * @module /bin/resolve-mocks
  */
 
 /**

@@ -3,6 +3,14 @@ const path = require('path');
 const { WebpackPluginInstance, Compiler } = require('webpack');
 
 /**
+ * @module /bin/MockRequestsWebpackPlugin
+ */
+
+/**
+ * Webpack plugin for automatically resolving the mock directory,
+ * including transpiling all files within that directory as well as
+ * adding the entry file to the build for the user.
+ *
  * @extends WebpackPluginInstance
  */
 class MockRequestsWebpackPlugin {
