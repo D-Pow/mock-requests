@@ -436,9 +436,9 @@ module.exports = {
     plugins: [
         // ...
          new MockRequestsWebpackPlugin(
-            'myMockDirectory', // Holds all mock-related files imported by the entry file.
-                               // Relative to the webpack "context" (i.e. project root).
-            'MockConfig.js', // Mock entry file, nested inside `myMockDirectory/`.
+            'mocks', // Holds all mock-related files imported by the entry file.
+                     // Relative to the webpack "context" (i.e. project root).
+            'MockConfig.js', // Mock entry file, nested inside `mocks/`.
             process.env.MOCK === 'true' // Whether or not mocks should be activated.
         ),
         // ...
@@ -468,17 +468,19 @@ const resolveMocks = require('mock-requests/bin/resolve-mocks');
 const resolvedMocks = resolveMocks('mocks', 'mocks/MockConfig.js', process.env.MOCK === 'true');
 
 module.exports = {
-    entry: [ '@babel/polyfill', './src/index.js', ...resolvedMocks.entry ],
     module: {
         rules: [
             {
                 test: /\.jsx?$/,
+                // adds mocks/ directory to loaders for transpilation
                 include: [ /src/, ...resolvedMocks.include ],
                 exclude: [ /node_modules/ ],
                 loader: 'babel-loader'
             }
         ]
-    }
+    },
+    // adds mocks/MockConfig.js entry file to build output
+    entry: [ '@babel/polyfill', './src/index.js', ...resolvedMocks.entry ]
 }
 ```
 
