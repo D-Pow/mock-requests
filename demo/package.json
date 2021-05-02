@@ -5,7 +5,7 @@
   "author": "Devon Powell",
   "license": "MIT",
   "scripts": {
-    "start": "webpack-dev-server",
+    "start": "webpack serve",
     "mock": "cross-env MOCK=true npm start",
     "test": "jest --coverage tests",
     "build": "cross-env NODE_ENV=production MOCK=true webpack --mode production",
