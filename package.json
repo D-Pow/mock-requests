@@ -37,7 +37,7 @@
     "copy-webpack-plugin": "^6.0.3",
     "coveralls": "^3.0.6",
     "docdash": "^1.1.1",
-    "jest": "^25.1.0",
+    "jest": "^26.6.3",
     "jsdoc": "^3.6.3",
     "shelljs": "^0.8.4",
     "webpack": "^5.11.0",
