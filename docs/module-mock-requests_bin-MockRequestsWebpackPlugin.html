@@ -3,7 +3,7 @@
 <head>
     
     <meta charset="utf-8">
-    <title>bin/resolve-mocks.js - Documentation</title>
+    <title>MockRequestsWebpackPlugin - Documentation</title>
     
     <meta name="description" content="MockRequests will mock both XMLHttpRequest and fetch such that any requested URL will return the specified mock object instead of actually making an async request. URLs not configured will be unaffected and still trigger an async request as normal." />
     
@@ -38,83 +38,112 @@
 
 <div id="main">
     
-    <h1 class="page-title">bin/resolve-mocks.js</h1>
+    <h1 class="page-title">MockRequestsWebpackPlugin</h1>
     
 
     
 
 
 
+
+<section>
+
+<header>
     
-    <section>
-        <article>
-            <pre class="prettyprint source linenums"><code>#!/usr/bin/env node
+        <h2>
+            <span class="ancestors"><a href="module-mock-requests_bin.html">mock-requests/bin</a>~</span>
+        
+        MockRequestsWebpackPlugin
+        </h2>
+        
+    
+</header>
 
-"use strict";
+<article>
+    
+        <div class="container-overview">
+        
+            
 
-const fs = require('fs');
-const path = require('path');
+<dl class="details">
 
-const rootDir = path.resolve('./');
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="bin_MockRequestsWebpackPlugin.js.html">bin/MockRequestsWebpackPlugin.js</a>, <a href="bin_MockRequestsWebpackPlugin.js.html#line8">line 8</a>
+    </li></ul></dd>
+    
 
-function getResolvedPathAsArray(mockPath) {
-    if (typeof mockPath !== typeof '') {
-        return [];
-    }
+    
 
-    const resolvedPath = path.resolve(rootDir, mockPath);
-    const pathExists = fs.existsSync(resolvedPath);
+    
 
-    if (!pathExists) {
-        console.warn(resolvedPath + ' was not found and will not be configured by MockRequests.');
-    }
+    
 
-    return pathExists ? [ resolvedPath ] : [];
-}
+    
 
-/**
- * @module mock-requests/bin
- */
-/**
- * @namespace resolve-mocks
- */
+    
 
-/**
- * @typedef {Object} ResolvedMocks
- * @property {string[]} include - Array containing mocks/ directory; spread it in `module.rules[jsLoader].include` webpack config field
- * @property {string[]} entry - Array containing mock entry file; spread it in `entry` webpack config field
- * @memberOf module:mock-requests/bin~resolve-mocks
- */
+    
 
-/**
- * Returns an object containing arrays of paths to pass into the webpack `module.rules[jsLoader].include`
- * and `entry` configuration fields. The returned arrays should be spread inside the arrays already
- * present in those configuration fields.
- *
- * This will return empty arrays if `activateMocks` is false so that the user doesn't have to modify the respective
- * webpack config fields when activating/deactivating mocks.
- *
- * @param {string} mocksDir - Directory containing all mock-related code. Only needed if transpiling JS code containing mocks.
- * @param {string} mockConfigFile - Entry JS file that configures all mocks.
- * @param {boolean} activateMocks - If mocks should be activated/injected into build or not.
- * @returns {ResolvedMocks} - Object containing arrays of files to spread in `entry` and `include` webpack config fields
- * @memberOf module:mock-requests/bin~resolve-mocks
- */
-function resolveMocks(mocksDir, mockConfigFile, activateMocks) {
-    if (activateMocks) {
-        console.log('Network mocks activated by mock-requests.\n');
-    }
+    
 
-    return {
-        include: activateMocks ? getResolvedPathAsArray(mocksDir) : [],
-        entry: activateMocks ? getResolvedPathAsArray(mockConfigFile) : []
-    };
-}
+    
 
-module.exports = resolveMocks;
-</code></pre>
-        </article>
-    </section>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+            
+
+            
+        
+        </div>
+    
+
+    
+
+    
+
+    
+        <h3 class="subsection-title">Classes</h3>
+
+        <dl>
+            <dt><a href="module-mock-requests_bin-MockRequestsWebpackPlugin.MockRequestsWebpackPlugin.html">MockRequestsWebpackPlugin</a></dt>
+            <dd></dd>
+        </dl>
+    
+    
+    
+
+     
+
+    
+
+    
+
+    
+
+    
+
+    
+</article>
+
+</section>
 
 
 
