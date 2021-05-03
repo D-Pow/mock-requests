@@ -33,7 +33,7 @@
 
 <nav >
     
-    <h2><a href="index.html">Home</a></h2><h2><a href="./demo" >Demo</a></h2><h3>Modules</h3><ul><li><a href="module-mock-requests.html">mock-requests</a></li><li><a href="module-mock-requests_bin_resolve-mocks.html">mock-requests/bin/resolve-mocks</a></li></ul><h3>Namespaces</h3><ul><li><a href="module-mock-requests-MockRequests.html">MockRequests</a><ul class='methods'><li data-type='method'><a href="module-mock-requests-MockRequests.html#.configure">configure</a></li><li data-type='method'><a href="module-mock-requests-MockRequests.html#.configureDynamicResponses">configureDynamicResponses</a></li><li data-type='method'><a href="module-mock-requests-MockRequests.html#.setMockUrlResponse">setMockUrlResponse</a></li><li data-type='method'><a href="module-mock-requests-MockRequests.html#.setDynamicMockUrlResponse">setDynamicMockUrlResponse</a></li><li data-type='method'><a href="module-mock-requests-MockRequests.html#.getResponse">getResponse</a></li><li data-type='method'><a href="module-mock-requests-MockRequests.html#.deleteMockUrlResponse">deleteMockUrlResponse</a></li><li data-type='method'><a href="module-mock-requests-MockRequests.html#.clearAllMocks">clearAllMocks</a></li><li data-type='method'><a href="module-mock-requests-MockRequests.html#.mapStaticConfigToDynamic">mapStaticConfigToDynamic</a></li></ul></li></ul>
+    <h2><a href="index.html">Home</a></h2><h2><a href="./demo" >Demo</a></h2><h3>Modules</h3><ul><li><a href="module-mock-requests.html">mock-requests</a></li><li><a href="module-mock-requests_bin.html">mock-requests/bin</a></li><li></li></ul><h3>Namespaces</h3><ul><li><a href="module-mock-requests-MockRequests.html">MockRequests</a><ul class='methods'><li data-type='method'><a href="module-mock-requests-MockRequests.html#.configure">configure</a></li><li data-type='method'><a href="module-mock-requests-MockRequests.html#.configureDynamicResponses">configureDynamicResponses</a></li><li data-type='method'><a href="module-mock-requests-MockRequests.html#.setMockUrlResponse">setMockUrlResponse</a></li><li data-type='method'><a href="module-mock-requests-MockRequests.html#.setDynamicMockUrlResponse">setDynamicMockUrlResponse</a></li><li data-type='method'><a href="module-mock-requests-MockRequests.html#.getResponse">getResponse</a></li><li data-type='method'><a href="module-mock-requests-MockRequests.html#.deleteMockUrlResponse">deleteMockUrlResponse</a></li><li data-type='method'><a href="module-mock-requests-MockRequests.html#.clearAllMocks">clearAllMocks</a></li><li data-type='method'><a href="module-mock-requests-MockRequests.html#.mapStaticConfigToDynamic">mapStaticConfigToDynamic</a></li></ul></li><li><a href="module-mock-requests_bin-MockRequestsWebpackPlugin.html">MockRequestsWebpackPlugin</a></li><li><a href="module-mock-requests_bin-resolve-mocks.html">resolve-mocks</a><ul class='methods'><li data-type='method'><a href="module-mock-requests_bin-resolve-mocks.html#.resolveMocks">resolveMocks</a></li></ul></li></ul>
 </nav>
 
 <div id="main">
@@ -71,7 +71,7 @@
 never have to change your source code to use mocks ever again.</p>
 <h4>Backed and Used by:</h4>
 <ul>
-<li><a href="https://us.etrade.com"><img src="https://cdn2.etrade.net/1/17092613100.0/aempros/content/dam/etrade/retail/en_US/images/global/logos/etrade-logo-rgb-144x22.svg" alt="E-Trade" /></a></li>
+<li><a href="https://us.etrade.com"><img src="https://cdn2.etrade.net/1/17092613100.0/aempros/content/dam/etrade/retail/en_US/images/global/logos/etrade-logo-rgb-144x22.svg" alt="E-Trade" style="background: white; padding: 5px" /></a></li>
 </ul>
 <h2>Contents</h2>
 <ul>
@@ -87,8 +87,9 @@ never have to change your source code to use mocks ever again.</p>
 </li>
 <li><a href="#separate-from-source">Separating mocks from source</a>
 <ul>
-<li><a href="#simple-instructions">Simple instructions</a></li>
-<li><a href="#activating-via-terminal">Activating via terminal</a></li>
+<li><a href="#bare-bones-instructions">Bare-bones instructions</a></li>
+<li><a href="#plugin-instructions">Webpack Plugin/Activating via CLI</a></li>
+<li><a href="#custom-instructions">Custom instructions</a></li>
 </ul>
 </li>
 <li><a href="#api">MockRequests API</a></li>
@@ -166,7 +167,7 @@ Otherwise, if a URL hasn't been configured with a mock response, the standard as
 experiences the effects. This means you could configure it in one file and then all other files
 that make network requests to the configured URLs will receive the mock responses instead,
 even without importing <code>MockRequests</code>. This makes it very easy to work on the front-end even if
-some APIs are down/haven't been developed yet, or if you have no internet access at all.</p>
+some APIs are down, haven't been developed yet, or if you have no internet access at all.</p>
 <p><a name="examples"></a></p>
 <h2>Examples</h2>
 <p>Note how in the below examples, the <strong>production-bound code doesn't change</strong> between
@@ -385,8 +386,8 @@ MockRequests.configureDynamicResponses(staticDynamicMerged.bob);
 </code></pre>
 <p><a name="separate-from-source"></a></p>
 <h2>Separating mocks from source code</h2>
-<p><a name="simple-instructions"></a></p>
-<h3>Simple instructions</h3>
+<p><a name="bare-bones-instructions"></a></p>
+<h3>Bare-bones instructions</h3>
 <p>In the simplest, bare-bones example, you could just import <code>MockRequests</code> into one of your entry JavaScript files
 (src/index.js, src/App.js, or similar) and configure your mocks there. As long as MockRequests was installed as a
 devDependency and you don't commit this code, it will never enter production.</p>
@@ -417,10 +418,10 @@ For example, if we have the setup:</p>
 </code></pre>
 <p>where <code>MockConfig.js</code> does all the <code>mock-requests</code> configuration, e.g.</p>
 <pre class="prettyprint source lang-javascript"><code>// mocks/MockConfig.js
+
 import MockRequests from 'mock-requests';
 import { myStaticApiUrl, myDynamicApiUrl } from '../src/services/Urls.js';
-// Imports from mocks/ directory
-import { myStaticApiResponse } from './StaticResponses';
+import { myStaticApiResponse } from './StaticResponses'; // Other files in mocks/
 import { myDynamicApiConfig } from './DynamicResponseConfigs';
 
 MockRequests.setMockUrlResponse(myStaticApiUrl, myStaticApiResponse);
@@ -436,20 +437,33 @@ import '../mocks/MockConfig';
 
 ReactDOM.render(&lt;App />, document.getElementById('root'));
 </code></pre>
-<p><a name="activating-via-terminal"></a></p>
-<h3>Activating via Terminal</h3>
-<p>If you prefer not having to change source code to activate/deactivate mocks, then the guide below will explain how to
-activate mocks via terminal, e.g. <code>MOCK=true npm start</code>.</p>
-<ol>
-<li>Import the function from the built-in <code>mock-requests/bin/resolve-mocks.js</code> script to handle activating/deactivating
-mocks for you.</li>
-<li>Pass in the mocks/ directory, the MockConfig.js entry file, and a boolean that determines if mocks should be
-active or not (e.g. <code>process.env.MOCK === 'true'</code>). Returns a <code>resolvedMocks</code> object with <code>entry</code> and <code>include</code>
-arrays.</li>
-<li>Spread the <code>resolvedMocks.entry</code> array in your webpack config's <code>entry</code> field.</li>
-<li>(Optional) Spread the <code>resolvedMocks.include</code> array in your webpack config's <code>include</code> field if you need the
-mock files to be transformed by your JS-loader to run your app on an older browser.</li>
-</ol>
+<p><a name="plugin-instructions"></a></p>
+<h3>Webpack Plugin/Activating via CLI</h3>
+<p>To avoid having to change your source code to activate/deactivate mocks (e.g. src/index.js above), <code>MockRequests</code> comes with a built-in plugin for projects using <a href="https://webpack.js.org/">webpack</a>. As such, assuming you have a separate directory of mocks and a single mock entry file (see above example), you can simply import the <code>MockRequestsWebpackPlugin</code> and use via:</p>
+<pre class="prettyprint source lang-javascript"><code>// webpack.config.js
+const MockRequestsWebpackPlugin = require('mock-requests/bin/MockRequestsWebpackPlugin');
+
+module.exports = {
+    // ...
+    plugins: [
+        // ...
+         new MockRequestsWebpackPlugin(
+            'mocks', // Holds all mock-related files imported by the entry file.
+                     // Relative to the webpack &quot;context&quot; (i.e. project root).
+            'MockConfig.js', // Mock entry file, nested inside `mocks/`.
+            process.env.MOCK === 'true' // Whether or not mocks should be activated.
+        ),
+        // ...
+    ]
+};
+</code></pre>
+<p>and run using <code>MOCK=true npm start</code>.</p>
+<p>Use of this plugin will automatically transpile your code (according to your webpack config's JS/TS rules) and activate mocks based on the boolean of whether or not mocks should be activated. This means you never have to change anything in <code>src/</code> or in webpack.config.js outside of this plugin.</p>
+<p>If the boolean condition resolves to <code>false</code>, then nothing will be added to your build output, keeping mock files out of the final production code. In this example, our toggle is via CLI env variable, but it can be anything else of your choosing.</p>
+<p><a name="custom-instructions"></a></p>
+<h3>Custom instructions</h3>
+<p>If your project doesn't use webpack or if you prefer to have more control over the file-processing, then you could instead use the <code>resolve-mocks.js</code> script to generate the paths to the mock directory/entry-file manually.</p>
+<p>All you have to do is pass in the same fields from the <code>MockRequestsWebpackPlugin</code> into the <code>resolveMocks()</code> function, and spread the resulting <code>entry</code>/<code>include</code> arrays where you want them processed. For example:</p>
 <pre class="prettyprint source lang-javascript"><code>// webpack.config.js
 
 // Returns an object containing arrays to spread in webpack's `include` and `entry` fields.
@@ -458,27 +472,23 @@ const resolveMocks = require('mock-requests/bin/resolve-mocks');
 const resolvedMocks = resolveMocks('mocks', 'mocks/MockConfig.js', process.env.MOCK === 'true');
 
 module.exports = {
-    entry: [ '@babel/polyfill', './src/index.js', ...resolvedMocks.entry ],
     module: {
         rules: [
             {
                 test: /\.jsx?$/,
+                // adds mocks/ directory to loaders for transpilation
                 include: [ /src/, ...resolvedMocks.include ],
                 exclude: [ /node_modules/ ],
                 loader: 'babel-loader'
             }
         ]
-    }
+    },
+    // adds mocks/MockConfig.js entry file to build output
+    entry: [ '@babel/polyfill', './src/index.js', ...resolvedMocks.entry ]
 }
 </code></pre>
 <p>and run using <code>MOCK=true npm start</code>.</p>
-<p>Doing so will allow <code>MockRequests</code> to automatically decide whether the mock directory/file should be resolved.
-It will return empty arrays if the <code>activateMocksBoolean</code> is false or arrays filled with resolved paths if true.
-This way, your MockConfig.js file will be added as an entry point to your app only if desired and will be
-loaded along with the rest of your code. Optionally, if you're using the latest JavaScript features in your
-mock configuration files but want to run them on browsers that lack support, then you'll need those mock files transpiled
-by your loader as well; in that case, add the respective spread to the <code>include</code> field as well.</p>
-<p>In this way, you won't have to change source code between activating and deactivating mocks.</p>
+<p>Doing so will result in the same outcome of the webpack plugin: transpilation of the <code>mocks/</code> directory so you can write your mocks with the latest JS features, as well as adding the mock entry file to your build/run output dynamically -- all while still being toggled by the CLI. Like the plugin, the mocks won't be added to your build output unless the boolean condition resolves to <code>true</code>.</p>
 <p><a name="api"></a></p>
 <h2>MockRequests API</h2>
 <p>In order to make mocking your network calls simpler, config functions have been added to allow for
@@ -533,10 +543,11 @@ so you can alternatively use an instance of the <code>Request</code> class in yo
 </li>
 <li>
 <p>This works with any environment that uses either <code>fetch</code> or <code>XMLHttpRequest</code>, regardless of if said
-environment is a browser, web/service worker, or a Node script. As long as they are defined (natively or
-by polyfill), any usage of <code>fetch</code>/<code>XMLHttpRequest</code> request to a URL configured by <code>MockRequests</code> will be
-mocked appropriately. For example,</p>
-<pre class="prettyprint source lang-javascript"><code>require('isomorphic-fetch');
+environment is a browser, web/service worker, or a Node.js script. As long as <code>fetch</code> and/or <code>XMLHttpRequest</code> are defined (natively or
+by polyfill), any network request to a URL configured by <code>MockRequests</code> will be
+mocked appropriately. For example:</p>
+<pre class="prettyprint source lang-javascript"><code>// my-script.js - called via `node my-script.js`
+require('isomorphic-fetch');
 const MockRequests = require('mock-requests');
 
 // ... use fetch and MockRequests as normal
