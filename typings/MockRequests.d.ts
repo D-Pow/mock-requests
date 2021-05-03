@@ -1,4 +1,4 @@
-// Type definitions for MockRequests
+// Type definitions for mock-requests
 // Project: https://github.com/D-Pow/MockRequests
 // Definitions by: Devon Powell
 
