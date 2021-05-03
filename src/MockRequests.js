@@ -39,7 +39,7 @@ const MockRequests = (() => {
     /**
      * Original XMLHttpRequest class, as defined in the browser
      *
-     * @type {(Object|undefined)}
+     * @type {(XMLHttpRequest|undefined)}
      * @memberOf module:mock-requests~MockRequests
      */
     let OriginalXHR;
@@ -47,7 +47,7 @@ const MockRequests = (() => {
     /**
      * Original fetch function, as defined in the browser
      *
-     * @type {(Function|undefined)}
+     * @type {(function|undefined)}
      * @memberOf module:mock-requests~MockRequests
      */
     let originalFetch;
@@ -189,7 +189,7 @@ const MockRequests = (() => {
         const isMocked = urlIsMocked(url);
 
         if (!isMocked) {
-            return undefined;
+            return null;
         }
 
         const { pathname } = getPathnameAndQueryParams(url);
@@ -266,7 +266,7 @@ const MockRequests = (() => {
      * Parses a URL for query parameters/hash entry and extracts the pathname/query parameter map respectively.
      *
      * @param {string} url - URL to parse for query parameters
-     * @returns {{hasQueryParams: boolean, queryParamMap: Object, pathname: string}} - Pathname, query parameter map, and if query params/hash exist
+     * @returns {{hasQueryParams: boolean, queryParamMap: Object<string, string>, pathname: string}} - Pathname, query parameter map, and if query params/hash exist
      */
     function getPathnameAndQueryParams(url) {
         const queryIndex = url.indexOf('?');
