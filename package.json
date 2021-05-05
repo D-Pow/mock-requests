@@ -5,7 +5,7 @@
   "author": "Devon Powell",
   "license": "MIT",
   "main": "index.js",
-  "types": "index.d.js",
+  "types": "index.d.ts",
   "files": [
     "*"
   ],
