@@ -65,7 +65,7 @@ This becomes extremely useful if you want to **switch app-wide mocks between dif
 * **Greatly simplify API testing**. Just define `fetch` and/or `XMLHttpRequest` in a test setup file and configure
 `MockRequests` with the responses you expect. It will handle all the heavy-lifting of mocking network responses for you
 so you don't have to repetitively use e.g. `fetch = jest.fn()`.
-* Compatible with all JavaScript environments, including back-end Node scripts, as long as either `fetch` or
+* Compatible with **all JavaScript environments**, including back-end Node scripts, as long as either `fetch` or
 `XMLHttpRequest` are defined and used in that environment (natively or by polyfill).
 
 <a name="installation"></a>
