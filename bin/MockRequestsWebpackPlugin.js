@@ -71,6 +71,7 @@ class MockRequestsWebpackPlugin {
     /**
      * @param {RuleSetCondition} condition - User-defined condition for matching directories/files.
      * @returns {boolean} - If the condition matches the mock directory/entry file.
+     * @private
      */
     webpackConditionMatchesMockDir(condition) {
         const { mockDirAbsPath, mockEntryAbsPath } = this;
@@ -166,6 +167,7 @@ class MockRequestsWebpackPlugin {
 
     /**
      * @param {Compiler} compiler
+     * @private
      */
     apply(compiler) {
         if (!this.activateMocks) {
