@@ -63,12 +63,16 @@ class MockRequestsWebpackPlugin {
         return absPath;
     }
 
+    setAbsPaths(projectRootPath) {
+        this.mockDirAbsPath = this.getAbsPath(projectRootPath);
+        this.mockEntryAbsPath = this.getAbsPath(projectRootPath, true);
+    }
+
     injectMocksIntoWebpackConfig(projectRootPath, moduleRules, entry) {
         try {
             const firstEntryName = Object.keys(entry)[0];
             const firstEntryList = entry[firstEntryName].import;
-            const mockDirAbsPath = this.getAbsPath(projectRootPath);
-            const mockEntryAbsPath = this.getAbsPath(projectRootPath, true);
+            const { mockDirAbsPath, mockEntryAbsPath } = this;
 
             if (!mockDirAbsPath) {
                 throw new Error(`Could not find mock directory "${this.mocksDir}" from webpack context directory "${projectRootPath}"`);
@@ -78,10 +82,10 @@ class MockRequestsWebpackPlugin {
                 throw new Error(`Could not find mock entry file "${this.mockEntryFile}" from webpack context directory "${projectRootPath}"`);
             }
 
-            const addedNewEntry = this.addMockEntryFileToConfigEntry(firstEntryList, mockEntryAbsPath);
+            const addedNewEntry = this.addMockEntryFileToConfigEntry(firstEntryList);
 
             if (addedNewEntry) {
-                this.addMockDirToModuleRule(moduleRules, mockDirAbsPath, mockEntryAbsPath);
+                this.addMockDirToModuleRule(moduleRules);
 
                 console.log('Network mocks activated by mock-requests.\n');
             }
@@ -91,7 +95,9 @@ class MockRequestsWebpackPlugin {
         }
     }
 
-    addMockEntryFileToConfigEntry(configEntryList, mockEntryAbsPath) {
+    addMockEntryFileToConfigEntry(configEntryList) {
+        const { mockEntryAbsPath } = this;
+
         if (configEntryList.includes(mockEntryAbsPath)) {
             // Mock entry file has already been added to webpack config
             // Don't add it again if a rebuild is triggered
@@ -103,10 +109,12 @@ class MockRequestsWebpackPlugin {
         return true;
     }
 
-    addMockDirToModuleRule(moduleRules, mockDirAbsPath, mockEntryAbsPath) {
+    addMockDirToModuleRule(moduleRules) {
         if (!this.transpileMocksDir) {
             return;
         }
+
+        const { mockDirAbsPath, mockEntryAbsPath } = this;
 
         const ruleTestMatchesMockDir = ruleTest => {
             if (ruleTest instanceof RegExp) {
@@ -157,6 +165,8 @@ class MockRequestsWebpackPlugin {
         if (!this.activateMocks) {
             return;
         }
+
+        this.setAbsPaths(compiler.context);
 
         const rules = compiler.options.module.rules;
 
