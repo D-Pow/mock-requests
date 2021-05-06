@@ -68,6 +68,32 @@ class MockRequestsWebpackPlugin {
         this.mockEntryAbsPath = this.getAbsPath(projectRootPath, true);
     }
 
+    webpackConditionMatchesMockDir(condition) {
+        const { mockDirAbsPath, mockEntryAbsPath } = this;
+
+        if (condition instanceof RegExp) {
+            return condition.test(mockEntryAbsPath);
+        } else if (typeof condition === typeof '') {
+            return condition.includes(mockDirAbsPath);
+        } else if (typeof condition === typeof this.constructor) {
+            return condition(this.mocksDir) || condition(this.mockEntryFile) || condition(mockDirAbsPath) || condition(mockEntryAbsPath);
+        } else if (Array.isArray(condition)) {
+            return condition.some(this.webpackConditionMatchesMockDir);
+        } else { // is Object with and/or/not keys
+            const allAndConditionsMet = condition.and
+                ? condition.and.reduce((matches, cond) => matches && this.webpackConditionMatchesMockDir(cond), true)
+                : true;
+            const anyOrConditionsMet = condition.or
+                ? condition.or.some(this.webpackConditionMatchesMockDir)
+                : true;
+            const allNotConditionsMet = condition.not
+                ? condition.not.reduce((matches, cond) => matches && !this.webpackConditionMatchesMockDir(cond), true)
+                : true;
+
+            return allAndConditionsMet && anyOrConditionsMet && allNotConditionsMet;
+        }
+    }
+
     injectMocksIntoWebpackConfig(projectRootPath, moduleRules, entry) {
         try {
             const firstEntryName = Object.keys(entry)[0];
@@ -114,33 +140,9 @@ class MockRequestsWebpackPlugin {
             return;
         }
 
-        const { mockDirAbsPath, mockEntryAbsPath } = this;
+        const { mockDirAbsPath } = this;
 
-        const ruleTestMatchesMockDir = ruleTest => {
-            if (ruleTest instanceof RegExp) {
-                return ruleTest.test(mockEntryAbsPath);
-            } else if (typeof ruleTest === typeof '') {
-                return ruleTest.includes(mockDirAbsPath);
-            } else if (typeof ruleTest === typeof this.constructor) {
-                return ruleTest(this.mocksDir) || ruleTest(this.mockEntryFile) || ruleTest(mockDirAbsPath) || ruleTest(mockEntryAbsPath);
-            } else if (Array.isArray(ruleTest)) {
-                return ruleTest.some(ruleTestMatchesMockDir);
-            } else { // is Object with and/or/not keys
-                const allAndConditionsMet = ruleTest.and
-                    ? ruleTest.and.reduce((matches, test) => matches && ruleTestMatchesMockDir(test), true)
-                    : true;
-                const anyOrConditionsMet = ruleTest.or
-                    ? ruleTest.or.some(ruleTestMatchesMockDir)
-                    : true;
-                const allNotConditionsMet = ruleTest.not
-                    ? ruleTest.not.reduce((matches, test) => matches && !ruleTestMatchesMockDir(test), true)
-                    : true;
-
-                return allAndConditionsMet && anyOrConditionsMet && allNotConditionsMet;
-            }
-        };
-
-        const matchingRuleForMockEntryFile = moduleRules.find(rule => ruleTestMatchesMockDir(rule.test));
+        const matchingRuleForMockEntryFile = moduleRules.find(rule => this.webpackConditionMatchesMockDir(rule.test));
 
         if (matchingRuleForMockEntryFile) {
             const mockDirInclude = matchingRuleForMockEntryFile.include;
