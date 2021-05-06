@@ -1,6 +1,6 @@
 const fs = require('fs');
 const path = require('path');
-const { WebpackPluginInstance, Compiler } = require('webpack');
+const { WebpackPluginInstance, Compiler, RuleSetCondition } = require('webpack');
 
 /**
  * @module mock-requests/bin
@@ -68,6 +68,10 @@ class MockRequestsWebpackPlugin {
         this.mockEntryAbsPath = this.getAbsPath(projectRootPath, true);
     }
 
+    /**
+     * @param {RuleSetCondition} condition - User-defined condition for matching directories/files.
+     * @returns {boolean} - If the condition matches the mock directory/entry file.
+     */
     webpackConditionMatchesMockDir(condition) {
         const { mockDirAbsPath, mockEntryAbsPath } = this;
 
