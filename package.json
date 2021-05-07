@@ -18,7 +18,12 @@
     "clean": "npx shx rm -rf dist docs coverage",
     "build": "webpack --mode production",
     "prebuild": "npm run clean",
-    "postbuild": "npm run jsdoc",
+    "postbuild": "npm run docgen",
+    "docgen": "npm run gentypes",
+    "postdocgen": "npm run jsdoc",
+    "gentypes": "npm run tsdoc:separate && echo 'Trying separate configs, if it fails, try combined instead'",
+    "tsdoc:separate": "jsdoc -c config/jsdoc-typings-src.config.json && jsdoc -c config/jsdoc-typings-bin.config.json",
+    "tsdoc:combined": "jsdoc -c config/jsdoc-typings-combined.config.json",
     "jsdoc": "jsdoc -R ./ReadMe.md -c config/jsdoc.config.json",
     "postjsdoc": "npm run build:demo",
     "build:demo": "cd demo && npm run build"
@@ -40,6 +45,7 @@
     "jest": "^26.6.3",
     "jsdoc": "^3.6.6",
     "shelljs": "^0.8.4",
+    "tsd-jsdoc": "^2.5.0",
     "webpack": "^5.11.0",
     "webpack-cli": "^4.7.0"
   },

@@ -1,0 +1,14 @@
+{
+    "source": {
+        "include": [ "bin" ]
+    },
+    "opts": {
+        "destination": "bin",
+        "template": "node_modules/tsd-jsdoc/dist"
+    },
+    "templates": {
+        "default": {
+            "includeDate": false
+        }
+    }
+}
