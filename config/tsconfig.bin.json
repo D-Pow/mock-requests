@@ -1,0 +1,15 @@
+{
+    "extends": "./tsconfig.json",
+    "compilerOptions": {
+        "module": "CommonJS",
+//        "allowUmdGlobalAccess": true, // allows accessing exports from external libs used within this app's code
+    },
+    "include": [
+        "../bin"
+    ]
+//    "typeAcquisition": {
+//        "include": [
+//            "webpack"
+//        ]
+//    }
+}
