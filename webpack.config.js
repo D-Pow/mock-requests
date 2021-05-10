@@ -25,7 +25,7 @@ module.exports = {
         rules: [
             {
                 test: /\.js$/,
-                exclude: /(node_modules|typings)/,
+                exclude: /node_modules/,
                 include: path.resolve(__dirname, 'src'),
                 use: 'babel-loader'
             }
@@ -34,10 +34,6 @@ module.exports = {
     plugins: [
         new CopyWebpackPlugin({
             patterns: [
-                {
-                    from: 'typings/MockRequests.d.ts',
-                    to: 'index.d.[ext]'
-                },
                 {
                     from: 'bin',
                     to: 'bin'
