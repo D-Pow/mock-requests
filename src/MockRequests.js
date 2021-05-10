@@ -22,7 +22,7 @@
  *
  * @namespace MockRequests
  */
-const MockRequests = (() => {
+const MockRequests = (function MockRequestsFactory() {
     /**
      * Key (URL string) - Value ({@link MockResponseConfig}) pairs for network mocks
      *
