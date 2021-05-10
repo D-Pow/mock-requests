@@ -9,34 +9,14 @@
  * @module mock-requests
  */
 
+/** @typedef {import('./types').JsonPrimitive} JsonPrimitive */
+/** @typedef {import('./types').DynamicResponseModFn} DynamicResponseModFn */
+/** @typedef {import('./types').MockResponseConfig} MockResponseConfig */
+
 /**
  * @namespace MockRequests
  */
-
 const MockRequests = (() => {
-    /**
-     * Valid JSON primitive types.
-     *
-     * @typedef {(string|number|boolean|null|JsonPrimitive[]|Object<string, JsonPrimitive>)} JsonPrimitive
-     * @memberOf module:mock-requests~MockRequests
-     */
-    /**
-     * @typedef {function} DynamicResponseModFn
-     * @param {JsonPrimitive} request - Payload passed to the async function
-     * @param {JsonPrimitive} response - Previous response object to be modified
-     * @param {Object<string, string>} queryParamMap - Key-value map of query parameters from the request URL. Hash content will be stored in 'hash' key.
-     * @returns {JsonPrimitive} modifiedResponse - Updated response to be saved in the mock response map
-     * @memberOf module:mock-requests~MockRequests
-     */
-    /**
-     * @typedef {Object} MockResponseConfig
-     * @property {JsonPrimitive} [response=null] - Initial mock response to be returned/passed into dynamicResponseModFn
-     * @property {DynamicResponseModFn} [dynamicResponseModFn=null] - Function to dynamically change the response object based on previous request/response
-     * @property {number} [delay=0] - Optional network mock resolution time
-     * @property {boolean} [usePathnameForAllQueries=false] - Optional flag to treat all URLs with the same pathname identically
-     * @memberOf module:mock-requests~MockRequests
-     */
-
     /**
      * Key (URL string) - Value ({@link MockResponseConfig}) pairs for network mocks
      *
