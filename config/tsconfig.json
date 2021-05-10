@@ -18,7 +18,9 @@
         "declaration": true, // generates typings.d.ts files
         "emitDeclarationOnly": true, // don't compile .ts files
         "outDir": "../dist", // output of running `npx tsc [-b|-p] tsconfig.json`
-        "rootDir": ".." // where to start looking for input files
+        "rootDir": "..", // where to start looking for input files
+        "esModuleInterop": true, // allows `import * as UserDefinedNamespace from 'my-module'`
+        "allowSyntheticDefaultImports": true, // allow imports of default exports even if .js files instead of .ts. Automatically activated if esModuleInterop is true
     },
     "exclude": [
         "../node_modules"
