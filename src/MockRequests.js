@@ -14,6 +14,12 @@
 /** @typedef {import('./types').MockResponseConfig} MockResponseConfig */
 
 /**
+ * MockRequests will mock both `XMLHttpRequest` and `fetch` such that
+ * one single configure call, and the entire app is provided with mocks.
+ *
+ * URLs not configured will be unaffected and still trigger an
+ * async request as normal.
+ *
  * @namespace MockRequests
  */
 const MockRequests = (() => {
@@ -502,7 +508,7 @@ const MockRequests = (() => {
     };
 })();
 
-export default MockRequests;
+
 export const {
     configure,
     configureDynamicResponses,
