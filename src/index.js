@@ -1,3 +1,14 @@
+/**
+ * API to configure mocks for your application.
+ *
+ * @module mock-requests
+ */
+
+/**
+ * @name {@link MockRequests}
+ * @type {namespace}
+ */
+
 /*
  * Must import whole module so that the default import on the
  * user's end offers autocompletion in the IDE from the
