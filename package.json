@@ -24,7 +24,7 @@
     "gentypes": "npm run gentypes:src && npm run gentypes:bin",
     "gentypes:src": "tsc -b config/tsconfig.src.json",
     "gentypes:bin": "tsc -b config/tsconfig.bin.json",
-    "jsdoc": "jsdoc -R ./ReadMe.md -c config/jsdoc.config.json",
+    "jsdoc": "jsdoc -c config/jsdoc.config.json",
     "postjsdoc": "npm run build:demo",
     "build:demo": "cd demo && npm run build"
   },

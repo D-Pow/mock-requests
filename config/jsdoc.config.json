@@ -4,6 +4,7 @@
     },
     "opts": {
         "destination": "./docs",
+        "readme": "./ReadMe.md",
         "template": "node_modules/docdash"
     },
     "templates": {
