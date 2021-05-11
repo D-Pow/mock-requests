@@ -27,7 +27,6 @@ const MockRequests = (function MockRequestsFactory() {
      * Key (URL string) - Value ({@link MockResponseConfig}) pairs for network mocks
      *
      * @type {Object<string, MockResponseConfig>}
-     * @private
      */
     let urlResponseMap = {};
 
@@ -179,7 +178,6 @@ const MockRequests = (function MockRequestsFactory() {
      *
      * @param {string} url
      * @returns {(MockResponseConfig|undefined)}
-     * @private
      */
     function getConfig(url) {
         const isMocked = urlIsMocked(url);
@@ -200,7 +198,6 @@ const MockRequests = (function MockRequestsFactory() {
      *
      * @param {MockResponseConfig} mockResponseConfig - Config object with the fields desired to be configured
      * @returns {MockResponseConfig}
-     * @private
      */
     function createConfigObj({ response = null, dynamicResponseModFn = null, delay = 0, usePathnameForAllQueries = false } = {}) {
         const mockResponseConfig = {
@@ -230,7 +227,6 @@ const MockRequests = (function MockRequestsFactory() {
      *
      * @param {JsonPrimitive} [obj=null]
      * @returns {JsonPrimitive}
-     * @private
      */
     function deepCopyObject(obj = null) {
         return JSON.parse(JSON.stringify(obj));
@@ -255,7 +251,6 @@ const MockRequests = (function MockRequestsFactory() {
      * Gets the `responseText` for XHR or `res.text()` for fetch.
      *
      * @param {JsonPrimitive} response
-     * @private
      */
     function castToString(response) {
         return (typeof response === typeof {}) ? JSON.stringify(response) : `${response}`;
@@ -266,7 +261,6 @@ const MockRequests = (function MockRequestsFactory() {
      *
      * @param {string} url - URL to parse for query parameters
      * @returns {{hasQueryParams: boolean, queryParamMap: Object<string, string>, pathname: string}} - Pathname, query parameter map, and if query params/hash exist
-     * @private
      */
     function getPathnameAndQueryParams(url) {
         const queryIndex = url.indexOf('?');
@@ -319,7 +313,6 @@ const MockRequests = (function MockRequestsFactory() {
      *
      * @param {*} content
      * @returns {(JsonPrimitive|*)} - Object if the content is a stringified object, otherwise the passed content
-     * @private
      */
     function attemptParseJson(content) {
         let parsedContent;
@@ -340,7 +333,6 @@ const MockRequests = (function MockRequestsFactory() {
      * @param {string} url
      * @param {JsonPrimitive} requestPayload
      * @returns {JsonPrimitive} - Configured response after the dynamic modification function has been run (if it exists)
-     * @private
      */
     async function getResponseAndDynamicallyUpdate(url, requestPayload) {
         const mockResponseConfig = getConfig(url);
@@ -367,7 +359,6 @@ const MockRequests = (function MockRequestsFactory() {
      * @param {number} delay - Milliseconds delay
      * @param {function} func - Function to wrap
      * @returns {function} - Original function if no delay or same function to be called after a delay
-     * @private
      */
     function withOptionalDelay(delay, func) {
         if (delay) {
@@ -389,8 +380,6 @@ const MockRequests = (function MockRequestsFactory() {
      *
      * The wrapper always marks the request as successful,
      * e.g. status = 200 and statusText = 'OK'
-     *
-     * @private
      */
     function overwriteXmlHttpRequestObject() {
         OriginalXHR = XMLHttpRequest;
@@ -445,8 +434,6 @@ const MockRequests = (function MockRequestsFactory() {
     /**
      * Overwrites the fetch() function with a wrapper that mocks
      * the response value after the configured delay has passed.
-     *
-     * @private
      */
     function overwriteFetch() {
         originalFetch = globalScope.fetch.bind(globalScope);
