@@ -1,6 +1,7 @@
 {
     "source": {
-        "include": [ "src/MockRequests.js", "bin" ]
+        "include": [ "src", "bin" ],
+        "includePattern": "\\.(j|t)sx?$"
     },
     "opts": {
         "destination": "./docs",
@@ -12,6 +13,10 @@
             "includeDate": false
         }
     },
+    "plugins": [
+        "node_modules/better-docs/typescript",
+        "node_modules/better-docs/typedef-import"
+    ],
     "docdash": {
         "sort": false,
         "sectionOrder": [
