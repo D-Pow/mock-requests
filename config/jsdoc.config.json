@@ -1,12 +1,15 @@
 {
     "source": {
         "include": [ "src", "bin" ],
-        "includePattern": "\\.(j|t)sx?$"
+        "includePattern": "\\.[jt]sx?$"
     },
     "opts": {
         "destination": "./docs",
         "readme": "./ReadMe.md",
         "template": "node_modules/docdash"
+    },
+    "tags": {
+        "allowUnknownTags": true
     },
     "templates": {
         "default": {
