@@ -35,6 +35,9 @@
         "menu": {
             "Demo": {
                 "href": "./demo"
+            },
+            "GitHub": {
+                "href": "https://github.com/D-Pow/MockRequests"
             }
         }
     }
