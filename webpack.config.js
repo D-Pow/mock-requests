@@ -8,8 +8,10 @@ module.exports = {
     output: {
         path: path.resolve(__dirname, 'dist'),
         filename: '[name].js',
-        library: 'MockRequests',
-        libraryTarget: 'umd',
+        library: {
+            name: 'MockRequests',
+            type: 'umd'
+        },
         globalObject: 'this',
         environment: {
             arrowFunction: false,
@@ -26,7 +28,7 @@ module.exports = {
             {
                 test: /\.js$/,
                 exclude: /node_modules/,
-                include: path.resolve(__dirname, 'src'),
+                include: /src/,
                 use: 'babel-loader'
             }
         ]
