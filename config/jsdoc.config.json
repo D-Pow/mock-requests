@@ -1,6 +1,6 @@
 {
     "source": {
-        "include": [ "src", "bin" ],
+        "include": [ "config/jsdoc.shim.js", "src", "bin" ],
         "includePattern": "\\.[jt]sx?$"
     },
     "opts": {
