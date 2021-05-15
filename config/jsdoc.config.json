@@ -24,7 +24,8 @@
         "sort": false,
         "sectionOrder": [
             "Modules",
-            "Namespaces"
+            "Namespaces",
+            "Classes"
         ],
         "typedefs": true,
         "meta": {
