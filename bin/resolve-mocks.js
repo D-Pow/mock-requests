@@ -23,9 +23,6 @@ function getResolvedPathAsArray(mockPath) {
 }
 
 /**
- * @module mock-requests/bin
- */
-/**
  * @namespace resolve-mocks
  */
 
@@ -33,7 +30,7 @@ function getResolvedPathAsArray(mockPath) {
  * @typedef {Object} ResolvedMocks
  * @property {string[]} include - Array containing mocks/ directory; spread it in `module.rules[jsLoader].include` webpack config field
  * @property {string[]} entry - Array containing mock entry file; spread it in `entry` webpack config field
- * @memberOf module:mock-requests/bin~resolve-mocks
+ * @memberOf resolve-mocks
  */
 
 /**
@@ -48,7 +45,7 @@ function getResolvedPathAsArray(mockPath) {
  * @param {string} mockConfigFile - Entry JS file that configures all mocks.
  * @param {boolean} activateMocks - If mocks should be activated/injected into build or not.
  * @returns {ResolvedMocks} - Object containing arrays of files to spread in `entry` and `include` webpack config fields
- * @memberOf module:mock-requests/bin~resolve-mocks
+ * @memberOf resolve-mocks
  */
 function resolveMocks(mocksDir, mockConfigFile, activateMocks) {
     if (activateMocks) {

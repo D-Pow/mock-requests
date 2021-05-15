@@ -3,10 +3,16 @@ const path = require('path');
 const { WebpackPluginInstance, Compiler, RuleSetCondition } = require('webpack');
 
 /**
- * @module mock-requests/bin
+ * @external WebpackPluginInstance
+ * @see https://webpack.js.org/api/
  */
 /**
- * @namespace MockRequestsWebpackPlugin
+ * @external Compiler
+ * @see https://webpack.js.org/api/
+ */
+/**
+ * @external RuleSetCondition
+ * @see https://webpack.js.org/api/
  */
 
 /**
@@ -15,7 +21,6 @@ const { WebpackPluginInstance, Compiler, RuleSetCondition } = require('webpack')
  * the entry file within it to the build/run output for the user.
  *
  * @extends WebpackPluginInstance
- * @memberOf module:mock-requests/bin~MockRequestsWebpackPlugin
  */
 class MockRequestsWebpackPlugin {
     /**
@@ -27,7 +32,6 @@ class MockRequestsWebpackPlugin {
      * @param {Object} [options]
      * @param {boolean} [options.pathsAreAbsolute=false] - If `mocksDir` and `mockEntryFile` are absolute paths instead of relative.
      * @param {boolean} [options.transpileMocksDir=true] - If the files within `mocksDir` should be transpiled.
-     * @memberOf module:mock-requests/bin~MockRequestsWebpackPlugin
      */
     constructor(
         mocksDir,
