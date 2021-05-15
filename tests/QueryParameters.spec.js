@@ -1,4 +1,4 @@
-import MockRequests from '../src/MockRequests';
+import MockRequests from '../src';
 
 const mockUrlPathname = 'https://example.com/someApi';
 const mockUrl1 = mockUrlPathname + '?q1=val1&q2=val2#someHash';

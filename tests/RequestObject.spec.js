@@ -1,4 +1,4 @@
-import MockRequests from '../src/MockRequests';
+import MockRequests from '../src';
 
 const mockUrl = 'https://example.com';
 const mockConfig = {
