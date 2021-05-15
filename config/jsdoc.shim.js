@@ -6,6 +6,9 @@
  */
 
 /**
+ * Utility files for easily setting up MockRequests within your
+ * app's specific configuration.
+ *
  * @module mock-requests/bin
  */
 /**
