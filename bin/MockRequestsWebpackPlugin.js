@@ -1,16 +1,21 @@
 const fs = require('fs');
 const path = require('path');
-const { WebpackPluginInstance, Compiler, RuleSetCondition } = require('webpack');
+const { WebpackPluginInstance, Compiler, RuleSetCondition } = require('webpack/lib');
 
-/**
+// /** @typedef {import('webpack/types').WebpackPluginInstance} WebpackPluginInstance */
+// /** @typedef {import('webpack/types').Compiler} Compiler */
+// /** @typedef {import('webpack/types').RuleSetCondition} RuleSetCondition */
+
+// TODO multiple externals in one block - is it acceptable?
+/*
  * @external WebpackPluginInstance
- * @see https://webpack.js.org/api/
+ * @see https://github.com/webpack/webpack/blob/master/types.d.ts
  */
-/**
+/*
  * @external Compiler
  * @see https://webpack.js.org/api/
  */
-/**
+/*
  * @external RuleSetCondition
  * @see https://webpack.js.org/api/
  */
@@ -193,3 +198,4 @@ class MockRequestsWebpackPlugin {
 }
 
 module.exports = MockRequestsWebpackPlugin;
+module.exports.default = MockRequestsWebpackPlugin;
