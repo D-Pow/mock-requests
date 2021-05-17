@@ -17,6 +17,7 @@
         }
     },
     "plugins": [
+        "config/jsdoc.fix-ts-type-defs-plugin.js",
         "node_modules/better-docs/typescript",
         "node_modules/better-docs/typedef-import"
     ],

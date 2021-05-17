@@ -1,11 +1,4 @@
 /**
- * Valid JSON primitive types.
- *
- * @typedef {(string | number | boolean | null | JsonPrimitive[] | Object<string, JsonPrimitive>)} JsonPrimitive
- * @global
- */
-
-/**
  * Utility files for easily setting up MockRequests within your
  * app's specific configuration.
  *
