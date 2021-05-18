@@ -137,12 +137,14 @@ class MockRequestsWebpackPlugin {
         }
 
         const { mockDirAbsPath } = this;
-
         const matchingRuleForMockEntryFile = moduleRules.find(rule => this.webpackConditionMatchesMockDir(rule.test));
 
         if (matchingRuleForMockEntryFile) {
             const userWebpackRuleInclude = matchingRuleForMockEntryFile.include;
 
+            // Note: If `include` doesn't exist, then the matching rule applies to everything in the `compiler.context`
+            // so there's no need to add the mock directory since it will be handled automatically, even if the user
+            // applied a `rule.resource(Query)` (see: https://webpack.js.org/configuration/module/#ruleresource)
             if (userWebpackRuleInclude instanceof RegExp) {
                 matchingRuleForMockEntryFile.include = [ userWebpackRuleInclude, mockDirAbsPath ];
             } else if (Array.isArray(userWebpackRuleInclude)) {
