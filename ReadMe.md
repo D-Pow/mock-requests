@@ -93,7 +93,7 @@ so you don't have to repetitively use e.g. `fetch = jest.fn()`.
 <a name="usage"></a>
 ## Usage
 
-API docs can be viewed in the [JSDoc](https://d-pow.github.io/MockRequests/module-mock-requests-MockRequests.html) along with
+API docs can be viewed in the [JSDoc](https://d-pow.github.io/MockRequests/MockRequests.html) along with
 a [live demo](https://d-pow.github.io/MockRequests/demo/).
 
 This library wraps `XMLHttpRequest` and `fetch` such that any network request to a configured
@@ -517,7 +517,7 @@ Doing so will result in the same outcome of the webpack plugin: transpilation of
 
 In order to make mocking your network calls simpler, config functions have been added to allow for
 setting, getting, and deleting mock responses for your network calls. These are described at length
-in the [JSDoc](https://d-pow.github.io/MockRequests/module-mock-requests-MockRequests.html).
+in the [JSDoc](https://d-pow.github.io/MockRequests/MockRequests.html).
 
 ##### configure(staticUrlResponseConfigObject, overwritePreviousConfig = true)
 ##### configureDynamicResponses(dynamicUrlResponseConfigObject, overwritePreviousConfig = true)
