@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    
+    <meta charset="utf-8">
+    <title>MockRequestsWebpackPlugin - Documentation</title>
+    
+    <meta name="description" content="MockRequests will mock both XMLHttpRequest and fetch such that any requested URL will return the specified mock object instead of actually making an async request. URLs not configured will be unaffected and still trigger an async request as normal." />
+    
+        <meta name="keywords" content="request HTTP requests XMLHttpRequest fetch mock mocks network" />
+        <meta name="keyword" content="request HTTP requests XMLHttpRequest fetch mock mocks network" />
+    
+    
+    
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc.css">
+    <script src="scripts/nav.js" defer></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav >
+    
+    <h2><a href="index.html">Home</a></h2><h2><a href="./demo" >Demo</a></h2><h2><a href="https://github.com/D-Pow/MockRequests" >GitHub</a></h2><h3>Modules</h3><ul><li><a href="module-mock-requests.html">mock-requests</a></li><li><a href="module-mock-requests_bin.html">mock-requests/bin</a></li></ul><h3>Namespaces</h3><ul><li><a href="MockRequests.html">MockRequests</a><ul class='methods'><li data-type='method'><a href="MockRequests.html#.configure">configure</a></li><li data-type='method'><a href="MockRequests.html#.configureDynamicResponses">configureDynamicResponses</a></li><li data-type='method'><a href="MockRequests.html#.setMockUrlResponse">setMockUrlResponse</a></li><li data-type='method'><a href="MockRequests.html#.setDynamicMockUrlResponse">setDynamicMockUrlResponse</a></li><li data-type='method'><a href="MockRequests.html#.getResponse">getResponse</a></li><li data-type='method'><a href="MockRequests.html#.deleteMockUrlResponse">deleteMockUrlResponse</a></li><li data-type='method'><a href="MockRequests.html#.clearAllMocks">clearAllMocks</a></li><li data-type='method'><a href="MockRequests.html#.mapStaticConfigToDynamic">mapStaticConfigToDynamic</a></li></ul></li><li><a href="resolve-mocks.html">resolve-mocks</a><ul class='methods'><li data-type='method'><a href="resolve-mocks.html#.resolveMocks">resolveMocks</a></li></ul></li></ul><h3>Classes</h3><ul><li><a href="MockRequestsWebpackPlugin.html">MockRequestsWebpackPlugin</a></li></ul><h3>Global</h3><ul><li><a href="global.html#JsonPrimitive">JsonPrimitive</a></li><li><a href="global.html#DynamicResponseModFn">DynamicResponseModFn</a></li><li><a href="global.html#MockResponseConfig">MockResponseConfig</a></li></ul>
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">MockRequestsWebpackPlugin</h1>
+    
+
+    
+
+
+
+
+<section>
+
+<header>
+    
+        <h2>
+        MockRequestsWebpackPlugin
+        </h2>
+        
+            <div class="class-description">Webpack plugin for automatically resolving the mock directory,
+including transpiling all files it contains as well as adding
+the entry file within it to the build/run output for the user.</div>
+        
+    
+</header>
+
+<article>
+    
+        <div class="container-overview">
+        
+            
+
+    
+    <h2>Constructor</h2>
+    
+
+    <h4 class="name" id="MockRequestsWebpackPlugin"><span class="type-signature"></span>new MockRequestsWebpackPlugin<span class="signature">(mocksDir, mockEntryFile, activateMocks, options<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="bin_MockRequestsWebpackPlugin.js.html">bin/MockRequestsWebpackPlugin.js</a>, <a href="bin_MockRequestsWebpackPlugin.js.html#line12">line 12</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    Activates mock-requests based on the provided parameters.
+</div>
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>mocksDir</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last">Directory of all mock files/logic, including the `mockEntryFile`.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>mockEntryFile</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last">Entry file that calls `MockRequests.configure()`.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>activateMocks</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last">If mocks determined by `mockEntryFile` should be activated or not.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>options</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last">
+                <h6>Properties</h6>
+                
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>pathsAreAbsolute</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>false</code>
+                
+                </td>
+            
+
+            <td class="description last">If `mocksDir` and `mockEntryFile` are absolute paths instead of relative.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>transpileMocksDir</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>true</code>
+                
+                </td>
+            
+
+            <td class="description last">If the files within `mocksDir` should be transpiled.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+            </td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+        </div>
+    
+
+    
+        <h3 class="subsection-title">Extends</h3>
+
+        
+
+
+    <ul>
+        <li>WebpackPluginInstance</li>
+    </ul>
+
+
+    
+
+    
+
+    
+    
+    
+
+     
+
+    
+
+    
+
+    
+
+    
+
+    
+</article>
+
+</section>
+
+
+
+
+    
+    
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.7</a> using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/polyfill.js"></script>
+<script src="scripts/linenumber.js"></script>
+
+
+
+</body>
+</html>
