@@ -1,7 +1,5 @@
 /**
  * Valid JSON primitive types.
- *
- * @memberOf MockRequests
  */
 export type JsonPrimitive = (
     | string
@@ -21,7 +19,6 @@ export type JsonPrimitive = (
  * @param {JsonPrimitive} response - Response object returned by the previous network call and modified by this same function.
  * @param {Object<string, string>} queryParamMap - Key-value map of query parameters from the request URL. Hash content will be stored in 'hash' key.
  * @returns {JsonPrimitive} Dynamic response; will be saved for subsequent calls.
- * @memberOf MockRequests
  */
 export type DynamicResponseModFn = (
     request: JsonPrimitive,
@@ -42,7 +39,6 @@ export type DynamicResponseModFn = (
  * @property {DynamicResponseModFn} [dynamicResponseModFn=null] - Function to dynamically change the response object based on each request's contents.
  * @property {number} [delay=0] - Optional network mock resolution time.
  * @property {boolean} [usePathnameForAllQueries=false] - Optional flag to treat all URLs with the same pathname identically.
- * @memberOf MockRequests
  */
 export type MockResponseConfig = {
     response?: JsonPrimitive;
