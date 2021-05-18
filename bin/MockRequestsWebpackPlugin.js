@@ -141,12 +141,12 @@ class MockRequestsWebpackPlugin {
         const matchingRuleForMockEntryFile = moduleRules.find(rule => this.webpackConditionMatchesMockDir(rule.test));
 
         if (matchingRuleForMockEntryFile) {
-            const mockDirInclude = matchingRuleForMockEntryFile.include;
+            const userWebpackRuleInclude = matchingRuleForMockEntryFile.include;
 
-            if (mockDirInclude instanceof RegExp) {
-                matchingRuleForMockEntryFile.include = [ mockDirInclude, mockDirAbsPath ];
-            } else if (Array.isArray(mockDirInclude)) {
-                mockDirInclude.push(mockDirAbsPath);
+            if (userWebpackRuleInclude instanceof RegExp) {
+                matchingRuleForMockEntryFile.include = [ userWebpackRuleInclude, mockDirAbsPath ];
+            } else if (Array.isArray(userWebpackRuleInclude)) {
+                userWebpackRuleInclude.push(mockDirAbsPath);
             }
         } else {
             throw new Error(
