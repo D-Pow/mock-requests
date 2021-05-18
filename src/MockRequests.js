@@ -13,22 +13,6 @@
  */
 const MockRequests = (function MockRequestsFactory() {
     /**
-     * @name {@link JsonPrimitive}
-     * @kind typedef
-     * @memberOf MockRequests
-     */
-    /**
-     * @name {@link DynamicResponseModFn}
-     * @kind typedef
-     * @memberOf MockRequests
-     */
-    /**
-     * @name {@link MockResponseConfig}
-     * @kind typedef
-     * @memberOf MockRequests
-     */
-
-    /**
      * Key (URL string) - Value ({@link MockResponseConfig}) pairs for network mocks
      *
      * @type {Object<string, MockResponseConfig>}
