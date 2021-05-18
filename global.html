@@ -3,7 +3,7 @@
 <head>
     
     <meta charset="utf-8">
-    <title>resolve-mocks - Documentation</title>
+    <title>Global - Documentation</title>
     
     <meta name="description" content="MockRequests will mock both XMLHttpRequest and fetch such that any requested URL will return the specified mock object instead of actually making an async request. URLs not configured will be unaffected and still trigger an async request as normal." />
     
@@ -38,7 +38,7 @@
 
 <div id="main">
     
-    <h1 class="page-title">resolve-mocks</h1>
+    <h1 class="page-title">Global</h1>
     
 
     
@@ -51,7 +51,7 @@
 <header>
     
         <h2>
-        resolve-mocks
+        
         </h2>
         
     
@@ -65,11 +65,6 @@
 
 <dl class="details">
 
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="bin_resolve-mocks.js.html">bin/resolve-mocks.js</a>, <a href="bin_resolve-mocks.js.html#line25">line 25</a>
-    </li></ul></dd>
     
 
     
@@ -128,16 +123,14 @@
     
 
     
-        <h3 class="subsection-title">Methods</h3>
+
+    
+        <h3 class="subsection-title">Type Definitions</h3>
 
         
-            
+                
+<h4 class="name" id="JsonPrimitive">JsonPrimitive</h4>
 
-    
-
-    <h4 class="name" id=".resolveMocks"><span class="type-signature">(static) </span>resolveMocks<span class="signature">(mocksDir, mockConfigFile, activateMocks)</span><span class="type-signature"> &rarr; {ResolvedMocks}</span></h4>
-
-    
 
 
 
@@ -147,7 +140,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="bin_resolve-mocks.js.html">bin/resolve-mocks.js</a>, <a href="bin_resolve-mocks.js.html#line50">line 50</a>
+        <a href="src_types.ts.html">src/types.ts</a>, <a href="src_types.ts.html#line2">line 2</a>
     </li></ul></dd>
     
 
@@ -187,12 +180,100 @@
 
 
 <div class="description">
-    Returns an object containing arrays of paths to pass into the webpack `module.rules[jsLoader].include`
-and `entry` configuration fields. The returned arrays should be spread inside the arrays already
-present in those configuration fields.
+    Valid JSON primitive types.
+</div>
 
-This will return empty arrays if `activateMocks` is false so that the user doesn't have to modify the respective
-webpack config fields when activating/deactivating mocks.
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type">string</span>
+|
+
+<span class="param-type">number</span>
+|
+
+<span class="param-type">boolean</span>
+|
+
+<span class="param-type">null</span>
+|
+
+<span class="param-type">Array.&lt;<a href="global.html#JsonPrimitive">JsonPrimitive</a>></span>
+|
+
+<span class="param-type">Object.&lt;string, <a href="global.html#JsonPrimitive">JsonPrimitive</a>></span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+
+            
+                
+
+    
+
+    <h4 class="name" id="DynamicResponseModFn"><span class="type-signature"></span>DynamicResponseModFn<span class="signature">(request, response, queryParamMap)</span><span class="type-signature"> &rarr; {<a href="global.html#JsonPrimitive">JsonPrimitive</a>}</span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="src_types.ts.html">src/types.ts</a>, <a href="src_types.ts.html#line8">line 8</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    Function to generate mock responses dynamically.
+Returned responses will be saved and passed as the `request` in subsequent calls.
 </div>
 
 
@@ -230,13 +311,13 @@ webpack config fields when activating/deactivating mocks.
 
         <tr>
             
-                <td class="name"><code>mocksDir</code></td>
+                <td class="name"><code>request</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">string</span>
+<span class="param-type"><a href="global.html#JsonPrimitive">JsonPrimitive</a></span>
 
 
             
@@ -246,20 +327,20 @@ webpack config fields when activating/deactivating mocks.
 
             
 
-            <td class="description last">Directory containing all mock-related code. Only needed if transpiling JS code containing mocks.</td>
+            <td class="description last">Payload/body passed in the network request.</td>
         </tr>
 
     
 
         <tr>
             
-                <td class="name"><code>mockConfigFile</code></td>
+                <td class="name"><code>response</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">string</span>
+<span class="param-type"><a href="global.html#JsonPrimitive">JsonPrimitive</a></span>
 
 
             
@@ -269,20 +350,20 @@ webpack config fields when activating/deactivating mocks.
 
             
 
-            <td class="description last">Entry JS file that configures all mocks.</td>
+            <td class="description last">Response object returned by the previous network call and modified by this same function.</td>
         </tr>
 
     
 
         <tr>
             
-                <td class="name"><code>activateMocks</code></td>
+                <td class="name"><code>queryParamMap</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">boolean</span>
+<span class="param-type">Object.&lt;string, string></span>
 
 
             
@@ -292,7 +373,7 @@ webpack config fields when activating/deactivating mocks.
 
             
 
-            <td class="description last">If mocks should be activated/injected into build or not.</td>
+            <td class="description last">Key-value map of query parameters from the request URL. Hash content will be stored in 'hash' key.</td>
         </tr>
 
     
@@ -318,7 +399,7 @@ webpack config fields when activating/deactivating mocks.
 
         
 <div class="param-desc">
-    - Object containing arrays of files to spread in `entry` and `include` webpack config fields
+    Dynamic response; will be saved for subsequent calls.
 </div>
 
 
@@ -329,7 +410,7 @@ webpack config fields when activating/deactivating mocks.
     </dt>
     <dd>
         
-<span class="param-type">ResolvedMocks</span>
+<span class="param-type"><a href="global.html#JsonPrimitive">JsonPrimitive</a></span>
 
 
     </dd>
@@ -339,15 +420,9 @@ webpack config fields when activating/deactivating mocks.
 
 
 
-        
-    
-
-    
-        <h3 class="subsection-title">Type Definitions</h3>
-
-        
+            
                 
-<h4 class="name" id=".ResolvedMocks">ResolvedMocks</h4>
+<h4 class="name" id="MockResponseConfig">MockResponseConfig</h4>
 
 
 
@@ -358,7 +433,7 @@ webpack config fields when activating/deactivating mocks.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="bin_resolve-mocks.js.html">bin/resolve-mocks.js</a>, <a href="bin_resolve-mocks.js.html#line29">line 29</a>
+        <a href="src_types.ts.html">src/types.ts</a>, <a href="src_types.ts.html#line21">line 21</a>
     </li></ul></dd>
     
 
@@ -409,7 +484,11 @@ webpack config fields when activating/deactivating mocks.
         <th>Type</th>
 
         
+        <th>Attributes</th>
+        
 
+        
+        <th>Default</th>
         
 
         <th class="last">Description</th>
@@ -421,46 +500,150 @@ webpack config fields when activating/deactivating mocks.
 
         <tr>
             
-                <td class="name"><code>include</code></td>
+                <td class="name"><code>response</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">Array.&lt;string></span>
+<span class="param-type"><a href="global.html#JsonPrimitive">JsonPrimitive</a></span>
 
 
             
             </td>
 
             
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
 
+                
+                </td>
             
 
-            <td class="description last">Array containing mocks/ directory; spread it in `module.rules[jsLoader].include` webpack config field</td>
+            
+                <td class="default">
+                
+                    <code>null</code>
+                
+                </td>
+            
+
+            <td class="description last">Mock response to be returned.
+                                            If `dynamicResponseModFn` is defined, the value defined here will be
+                                            the first `response` argument passed into the function.</td>
         </tr>
 
     
 
         <tr>
             
-                <td class="name"><code>entry</code></td>
+                <td class="name"><code>dynamicResponseModFn</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">Array.&lt;string></span>
+<span class="param-type"><a href="global.html#DynamicResponseModFn">DynamicResponseModFn</a></span>
 
 
             
             </td>
 
             
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
 
+                
+                </td>
             
 
-            <td class="description last">Array containing mock entry file; spread it in `entry` webpack config field</td>
+            
+                <td class="default">
+                
+                    <code>null</code>
+                
+                </td>
+            
+
+            <td class="description last">Function to dynamically change the response object based on each request's contents.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>delay</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>0</code>
+                
+                </td>
+            
+
+            <td class="description last">Optional network mock resolution time.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>usePathnameForAllQueries</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>false</code>
+                
+                </td>
+            
+
+            <td class="description last">Optional flag to treat all URLs with the same pathname identically.</td>
         </tr>
 
     
@@ -471,6 +654,10 @@ webpack config fields when activating/deactivating mocks.
 
 
 
+
+<div class="description">
+    Mock configuration for a single URL.
+</div>
 
 
 

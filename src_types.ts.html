@@ -33,7 +33,7 @@
 
 <nav >
     
-    <h2><a href="index.html">Home</a></h2><h2><a href="./demo" >Demo</a></h2><h2><a href="https://github.com/D-Pow/MockRequests" >GitHub</a></h2><h3>Modules</h3><ul><li><a href="module-mock-requests.html">mock-requests</a></li><li><a href="module-mock-requests_bin.html">mock-requests/bin</a></li></ul><h3>Namespaces</h3><ul><li><a href="MockRequests.html">MockRequests</a><ul class='methods'><li data-type='method'><a href="MockRequests.html#.configure">configure</a></li><li data-type='method'><a href="MockRequests.html#.configureDynamicResponses">configureDynamicResponses</a></li><li data-type='method'><a href="MockRequests.html#.setMockUrlResponse">setMockUrlResponse</a></li><li data-type='method'><a href="MockRequests.html#.setDynamicMockUrlResponse">setDynamicMockUrlResponse</a></li><li data-type='method'><a href="MockRequests.html#.getResponse">getResponse</a></li><li data-type='method'><a href="MockRequests.html#.deleteMockUrlResponse">deleteMockUrlResponse</a></li><li data-type='method'><a href="MockRequests.html#.clearAllMocks">clearAllMocks</a></li><li data-type='method'><a href="MockRequests.html#.mapStaticConfigToDynamic">mapStaticConfigToDynamic</a></li></ul></li><li><a href="resolve-mocks.html">resolve-mocks</a><ul class='methods'><li data-type='method'><a href="resolve-mocks.html#.resolveMocks">resolveMocks</a></li></ul></li></ul><h3>Classes</h3><ul><li><a href="MockRequestsWebpackPlugin.html">MockRequestsWebpackPlugin</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h2><a href="./demo" >Demo</a></h2><h2><a href="https://www.npmjs.com/package/mock-requests" >npm</a></h2><h2><a href="https://github.com/D-Pow/MockRequests" >GitHub</a></h2><h3>Modules</h3><ul><li><a href="module-mock-requests.html">mock-requests</a></li><li><a href="module-mock-requests_bin.html">mock-requests/bin</a></li></ul><h3>Namespaces</h3><ul><li><a href="MockRequests.html">MockRequests</a><ul class='methods'><li data-type='method'><a href="MockRequests.html#.configure">configure</a></li><li data-type='method'><a href="MockRequests.html#.configureDynamicResponses">configureDynamicResponses</a></li><li data-type='method'><a href="MockRequests.html#.setMockUrlResponse">setMockUrlResponse</a></li><li data-type='method'><a href="MockRequests.html#.setDynamicMockUrlResponse">setDynamicMockUrlResponse</a></li><li data-type='method'><a href="MockRequests.html#.getResponse">getResponse</a></li><li data-type='method'><a href="MockRequests.html#.deleteMockUrlResponse">deleteMockUrlResponse</a></li><li data-type='method'><a href="MockRequests.html#.clearAllMocks">clearAllMocks</a></li><li data-type='method'><a href="MockRequests.html#.mapStaticConfigToDynamic">mapStaticConfigToDynamic</a></li></ul></li><li><a href="resolve-mocks.html">resolve-mocks</a><ul class='methods'><li data-type='method'><a href="resolve-mocks.html#.resolveMocks">resolveMocks</a></li></ul></li></ul><h3>Classes</h3><ul><li><a href="MockRequestsWebpackPlugin.html">MockRequestsWebpackPlugin</a></li></ul><h3>Global</h3><ul><li><a href="global.html#JsonPrimitive">JsonPrimitive</a></li><li><a href="global.html#DynamicResponseModFn">DynamicResponseModFn</a></li><li><a href="global.html#MockResponseConfig">MockResponseConfig</a></li></ul>
 </nav>
 
 <div id="main">
@@ -50,8 +50,6 @@
         <article>
             <pre class="prettyprint source linenums"><code>/**
  * Valid JSON primitive types.
- *
- * @memberOf MockRequests
  */
 export type JsonPrimitive = (
     | string
@@ -71,7 +69,6 @@ export type JsonPrimitive = (
  * @param {JsonPrimitive} response - Response object returned by the previous network call and modified by this same function.
  * @param {Object&lt;string, string>} queryParamMap - Key-value map of query parameters from the request URL. Hash content will be stored in 'hash' key.
  * @returns {JsonPrimitive} Dynamic response; will be saved for subsequent calls.
- * @memberOf MockRequests
  */
 export type DynamicResponseModFn = (
     request: JsonPrimitive,
@@ -92,7 +89,6 @@ export type DynamicResponseModFn = (
  * @property {DynamicResponseModFn} [dynamicResponseModFn=null] - Function to dynamically change the response object based on each request's contents.
  * @property {number} [delay=0] - Optional network mock resolution time.
  * @property {boolean} [usePathnameForAllQueries=false] - Optional flag to treat all URLs with the same pathname identically.
- * @memberOf MockRequests
  */
 export type MockResponseConfig = {
     response?: JsonPrimitive;
