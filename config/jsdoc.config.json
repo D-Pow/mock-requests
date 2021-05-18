@@ -38,6 +38,9 @@
             "Demo": {
                 "href": "./demo"
             },
+            "npm": {
+                "href": "https://www.npmjs.com/package/mock-requests"
+            },
             "GitHub": {
                 "href": "https://github.com/D-Pow/MockRequests"
             }
