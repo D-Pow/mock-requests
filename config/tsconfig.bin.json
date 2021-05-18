@@ -7,9 +7,4 @@
     "include": [
         "../bin"
     ]
-//    "typeAcquisition": {
-//        "include": [
-//            "webpack"
-//        ]
-//    }
 }
