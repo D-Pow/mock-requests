@@ -182,7 +182,7 @@ const MockRequests = (function MockRequestsFactory() {
      * Gets the config object for a specified URL or its pathname if the URL itself isn't mocked
      *
      * @param {string} url
-     * @returns {(MockResponseConfig|undefined)}
+     * @returns {(MockResponseConfig|null)}
      */
     function getConfig(url) {
         const isMocked = urlIsMocked(url);

@@ -17,7 +17,7 @@ export type JsonPrimitive = (
  *
  * @param {JsonPrimitive} request - Payload/body passed in the network request.
  * @param {JsonPrimitive} response - Response object returned by the previous network call and modified by this same function.
- * @param {{ key: string, val: string }} queryParamMap - Key-value map of query parameters from the request URL. Hash content will be stored in 'hash' key.
+ * @param {Object<string, string>} queryParamMap - Key-value map of query parameters from the request URL. Hash content will be stored in 'hash' key.
  * @returns {JsonPrimitive} Dynamic response; will be saved for subsequent calls.
  */
 export type DynamicResponseModFn = (
