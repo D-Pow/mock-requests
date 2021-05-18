@@ -1,6 +1,8 @@
 {
-    // See resulting post-extends config via:
-    // npx tsc --showConfig -p config/tsconfig.src.json
+    /**
+     * See resulting post-extends config via:
+     * npx tsc --showConfig -p config/tsconfig.src.json
+     */
     "extends": "./tsconfig.json",
     "compilerOptions": {
         "lib": [
