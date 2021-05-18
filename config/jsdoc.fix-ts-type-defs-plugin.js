@@ -87,6 +87,42 @@ function getJsdocCommentForUnionType(tsNode, sourceText) {
 }
 
 
+function removeDuplicateJSDocDocletEntries(docEntryArray) {
+    if (!docEntryArray || !docEntryArray.length) {
+        return;
+    }
+
+    const { duplicates } = docEntryArray.reduce((duplicateDetails, docEntry, i) => {
+        const { details, duplicates } = duplicateDetails;
+        // docEntry is an object of JSDoc `@` keys to their values
+        const numDocEntryKeys = Object.keys(docEntry).length;
+
+        if (details.has(docEntry.name)) {
+            const prevDocEntryDetails = details.get(docEntry.name);
+
+            if (prevDocEntryDetails.numKeys < numDocEntryKeys) {
+                duplicates.push(prevDocEntryDetails.index);
+            } else {
+                duplicates.push(i);
+            }
+        } else {
+            details.set(docEntry.name, {
+                index: i,
+                numKeys: numDocEntryKeys
+            });
+        }
+
+        return duplicateDetails;
+    }, { details: new Map(), duplicates: [] });
+
+    duplicates.forEach(index => {
+        docEntryArray[index] = null;
+    });
+
+    return docEntryArray.filter(docEntry => docEntry);
+}
+
+
 /** @type {Parser} */
 exports.handlers = {
     beforeParse: function(event) {
@@ -115,5 +151,30 @@ exports.handlers = {
          * it remains even after better-docs removes the entire TS type definition.
          */
         event.source += jsdocsForUnionTypes.map(jsdoc => jsdoc.newJsdoc).join('\n');
+    },
+
+    newDoclet: function(event) {
+        // see: jsdoc/lib/jsdoc/ (schema.DOCLET_SCHEMA | Doclet)
+        const doclet = event.doclet;
+
+        const {
+            meta: {
+                filename
+            },
+            params,
+            properties
+        } = doclet;
+
+        if (!isTypeScriptFile(filename)) {
+            return;
+        }
+
+        if (params) {
+            doclet.params = removeDuplicateJSDocDocletEntries(params);
+        }
+
+        if (properties) {
+            doclet.properties = removeDuplicateJSDocDocletEntries(properties);
+        }
     }
 };
