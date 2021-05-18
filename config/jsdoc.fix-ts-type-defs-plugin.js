@@ -3,6 +3,12 @@ const path = require('path');
 const ts = require('typescript');
 const { Parser } = require('jsdoc/lib/jsdoc/src/parser');
 
+function isTypeScriptFile(filename) {
+    const fileExtension = path.extname(filename);
+
+    return fileExtension.includes('.ts');
+}
+
 function getNodeAsStringFromSrc(node, sourceText, trim = true) {
     const nodeText = sourceText.substring(node.pos, node.end);
 
@@ -85,9 +91,8 @@ function getJsdocCommentForUnionType(tsNode, sourceText) {
 exports.handlers = {
     beforeParse: function(event) {
         const { filename, source } = event;
-        const fileExtension = path.extname(filename);
 
-        if (!fileExtension.includes('.ts')) {
+        if (!isTypeScriptFile(filename)) {
             return;
         }
 
