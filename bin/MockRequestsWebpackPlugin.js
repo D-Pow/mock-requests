@@ -1,13 +1,6 @@
 const fs = require('fs');
 const path = require('path');
-const { WebpackPluginInstance, Compiler } = require('webpack');
-
-/**
- * @module mock-requests/bin
- */
-/**
- * @namespace MockRequestsWebpackPlugin
- */
+const { WebpackPluginInstance, Compiler, RuleSetCondition } = require('webpack/lib');
 
 /**
  * Webpack plugin for automatically resolving the mock directory,
@@ -15,7 +8,6 @@ const { WebpackPluginInstance, Compiler } = require('webpack');
  * the entry file within it to the build/run output for the user.
  *
  * @extends WebpackPluginInstance
- * @memberOf module:mock-requests/bin~MockRequestsWebpackPlugin
  */
 class MockRequestsWebpackPlugin {
     /**
@@ -27,7 +19,6 @@ class MockRequestsWebpackPlugin {
      * @param {Object} [options]
      * @param {boolean} [options.pathsAreAbsolute=false] - If `mocksDir` and `mockEntryFile` are absolute paths instead of relative.
      * @param {boolean} [options.transpileMocksDir=true] - If the files within `mocksDir` should be transpiled.
-     * @memberOf module:mock-requests/bin~MockRequestsWebpackPlugin
      */
     constructor(
         mocksDir,
@@ -63,12 +54,47 @@ class MockRequestsWebpackPlugin {
         return absPath;
     }
 
+    setAbsPaths(projectRootPath) {
+        this.mockDirAbsPath = this.getAbsPath(projectRootPath);
+        this.mockEntryAbsPath = this.getAbsPath(projectRootPath, true);
+    }
+
+    /**
+     * @param {RuleSetCondition} condition - User-defined condition for matching directories/files.
+     * @returns {boolean} - If the condition matches the mock directory/entry file.
+     * @private
+     */
+    webpackConditionMatchesMockDir(condition) {
+        const { mockDirAbsPath, mockEntryAbsPath } = this;
+
+        if (condition instanceof RegExp) {
+            return condition.test(mockEntryAbsPath);
+        } else if (typeof condition === typeof '') {
+            return condition.includes(mockDirAbsPath);
+        } else if (typeof condition === typeof this.constructor) {
+            return condition(this.mocksDir) || condition(this.mockEntryFile) || condition(mockDirAbsPath) || condition(mockEntryAbsPath);
+        } else if (Array.isArray(condition)) {
+            return condition.some(this.webpackConditionMatchesMockDir);
+        } else { // is Object with and/or/not keys
+            const allAndConditionsMet = condition.and
+                ? condition.and.reduce((matches, cond) => matches && this.webpackConditionMatchesMockDir(cond), true)
+                : true;
+            const anyOrConditionsMet = condition.or
+                ? condition.or.some(this.webpackConditionMatchesMockDir)
+                : true;
+            const allNotConditionsMet = condition.not
+                ? condition.not.reduce((matches, cond) => matches && !this.webpackConditionMatchesMockDir(cond), true)
+                : true;
+
+            return allAndConditionsMet && anyOrConditionsMet && allNotConditionsMet;
+        }
+    }
+
     injectMocksIntoWebpackConfig(projectRootPath, moduleRules, entry) {
         try {
             const firstEntryName = Object.keys(entry)[0];
             const firstEntryList = entry[firstEntryName].import;
-            const mockDirAbsPath = this.getAbsPath(projectRootPath);
-            const mockEntryAbsPath = this.getAbsPath(projectRootPath, true);
+            const { mockDirAbsPath, mockEntryAbsPath } = this;
 
             if (!mockDirAbsPath) {
                 throw new Error(`Could not find mock directory "${this.mocksDir}" from webpack context directory "${projectRootPath}"`);
@@ -78,10 +104,10 @@ class MockRequestsWebpackPlugin {
                 throw new Error(`Could not find mock entry file "${this.mockEntryFile}" from webpack context directory "${projectRootPath}"`);
             }
 
-            const addedNewEntry = this.addMockEntryFileToConfigEntry(firstEntryList, mockEntryAbsPath);
+            const addedNewEntry = this.addMockEntryFileToConfigEntry(firstEntryList);
 
             if (addedNewEntry) {
-                this.addMockDirToModuleRule(moduleRules, mockDirAbsPath, mockEntryAbsPath);
+                this.addMockDirToModuleRule(moduleRules);
 
                 console.log('Network mocks activated by mock-requests.\n');
             }
@@ -91,7 +117,9 @@ class MockRequestsWebpackPlugin {
         }
     }
 
-    addMockEntryFileToConfigEntry(configEntryList, mockEntryAbsPath) {
+    addMockEntryFileToConfigEntry(configEntryList) {
+        const { mockEntryAbsPath } = this;
+
         if (configEntryList.includes(mockEntryAbsPath)) {
             // Mock entry file has already been added to webpack config
             // Don't add it again if a rebuild is triggered
@@ -103,44 +131,24 @@ class MockRequestsWebpackPlugin {
         return true;
     }
 
-    addMockDirToModuleRule(moduleRules, mockDirAbsPath, mockEntryAbsPath) {
+    addMockDirToModuleRule(moduleRules) {
         if (!this.transpileMocksDir) {
             return;
         }
 
-        const ruleTestMatchesMockDir = ruleTest => {
-            if (ruleTest instanceof RegExp) {
-                return ruleTest.test(mockEntryAbsPath);
-            } else if (typeof ruleTest === typeof '') {
-                return ruleTest.includes(mockDirAbsPath);
-            } else if (typeof ruleTest === typeof this.constructor) {
-                return ruleTest(this.mocksDir) || ruleTest(this.mockEntryFile) || ruleTest(mockDirAbsPath) || ruleTest(mockEntryAbsPath);
-            } else if (Array.isArray(ruleTest)) {
-                return ruleTest.some(ruleTestMatchesMockDir);
-            } else { // is Object with and/or/not keys
-                const allAndConditionsMet = ruleTest.and
-                    ? ruleTest.and.reduce((matches, test) => matches && ruleTestMatchesMockDir(test), true)
-                    : true;
-                const anyOrConditionsMet = ruleTest.or
-                    ? ruleTest.or.some(ruleTestMatchesMockDir)
-                    : true;
-                const allNotConditionsMet = ruleTest.not
-                    ? ruleTest.not.reduce((matches, test) => matches && !ruleTestMatchesMockDir(test), true)
-                    : true;
-
-                return allAndConditionsMet && anyOrConditionsMet && allNotConditionsMet;
-            }
-        };
-
-        const matchingRuleForMockEntryFile = moduleRules.find(rule => ruleTestMatchesMockDir(rule.test));
+        const { mockDirAbsPath } = this;
+        const matchingRuleForMockEntryFile = moduleRules.find(rule => this.webpackConditionMatchesMockDir(rule.test));
 
         if (matchingRuleForMockEntryFile) {
-            const mockDirInclude = matchingRuleForMockEntryFile.include;
+            const userWebpackRuleInclude = matchingRuleForMockEntryFile.include;
 
-            if (mockDirInclude instanceof RegExp) {
-                matchingRuleForMockEntryFile.include = [ mockDirInclude, mockDirAbsPath ];
-            } else if (Array.isArray(mockDirInclude)) {
-                mockDirInclude.push(mockDirAbsPath);
+            // Note: If `include` doesn't exist, then the matching rule applies to everything in the `compiler.context`
+            // so there's no need to add the mock directory since it will be handled automatically, even if the user
+            // applied a `rule.resource(Query)` (see: https://webpack.js.org/configuration/module/#ruleresource)
+            if (userWebpackRuleInclude instanceof RegExp) {
+                matchingRuleForMockEntryFile.include = [ userWebpackRuleInclude, mockDirAbsPath ];
+            } else if (Array.isArray(userWebpackRuleInclude)) {
+                userWebpackRuleInclude.push(mockDirAbsPath);
             }
         } else {
             throw new Error(
@@ -152,11 +160,14 @@ class MockRequestsWebpackPlugin {
 
     /**
      * @param {Compiler} compiler
+     * @private
      */
     apply(compiler) {
         if (!this.activateMocks) {
             return;
         }
+
+        this.setAbsPaths(compiler.context);
 
         const rules = compiler.options.module.rules;
 
@@ -171,3 +182,4 @@ class MockRequestsWebpackPlugin {
 }
 
 module.exports = MockRequestsWebpackPlugin;
+module.exports.default = MockRequestsWebpackPlugin;

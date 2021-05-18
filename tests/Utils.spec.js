@@ -1,4 +1,4 @@
-import MockRequests from '../src/MockRequests';
+import MockRequests from '../src';
 
 const homepageUrl = 'https://example.com/home';
 const friendsUrl = 'https://example.com/friends';

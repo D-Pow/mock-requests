@@ -8,8 +8,10 @@ module.exports = {
     output: {
         path: path.resolve(__dirname, 'dist'),
         filename: '[name].js',
-        library: 'MockRequests',
-        libraryTarget: 'umd',
+        library: {
+            name: 'MockRequests',
+            type: 'umd'
+        },
         globalObject: 'this',
         environment: {
             arrowFunction: false,
@@ -25,8 +27,8 @@ module.exports = {
         rules: [
             {
                 test: /\.js$/,
-                exclude: /(node_modules|typings)/,
-                include: path.resolve(__dirname, 'src'),
+                include: /src/,
+                exclude: /node_modules/,
                 use: 'babel-loader'
             }
         ]
@@ -34,10 +36,6 @@ module.exports = {
     plugins: [
         new CopyWebpackPlugin({
             patterns: [
-                {
-                    from: 'typings/MockRequests.d.ts',
-                    to: 'index.d.[ext]'
-                },
                 {
                     from: 'bin',
                     to: 'bin'

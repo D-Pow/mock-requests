@@ -1,40 +1,31 @@
+/** @typedef {import('./types').JsonPrimitive} JsonPrimitive */
+/** @typedef {import('./types').DynamicResponseModFn} DynamicResponseModFn */
+/** @typedef {import('./types').MockResponseConfig} MockResponseConfig */
+
 /**
- * MockRequests will mock both XMLHttpRequest and fetch such that
- * any requested URL will return the specified mock object instead
- * of actually making an async request.
+ * MockRequests will mock both `XMLHttpRequest` and `fetch` such that
+ * one single configure call, and the entire app is provided with mocks.
  *
  * URLs not configured will be unaffected and still trigger an
  * async request as normal.
  *
- * @module mock-requests
- */
-
-/**
  * @namespace MockRequests
  */
-
-const MockRequests = (() => {
+const MockRequests = (function MockRequestsFactory() {
     /**
-     * Valid JSON primitive types.
-     *
-     * @typedef {(string|number|boolean|null|JsonPrimitive[]|Object<string, JsonPrimitive>)} JsonPrimitive
-     * @memberOf module:mock-requests~MockRequests
+     * @name {@link JsonPrimitive}
+     * @kind typedef
+     * @memberOf MockRequests
      */
     /**
-     * @typedef {function} DynamicResponseModFn
-     * @param {JsonPrimitive} request - Payload passed to the async function
-     * @param {JsonPrimitive} response - Previous response object to be modified
-     * @param {Object<string, string>} queryParamMap - Key-value map of query parameters from the request URL. Hash content will be stored in 'hash' key.
-     * @returns {JsonPrimitive} modifiedResponse - Updated response to be saved in the mock response map
-     * @memberOf module:mock-requests~MockRequests
+     * @name {@link DynamicResponseModFn}
+     * @kind typedef
+     * @memberOf MockRequests
      */
     /**
-     * @typedef {Object} MockResponseConfig
-     * @property {JsonPrimitive} [response=null] - Initial mock response to be returned/passed into dynamicResponseModFn
-     * @property {DynamicResponseModFn} [dynamicResponseModFn=null] - Function to dynamically change the response object based on previous request/response
-     * @property {number} [delay=0] - Optional network mock resolution time
-     * @property {boolean} [usePathnameForAllQueries=false] - Optional flag to treat all URLs with the same pathname identically
-     * @memberOf module:mock-requests~MockRequests
+     * @name {@link MockResponseConfig}
+     * @kind typedef
+     * @memberOf MockRequests
      */
 
     /**
@@ -45,18 +36,18 @@ const MockRequests = (() => {
     let urlResponseMap = {};
 
     /**
-     * Original XMLHttpRequest class, as defined in the browser
+     * Original XMLHttpRequest class, as defined in the global environment.
      *
      * @type {(XMLHttpRequest|undefined)}
-     * @memberOf module:mock-requests~MockRequests
+     * @memberOf MockRequests
      */
     let OriginalXHR;
 
     /**
-     * Original fetch function, as defined in the browser
+     * Original fetch function, as defined in the global environment.
      *
      * @type {(function|undefined)}
-     * @memberOf module:mock-requests~MockRequests
+     * @memberOf MockRequests
      */
     let originalFetch;
 
@@ -73,7 +64,7 @@ const MockRequests = (() => {
      *
      * @param  {Object<string, JsonPrimitive>} apiUrlResponseConfig - Config object containing URL strings as keys and respective mock response objects as values
      * @param {boolean} [overwritePreviousConfig=true] - If the map from a previous configure call should be overwritten by this call (true) or not (false)
-     * @memberOf module:mock-requests~MockRequests
+     * @memberOf MockRequests
      */
     function configure(apiUrlResponseConfig = {}, overwritePreviousConfig = true) {
         const newUrlResponseMap = mapStaticConfigToDynamic(apiUrlResponseConfig);
@@ -90,7 +81,7 @@ const MockRequests = (() => {
      *
      * @param {Object<string, MockResponseConfig>} dynamicApiUrlResponseConfig - URL-MockResponseConfig mappings
      * @param {boolean} [overwritePreviousConfig=true] - If the map from a previous configure call should be overwritten by this call (true) or not (false)
-     * @memberOf module:mock-requests~MockRequests
+     * @memberOf MockRequests
      */
     function configureDynamicResponses(dynamicApiUrlResponseConfig = {}, overwritePreviousConfig = true) {
         const newUrlResponseMap = Object.keys(dynamicApiUrlResponseConfig).reduce((mockResponses, url) => {
@@ -118,7 +109,7 @@ const MockRequests = (() => {
      *
      * @param {string} url - URL to mock
      * @param {JsonPrimitive} response - Mock response object
-     * @memberOf module:mock-requests~MockRequests
+     * @memberOf MockRequests
      */
     function setMockUrlResponse(url, response = null) {
         urlResponseMap[url] = createConfigObj({ response });
@@ -130,7 +121,7 @@ const MockRequests = (() => {
      *
      * @param {string} url - URL to mock
      * @param {MockResponseConfig} mockResponseConfig - Config object with the fields desired to be configured
-     * @memberOf module:mock-requests~MockRequests
+     * @memberOf MockRequests
      */
     function setDynamicMockUrlResponse(url, mockResponseConfig) {
         const config = createConfigObj(mockResponseConfig);
@@ -148,7 +139,7 @@ const MockRequests = (() => {
      *
      * @param {string} url - URL that was previously mocked
      * @returns {JsonPrimitive} - Configured response object
-     * @memberOf module:mock-requests~MockRequests
+     * @memberOf MockRequests
      */
     function getResponse(url) {
         const config = getConfig(url);
@@ -165,7 +156,7 @@ const MockRequests = (() => {
      *
      * @param {string} url - URL that was previously mocked
      * @returns {boolean} - Value returned from `delete Object.url`
-     * @memberOf module:mock-requests~MockRequests
+     * @memberOf MockRequests
      */
     function deleteMockUrlResponse(url) {
         const config = getConfig(url);
@@ -181,7 +172,7 @@ const MockRequests = (() => {
     /**
      * Deletes all entries in the MockRequests configuration
      *
-     * @memberOf module:mock-requests~MockRequests
+     * @memberOf MockRequests
      */
     function clearAllMocks() {
         urlResponseMap = {};
@@ -191,7 +182,7 @@ const MockRequests = (() => {
      * Gets the config object for a specified URL or its pathname if the URL itself isn't mocked
      *
      * @param {string} url
-     * @returns {(MockResponseConfig|undefined)}
+     * @returns {(MockResponseConfig|null)}
      */
     function getConfig(url) {
         const isMocked = urlIsMocked(url);
@@ -251,7 +242,7 @@ const MockRequests = (() => {
      *
      * @param {Object<string, JsonPrimitive>} staticConfig - URL-staticResponse map
      * @returns {Object<string, MockResponseConfig>} - URL-MockResponseConfig object with default configuration fields
-     * @memberOf module:mock-requests~MockRequests
+     * @memberOf MockRequests
      */
     function mapStaticConfigToDynamic(staticConfig) {
         return Object.keys(staticConfig).reduce((dynamicMockConfig, staticUrl) => {
@@ -509,7 +500,7 @@ const MockRequests = (() => {
     };
 })();
 
-export default MockRequests;
+
 export const {
     configure,
     configureDynamicResponses,

@@ -1,4 +1,4 @@
-import MockRequests, { configure, getResponse, clearAllMocks } from '../src/MockRequests';
+import MockRequests, { configure, getResponse, clearAllMocks } from '../src';
 
 const mockUrl1 = 'https://example.com';
 const mockUrl2 = 'https://other.example/someApi';

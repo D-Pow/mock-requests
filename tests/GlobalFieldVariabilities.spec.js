@@ -18,7 +18,7 @@ describe('Global field variabilities', () => {
         it('should not overwrite fetch/XMLHttpRequest if it is not defined in the browser', async () => {
             global.XMLHttpRequest = undefined;
             global.fetch = undefined;
-            const module = await import('../src/MockRequests');
+            const module = await import('../src');
             const MockRequestsWithoutAsync = module.default;
 
             expect(MockRequestsWithoutAsync.originalFetch).toBe(undefined);
@@ -106,7 +106,7 @@ describe('Global field variabilities', () => {
                 }
             });
 
-            const module = await import('../src/MockRequests');
+            const module = await import('../src');
             const MockRequests = module.default;
 
             await testMockRequestsWorks(MockRequests);
@@ -120,7 +120,7 @@ describe('Global field variabilities', () => {
                 }
             });
 
-            const module = await import('../src/MockRequests');
+            const module = await import('../src');
             const MockRequests = module.default;
 
             await testMockRequestsWorks(MockRequests);
@@ -134,10 +134,12 @@ describe('Global field variabilities', () => {
                 }
             });
 
-            const module = require('../src/MockRequests');
-            const MockRequests = module.default;
+            const module = require('../src');
+            const MockRequests = module;
+            const MockRequestsDefault = module.default;
 
             await testMockRequestsWorks(MockRequests);
+            await testMockRequestsWorks(MockRequestsDefault);
         });
     });
 });

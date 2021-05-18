@@ -1,4 +1,4 @@
-import MockRequests from '../src/MockRequests';
+import MockRequests from '../src';
 
 global.setTimeout = jest.fn((func, time) => func());
 

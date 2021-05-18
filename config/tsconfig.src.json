@@ -1,0 +1,18 @@
+{
+    /**
+     * See resulting post-extends config via:
+     * npx tsc --showConfig -p config/tsconfig.src.json
+     */
+    "extends": "./tsconfig.json",
+    "compilerOptions": {
+        "lib": [
+            "ESNext", // modern JS features
+            "DOM" // fetch/XMLHttpRequest
+        ],
+        "module": "UMD", // how tsc output module(s) will be imported; umd for both node & browsers
+        "rootDir": "../src" // de-nest output files in dist/ rather than maintaining file structure (e.g. dist/outFile instead of dist/src/outFile)
+    },
+    "include": [
+        "../src"
+    ]
+}

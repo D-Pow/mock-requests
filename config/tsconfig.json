@@ -1,0 +1,28 @@
+{
+    /**
+     * Using `tsc -b config.json` instead of `-p` because
+     * has more features (e.g. respecting project properties,
+     * only updating files that have changed, etc.).
+     * See: https://www.typescriptlang.org/docs/handbook/project-references.html#build-mode-for-typescript
+     *
+     * TS options:
+     * Config file: https://www.typescriptlang.org/tsconfig
+     * CLI: https://www.typescriptlang.org/docs/handbook/compiler-options.html
+     */
+    "compilerOptions": {
+        "lib": [
+            "ESNext" // modern JS features
+        ],
+        "moduleResolution": "Node",
+        "allowJs": true,
+        "declaration": true, // generates typings.d.ts files
+        "emitDeclarationOnly": true, // don't compile .ts files
+        "outDir": "../dist", // output of running `npx tsc [-b|-p] tsconfig.json`
+        "rootDir": "..", // where to start looking for input files
+        "esModuleInterop": true, // allows `import * as UserDefinedNamespace from 'my-module'`
+        "allowSyntheticDefaultImports": true, // allow imports of default exports even if .js files instead of .ts. Automatically activated if esModuleInterop is true
+    },
+    "exclude": [
+        "../node_modules"
+    ]
+}

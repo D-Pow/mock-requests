@@ -23,6 +23,7 @@ never have to change your source code to use mocks ever again.
 * [Separating mocks from source](#separate-from-source)
     - [Bare-bones instructions](#bare-bones-instructions)
     - [Webpack Plugin/Activating via CLI](#plugin-instructions)
+        + [Options](#options)
     - [Custom instructions](#custom-instructions)
 * [MockRequests API](#api)
 * [Final notes](#final-notes)
@@ -65,7 +66,7 @@ This becomes extremely useful if you want to **switch app-wide mocks between dif
 * **Greatly simplify API testing**. Just define `fetch` and/or `XMLHttpRequest` in a test setup file and configure
 `MockRequests` with the responses you expect. It will handle all the heavy-lifting of mocking network responses for you
 so you don't have to repetitively use e.g. `fetch = jest.fn()`.
-* Compatible with all JavaScript environments, including back-end Node scripts, as long as either `fetch` or
+* Compatible with **all JavaScript environments**, including back-end Node scripts, as long as either `fetch` or
 `XMLHttpRequest` are defined and used in that environment (natively or by polyfill).
 
 <a name="installation"></a>
@@ -440,7 +441,7 @@ module.exports = {
         // ...
          new MockRequestsWebpackPlugin(
             'mocks', // Holds all mock-related files imported by the entry file.
-                     // Relative to the webpack "context" (i.e. project root).
+                     // Relative to the webpack "context"/project root (more on this below).
             'MockConfig.js', // Mock entry file, nested inside `mocks/`.
             process.env.MOCK === 'true' // Whether or not mocks should be activated.
         ),
@@ -454,6 +455,26 @@ and run using `MOCK=true npm start`.
 Use of this plugin will automatically transpile your code (according to your webpack config's JS/TS rules) and activate mocks based on the boolean of whether or not mocks should be activated. This means you never have to change anything in `src/` or in webpack.config.js outside of this plugin.
 
 If the boolean condition resolves to `false`, then nothing will be added to your build output, keeping mock files out of the final production code. In this example, our toggle is via CLI env variable, but it can be anything else of your choosing.
+
+#### Options
+
+The webpack plugin comes with a few configuration options to accommodate all types of webpack configurations:
+
+```javascript
+new MockRequestsWebpackPlugin(
+    'mocks',
+    'MockConfig.js',
+    process.env.NODE_ENV === 'development',
+    {
+        pathsAreAbsolute,  // defaults to `false`
+        transpileMocksDir // defaults to `true`
+    }
+),
+```
+
+If you prefer using absolute paths instead of relative, then change both the `mocksDir` and `mockEntryFile` arguments to be absolute, and set `pathsAreAbsolute: true`.
+
+If you prefer to nest your `mocks/` directory inside `src/` or other directory that's already configured to be transpiled, then set `transpileMocksDir: false` for added simplicity in webpack processing.
 
 <a name="custom-instructions"></a>
 ### Custom instructions
