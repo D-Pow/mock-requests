@@ -4,7 +4,7 @@ const dotenv = require('dotenv');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
-const resolveMocks = require('mock-requests/bin/resolve-mocks');
+const MockRequestsWebpackPlugin = require('mock-requests/bin/MockRequestsWebpackPlugin');
 
 const outputPaths = {
     dev: '',
@@ -36,15 +36,13 @@ const cssRegex = /\.css$/;
 const sassRegex = /\.scss$/;
 const assetRegex = /\.(png|gif|jpe?g|svg|ico|pdf|tex|eot)$/;
 
-const resolvedMocks = resolveMocks('mocks', 'mocks/MockConfig.js', process.env.MOCK === 'true');
-
 module.exports = {
     module: {
         rules: [
             {
                 test: jsRegex,
                 exclude: /node_modules/,
-                include: [ /src/, ...resolvedMocks.include ],
+                include: /src/,
                 loader: 'babel-loader'
             },
             {
@@ -99,7 +97,7 @@ module.exports = {
         ]
     },
     entry: {
-        client: [ 'core-js', 'isomorphic-fetch', './src/index.js', ...resolvedMocks.entry ],
+        client: [ 'core-js', 'isomorphic-fetch', './src/index.js' ],
         vendor: ['react', 'react-dom', 'prop-types']
     },
     output: {
@@ -143,7 +141,12 @@ module.exports = {
                     to: 'static/assets/'
                 }
             ]
-        })
+        }),
+        new MockRequestsWebpackPlugin(
+            'mocks',
+            'MockConfig.js',
+            process.env.MOCK === 'true'
+        )
     ],
     optimization: {
         splitChunks: {
