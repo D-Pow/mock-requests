@@ -1,6 +1,6 @@
 const fs = require('fs');
 const path = require('path');
-const { WebpackPluginInstance, Compiler, RuleSetCondition } = require('webpack/lib');
+const { WebpackPluginInstance, Compiler, RuleSetCondition } = require('webpack');
 
 /**
  * Webpack plugin for automatically resolving the mock directory,
