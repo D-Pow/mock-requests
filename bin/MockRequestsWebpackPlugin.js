@@ -132,8 +132,8 @@ class MockRequestsWebpackPlugin {
                 console.log('Network mocks activated by mock-requests.\n');
             }
         } catch (e) {
-            console.error('Error:', e.message);
-            console.error('Note:', this.pluginName, 'has only been verified for webpack@>=5. Webpack runtime issues may be fixed by upgrading.\n');
+            console.error(this.pluginName, 'Error:', e.message);
+            console.error('Note:', this.pluginName, 'has only been verified for webpack@>=5. Webpack runtime issues may be fixed by upgrading to v5.\n');
         }
     }
 
