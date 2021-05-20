@@ -93,7 +93,27 @@ class MockRequestsWebpackPlugin {
     injectMocksIntoWebpackConfig(projectRootPath, moduleRules, entry) {
         try {
             const firstEntryName = Object.keys(entry)[0];
-            const firstEntryList = entry[firstEntryName].import;
+            let firstEntryList = entry[firstEntryName].import;
+
+            if (!firstEntryList) {
+                // webpack@4 doesn't add the `import` field, so read the entry directly
+                if (Array.isArray(entry)) {
+                    firstEntryList = entry;
+                } else if (Array.isArray(entry[firstEntryName])) {
+                    firstEntryList = entry[firstEntryName];
+                }
+
+                if (typeof firstEntryList === typeof '' || !firstEntryList) {
+                    throw new Error(
+                        'webpack.config.js `entry` field cannot be a single string; it must be an array or an object containing an array.' +
+                        '\n' +
+                        'If running webpack-dev-server, this error can be ignored.' +
+                        '\n' +
+                        'If building final output with mocks, then please make the `entry` field an array instead of a string.'
+                    );
+                }
+            }
+
             const { mockDirAbsPath, mockEntryAbsPath } = this;
 
             if (!mockDirAbsPath) {
