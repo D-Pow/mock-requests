@@ -4,9 +4,6 @@ import KitsuResultCard from 'components/KitsuResultCard';
 import { fetchKitsuTitleSearch } from 'services/Kitsu';
 import { kimiNoNaWaSearchQuery } from 'utils/Constants';
 
-// Mock network requests using default MockRequests configuration in mocks/MockConfig.js
-import '../../mocks/MockConfig';
-
 describe('KitsuResultCard', () => {
     it('should ', async () => {
         const kimiNoNaWaResponse = await fetchKitsuTitleSearch(kimiNoNaWaSearchQuery);

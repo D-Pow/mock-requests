@@ -51,7 +51,8 @@
   },
   "jest": {
     "setupFiles": [
-      "<rootDir>/config/jestSetup.js"
+      "<rootDir>/config/jestSetup.js",
+      "<rootDir>/mocks/MockConfig.js"
     ],
     "modulePaths": [
       "<rootDir>/src"
