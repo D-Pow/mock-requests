@@ -7,7 +7,7 @@
   "scripts": {
     "start": "webpack serve",
     "mock": "cross-env MOCK=true npm start",
-    "test": "jest --coverage tests",
+    "test": "jest tests",
     "build": "cross-env NODE_ENV=production MOCK=true webpack --mode production",
     "nodeSample": "node ./bin/MockRequestsInNodeScript.js"
   },
