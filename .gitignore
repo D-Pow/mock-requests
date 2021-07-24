@@ -3,3 +3,4 @@ dist
 docs
 .idea
 coverage
+.DS_Store
