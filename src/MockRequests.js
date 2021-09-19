@@ -472,6 +472,15 @@ const MockRequests = (function MockRequestsFactory() {
                         {
                             eventType: 'readystatechange',
                         },
+                        {
+                            eventType: 'loadend',
+                            // `ProgressEvent` properties: https://developer.mozilla.org/en-US/docs/Web/API/ProgressEvent/ProgressEvent
+                            properties: {
+                                lengthComputable: false,
+                                loaded: xhr.responseText.length,
+                                total: xhr.responseText.length,
+                            }
+                        },
                     ];
 
                     resolveEvents.forEach(({ eventType, properties }) => {
