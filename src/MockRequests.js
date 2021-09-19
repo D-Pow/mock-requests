@@ -365,7 +365,7 @@ const MockRequests = (function MockRequestsFactory() {
      * @param {function} func - Function to wrap
      * @returns {function} - Original function if no delay or same function to be called after a delay
      */
-    function withOptionalDelay(delay, func) {
+    function withOptionalDelay(delay, func = () => {}) {
         if (delay) {
             return (...args) => {
                 setTimeout(() => {
