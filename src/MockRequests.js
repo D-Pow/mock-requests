@@ -378,6 +378,48 @@ const MockRequests = (function MockRequestsFactory() {
     }
 
     /**
+     * Creates an event with the desired properties.
+     *
+     * Supported on IE >= 9 (`Event` constructor and `CustomEvent` aren't polyfilled by Babel).
+     *
+     * @param {string} eventType - Event to create.
+     * @param {Object} [options]
+     * @param {HTMLElement} [options.element=self] - Target element on which to dispatch the event.
+     * @param {boolean} [options.bubbles=false] - If the event bubbles.
+     * @param {boolean} [options.cancelable=false] - If the event is cancellable.
+     * @param {Object} [options.properties] - Custom fields to add to the event object.
+     * @returns {function} - Function to dispatch the event when desired.
+     * @see {@link https://developer.mozilla.org/en-US/docs/Web/Events/Creating_and_triggering_events}
+     */
+    function createEvent(
+        eventType,
+        {
+            element = globalScope,
+            bubbles = false,
+            cancelable = false,
+            properties = {},
+        } = {}
+    ) {
+        // Deprecated, but required to support IE >= 9
+        const event = document.createEvent('Event');
+
+        event.initEvent(eventType, bubbles, cancelable);
+
+        // There are no built-in `Event` functions to add custom event properties,
+        // so they must be attached to the event object directly
+        Object.entries(properties).forEach(([ key, value ]) => {
+            Object.defineProperty(event, key, {
+                configurable: false,
+                writable: false,
+                enumerable: true,
+                value,
+            });
+        });
+
+        return () => element.dispatchEvent(event);
+    }
+
+    /**
      * Overwrites the XMLHttpRequest function with a wrapper that
      * mocks the readyState, status, statusText, and various other
      * fields that depend on the status of the request, and applies
@@ -425,8 +467,28 @@ const MockRequests = (function MockRequestsFactory() {
             xhr.send = async function(requestPayload) {
                 if (urlIsMocked(xhr.url)) {
                     await mockXhrRequest(requestPayload);
-                    const resolveAfterDelay = withOptionalDelay(getConfig(xhr.url).delay, xhr.onreadystatechange || (() => {}));
-                    resolveAfterDelay();
+
+                    const resolveEvents = [
+                        {
+                            eventType: 'readystatechange',
+                        },
+                    ];
+
+                    resolveEvents.forEach(({ eventType, properties }) => {
+                        const resolveRequest = () => {
+                            const resolveOnHandler = xhr[`on${eventType}`] || (() => {});
+                            const resolveEvent = createEvent(eventType, {
+                                element: xhr,
+                                properties,
+                            });
+
+                            resolveOnHandler(properties);
+                            resolveEvent();
+                        };
+                        const resolveAfterDelay = withOptionalDelay(getConfig(xhr.url).delay, resolveRequest);
+
+                        resolveAfterDelay();
+                    });
                 } else {
                     xhr.originalSend(requestPayload);
                 }
