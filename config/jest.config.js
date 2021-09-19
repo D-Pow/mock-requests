@@ -3,7 +3,8 @@ import '@babel/polyfill';
 global.XMLHttpRequest = jest.fn(() => {
     return {
         open: () => {},
-        send: () => {}
+        send: () => {},
+        dispatchEvent: (...args) => global.dispatchEvent(...args),
     };
 });
 global.fetch = jest.fn(() => Promise.resolve({
@@ -15,3 +16,7 @@ global.Request = jest.fn((url, options) => ({
     url,
     text: () => Promise.resolve(options ? options.body : '')
 }));
+
+
+
+global.dispatchEvent = jest.fn(event => event);
