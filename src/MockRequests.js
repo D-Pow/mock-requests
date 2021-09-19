@@ -450,7 +450,7 @@ const MockRequests = (function MockRequestsFactory() {
             if (urlIsMocked(url)) {
                 return (async () => {
                     const requestPayload = isUsingRequestObject
-                        ? await attemptParseJson(resource.text())
+                        ? attemptParseJson(await resource.text())
                         : (init && init.hasOwnProperty('body') && init.body)
                             ? attemptParseJson(init.body)
                             : undefined;
