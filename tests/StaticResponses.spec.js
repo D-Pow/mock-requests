@@ -93,6 +93,15 @@ describe('StaticResponses', () => {
         mockXhrJson.onreadystatechange = () => {
             expect(mockXhrJson.response).toEqual(mockConfig1[mockUrl2]);
         };
+        mockXhrJson.onloadend = (progressEvent) => {
+            expect(mockXhrJson.response).toEqual(mockConfig1[mockUrl2]);
+
+            const { lengthComputable, loaded, total } = progressEvent;
+
+            expect(lengthComputable).toBe(false);
+            expect(loaded).toEqual(JSON.stringify(mockXhrJson.response).length);
+            expect(total).toEqual(JSON.stringify(mockXhrJson.response).length);
+        };
         mockXhrJson.send();
 
         const mockXhrText = new XMLHttpRequest();
@@ -103,6 +112,16 @@ describe('StaticResponses', () => {
 
             expect(mockXhrText.responseText).toEqual(mockConfig2[mockUrl4]);
             expect(mockXhrText.status).toEqual(expectedManuallyChangedStatus);
+        };
+        mockXhrText.onloadend = (progressEvent) => {
+            expect(mockXhrText.responseText).toEqual(mockConfig2[mockUrl4]);
+            expect(mockXhrText.status).toEqual(expectedManuallyChangedStatus);
+
+            const { lengthComputable, loaded, total } = progressEvent;
+
+            expect(lengthComputable).toBe(false);
+            expect(loaded).toEqual(mockXhrText.responseText.length);
+            expect(total).toEqual(mockXhrText.responseText.length);
         };
         mockXhrText.send();
     });
