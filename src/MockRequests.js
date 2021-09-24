@@ -387,6 +387,7 @@ const MockRequests = (function MockRequestsFactory() {
      * @param {HTMLElement} [options.element=self] - Target element on which to dispatch the event.
      * @param {boolean} [options.bubbles=false] - If the event bubbles.
      * @param {boolean} [options.cancelable=false] - If the event is cancellable.
+     * @param {boolean} [options.composed=false] - If the event can trigger listeners outside of a shadow DOM.
      * @param {Object} [options.properties] - Custom fields to add to the event object.
      * @returns {function} - Function to dispatch the event when desired.
      * @see {@link https://developer.mozilla.org/en-US/docs/Web/Events/Creating_and_triggering_events}
@@ -397,13 +398,26 @@ const MockRequests = (function MockRequestsFactory() {
             element = globalScope,
             bubbles = false,
             cancelable = false,
+            composed = false,
             properties = {},
         } = {}
     ) {
-        // Deprecated, but required to support IE >= 9
-        const event = document.createEvent('Event');
+        let event;
 
-        event.initEvent(eventType, bubbles, cancelable);
+        try {
+            // Only supported in NodeJS >= 15 and modern browsers
+            event = new Event(eventType, { bubbles, cancelable, composed });
+        } catch (eventConstructorNotSupported) {
+            try {
+                // Deprecated, but required to support IE >= 9
+                event = document.createEvent('Event');
+
+                event.initEvent(eventType, bubbles, cancelable);
+            } catch (documentNotInGlobalScope) {
+                // TODO Add support for NodeJS < 15
+                return () => {};
+            }
+        }
 
         // There are no built-in `Event` functions to add custom event properties,
         // so they must be attached to the event object directly
