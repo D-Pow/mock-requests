@@ -430,7 +430,7 @@ const MockRequests = (function MockRequestsFactory() {
             });
         });
 
-        return () => element.dispatchEvent(event);
+        return () => element && element.dispatchEvent && element.dispatchEvent(event);
     }
 
     /**
