@@ -159,4 +159,58 @@ describe('StaticResponses', () => {
         clearAllMocks();
         expect(getResponse(mockUrl1)).toBe(undefined);
     });
+
+    describe('Event listeners', () => {
+        let testPromises = [];
+
+        async function testEventListener(xhr, eventType, testFunc) {
+            return await new Promise(res => {
+                xhr.addEventListener(eventType, (...args) => {
+                    res(testFunc(...args));
+                });
+            })
+        }
+
+        beforeEach(() => {
+            testPromises = [];
+        });
+
+        it('should work with XMLHttpRequest', async () => {
+            MockRequests.configure({ ...mockConfig1, ...mockConfig2 });
+
+            const mockXhrJson = new XMLHttpRequest();
+            mockXhrJson.open('GET', mockUrl2);
+            testPromises.push(testEventListener(mockXhrJson, 'readystatechange', () => {
+                expect(mockXhrJson.response).toEqual(mockConfig1[mockUrl2]);
+            }));
+            testPromises.push(testEventListener(mockXhrJson, 'loadend', progressEvent => {
+                expect(mockXhrJson.response).toEqual(mockConfig1[mockUrl2]);
+
+                const { lengthComputable, loaded, total } = progressEvent;
+
+                expect(lengthComputable).toBe(false);
+                expect(loaded).toEqual(JSON.stringify(mockXhrJson.response).length);
+                expect(total).toEqual(JSON.stringify(mockXhrJson.response).length);
+            }));
+            mockXhrJson.send();
+
+            const mockXhrText = new XMLHttpRequest();
+            mockXhrText.open('GET', mockUrl4);
+            testPromises.push(testEventListener(mockXhrText, 'readystatechange', () => {
+                expect(mockXhrText.responseText).toEqual(mockConfig2[mockUrl4]);
+            }));
+            testPromises.push(testEventListener(mockXhrText, 'loadend', progressEvent => {
+                expect(mockXhrText.responseText).toEqual(mockConfig2[mockUrl4]);
+
+                const { lengthComputable, loaded, total } = progressEvent;
+
+                expect(lengthComputable).toBe(false);
+                expect(loaded).toEqual(mockXhrText.responseText.length);
+                expect(total).toEqual(mockXhrText.responseText.length);
+            }));
+            mockXhrText.send();
+
+            await Promise.all(testPromises);
+        });
+    });
 });
