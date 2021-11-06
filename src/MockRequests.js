@@ -414,7 +414,12 @@ const MockRequests = (function MockRequestsFactory() {
 
                 event.initEvent(eventType, bubbles, cancelable);
             } catch (documentNotInGlobalScope) {
-                // TODO Add support for NodeJS < 15
+                // TODO Won't work with NodeJS, only the browser; Add support for NodeJS < 15
+                //  Maybe try:
+                //  * https://stackoverflow.com/questions/2856513/how-can-i-trigger-an-onchange-event-manually
+                // TODO for tests:
+                //  * https://stackoverflow.com/questions/55280573/how-to-test-a-method-dispatching-custom-event
+                //  * https://stackoverflow.com/questions/63546042/how-to-mock-element-with-addeventlistener-in-vue-jest
                 return () => {};
             }
         }
