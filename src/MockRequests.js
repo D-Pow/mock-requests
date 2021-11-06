@@ -380,7 +380,10 @@ const MockRequests = (function MockRequestsFactory() {
     /**
      * Creates an event with the desired properties.
      *
-     * Supported on IE >= 9 (`Event` constructor and `CustomEvent` aren't polyfilled by Babel).
+     * Supported on:
+     *  - Modern browsers.
+     *  - IE >= 9 (`Event` constructor and `CustomEvent` aren't polyfilled by Babel).
+     *  - NodeJS (with polyfills).
      *
      * @param {string} eventType - Event to create.
      * @param {Object} [options]

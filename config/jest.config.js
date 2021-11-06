@@ -58,24 +58,42 @@ global.MockEvent = class MockEvent {
         MockEvent.elemEventListeners = {};
     }
 
-    static addEventListener(id, eventType, func, bindThis) {
+    /**
+     * Mock `addEventListener` function to add the event listeners to the mock event queue
+     * for testing.
+     *
+     * @param {string} elemId - Unique identifier for the element for which to run event listeners.
+     * @param {string} eventType - Type of event.
+     * @param {function} func - Event handler function.
+     * @param {Object} bindThis - Element or object on which to bind the value of `this` when `func` is called.
+     */
+    static addEventListener(elemId, eventType, func, bindThis) {
         if (bindThis) {
             func.bind(bindThis);
         }
 
-        if (MockEvent.elemEventListeners[id]) {
-            if (MockEvent.elemEventListeners[id][eventType]) {
-                MockEvent.elemEventListeners[id][eventType].push(func);
+        if (MockEvent.elemEventListeners[elemId]) {
+            if (MockEvent.elemEventListeners[elemId][eventType]) {
+                MockEvent.elemEventListeners[elemId][eventType].push(func);
             } else {
-                MockEvent.elemEventListeners[id][eventType] = [ func ];
+                MockEvent.elemEventListeners[elemId][eventType] = [ func ];
             }
         } else {
-            MockEvent.elemEventListeners[id] = {
+            MockEvent.elemEventListeners[elemId] = {
                 [eventType]: [ func ],
             };
         }
     }
 
+    /**
+     * Gets all event listener functions for the specified element/eventType/event object,
+     * or all listeners if none specified.
+     *
+     * @param {string} elemId - Unique identifier for the element for which to run event listeners.
+     * @param {string} eventType - Type of event.
+     * @param {boolean} deleteAfter - If the event listeners should be removed from the event queue after returning them.
+     * @returns {function[]} - Array of event listener functions matching the parameter(s) query.
+     */
     static getEventListenerFunctions({ elemId, eventType, deleteAfter } = {}) {
         let funcs;
         const elemEventListeners = MockEvent.elemEventListeners[elemId] || {};
@@ -117,6 +135,17 @@ global.MockEvent = class MockEvent {
         return funcs || [];
     }
 
+    /**
+     * Runs all event listeners for the specified element/eventType/event object,
+     * or all listeners if none specified.
+     *
+     * Passes the `event` object to the event listeners.
+     *
+     * @param {string} elemId - Unique identifier for the element for which to run event listeners.
+     * @param {string} eventType - Type of event.
+     * @param {Event} event - Specific event object to pass to event listener functions (Note: only `event.type` is used to identify listener functions).
+     * @returns {Promise<any[]>} - All the results of calling the matching event listener(s) functions.
+     */
     static async runAllEventListeners({ elemId, eventType, event } = {}) {
         if (event) {
             eventType = event.type;
