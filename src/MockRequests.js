@@ -402,6 +402,12 @@ const MockRequests = (function MockRequestsFactory() {
             properties = {},
         } = {}
     ) {
+        /**
+         * Event to dispatch for event listeners added via `addEventListener()` to receive.
+         *
+         * @type {Event}
+         * @see [MDN Event docs]{@link https://developer.mozilla.org/en-US/docs/Web/API/Event}
+         */
         let event;
 
         try {
