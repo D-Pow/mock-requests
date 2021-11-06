@@ -76,7 +76,7 @@ global.MockEvent = class MockEvent {
         }
     }
 
-    static getEventListenerFunctions({ elemId, eventType, deleteAfter }) {
+    static getEventListenerFunctions({ elemId, eventType, deleteAfter } = {}) {
         let funcs;
         const elemEventListeners = MockEvent.elemEventListeners[elemId] || {};
 
@@ -117,7 +117,7 @@ global.MockEvent = class MockEvent {
         return funcs || [];
     }
 
-    static async runAllEventListeners({ elemId, eventType, event }) {
+    static async runAllEventListeners({ elemId, eventType, event } = {}) {
         if (event) {
             eventType = event.type;
         }
