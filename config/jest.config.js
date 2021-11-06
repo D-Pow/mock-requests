@@ -132,24 +132,34 @@ global.MockEvent = class MockEvent {
     }
 }
 
-// Modern browsers
-jest.spyOn(global, 'Event').mockImplementation((...args) => new MockEvent(...args));
-// IE >= 9
-jest.spyOn(document, 'createEvent').mockImplementation((...args) => new MockEvent(...args));
-// Browsers and NodeJS
-jest.spyOn(global, 'dispatchEvent').mockImplementation(jest.fn((xhrObj, event) => {
-    MockEvent.runAllEventListeners({
-        elemId: xhrObj.url,
-        eventType: event.type,
-        event,
-    });
-}));
+
+function toggleEventObjectMocks(activateMock = true) {
+    if (!activateMock) {
+        jest.restoreAllMocks();
+        return;
+    }
+
+    // Modern browsers
+    jest.spyOn(global, 'Event').mockImplementation((...args) => new MockEvent(...args));
+    // IE >= 9
+    jest.spyOn(document, 'createEvent').mockImplementation((...args) => new MockEvent(...args));
+    // Browsers and NodeJS
+    jest.spyOn(global, 'dispatchEvent').mockImplementation(jest.fn((xhrObj, event) => {
+        MockEvent.runAllEventListeners({
+            elemId: xhrObj.url,
+            eventType: event.type,
+            event,
+        });
+    }));
+}
 
 
 beforeEach(() => {
+    toggleEventObjectMocks();
     MockEvent.clearAll();
 });
 
 afterEach(() => {
+    toggleEventObjectMocks(false);
     MockEvent.clearAll();
 });
