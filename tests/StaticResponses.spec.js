@@ -212,5 +212,31 @@ describe('StaticResponses', () => {
 
             await Promise.all(testPromises);
         });
+
+        it('should work with XMLHttpRequest on Internet Explorer', async () => {
+            MockRequests.configure(mockConfig1);
+
+            // Make `new Event()` fail to mimic IE >= 9
+            // Forces the use of `document.createEvent('Event').initEvent(...)`
+            jest.spyOn(global, 'Event').mockImplementation(new Error('blah'));
+
+            const mockXhrJsonInternetExplorer = new XMLHttpRequest();
+            mockXhrJsonInternetExplorer.open('GET', mockUrl2);
+            testPromises.push(testEventListener(mockXhrJsonInternetExplorer, 'readystatechange', () => {
+                expect(mockXhrJsonInternetExplorer.response).toEqual(mockConfig1[mockUrl2]);
+            }));
+            testPromises.push(testEventListener(mockXhrJsonInternetExplorer, 'loadend', progressEvent => {
+                expect(mockXhrJsonInternetExplorer.response).toEqual(mockConfig1[mockUrl2]);
+
+                const { lengthComputable, loaded, total } = progressEvent;
+
+                expect(lengthComputable).toBe(false);
+                expect(loaded).toEqual(JSON.stringify(mockXhrJsonInternetExplorer.response).length);
+                expect(total).toEqual(JSON.stringify(mockXhrJsonInternetExplorer.response).length);
+            }));
+            mockXhrJsonInternetExplorer.send();
+
+            await Promise.all(testPromises);
+        });
     });
 });
