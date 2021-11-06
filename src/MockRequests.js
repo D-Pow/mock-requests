@@ -414,13 +414,38 @@ const MockRequests = (function MockRequestsFactory() {
 
                 event.initEvent(eventType, bubbles, cancelable);
             } catch (documentNotInGlobalScope) {
-                // TODO Won't work with NodeJS, only the browser; Add support for NodeJS < 15
-                //  Maybe try:
-                //  * https://stackoverflow.com/questions/2856513/how-can-i-trigger-an-onchange-event-manually
-                // TODO for tests:
-                //  * https://stackoverflow.com/questions/55280573/how-to-test-a-method-dispatching-custom-event
-                //  * https://stackoverflow.com/questions/63546042/how-to-mock-element-with-addeventlistener-in-vue-jest
-                return () => {};
+                event = {
+                    type: eventType,
+                    bubbles,
+                    cancelable,
+                    composed,
+                    target: element,
+                    currentTarget: element,
+                    isTrusted: false,
+                    defaultPrevented: false,
+                    eventPhase: 0,
+                    path: [], // Path from root to element
+                    cancelBubble: false, // Deprecated
+                    returnValue: true, // Deprecated
+                    srcElement: element, // Deprecated
+                    timeStamp: 1234,
+                    toString: () => '[object Event]',
+                    initEvent(type, bubbles = false, cancelable = false) {
+                        this.type = type;
+                        this.bubbles = bubbles;
+                        this.cancelable = cancelable;
+                    },
+                    preventDefault() {
+                        this.defaultPrevented = true;
+                    },
+                    stopPropagation() {
+                        this.bubbles = false;
+                        this.cancelBubble = true;
+                    },
+                    stopImmediatePropagation() {
+                        this.stopPropagation();
+                    },
+                };
             }
         }
 

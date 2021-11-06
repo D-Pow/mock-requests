@@ -171,6 +171,87 @@ describe('StaticResponses', () => {
             })
         }
 
+        function testEventProperties(
+            eventObj,
+            eventInit,
+        ) {
+            const eventType = eventObj.type;
+            const targetElement = eventInit?.target;
+            const defaultEventProperties = {
+                type: eventType,
+                bubbles: false,
+                cancelable: false,
+                composed: false,
+                defaultPrevented: false,
+                cancelBubble: false,
+                target: targetElement,
+                currentTarget: targetElement,
+                isTrusted: false,
+                eventPhase: 0,
+                path: [],
+                returnValue: true,
+                srcElement: targetElement,
+                timeStamp: 1234,
+            };
+
+            // Iterate through the default event properties if no properties specified
+            const eventObjToIterateThrough = eventInit ? eventInit : defaultEventProperties;
+
+            Object.entries(eventObjToIterateThrough).forEach(([ key, value ]) => {
+                /*
+                 * The below is equivalent to `expect(received).toBeOneOf([ val1, val2 ])`
+                 * except the `expected` and `received` are swapped, i.e.
+                 * `expect([ expectedValOption1, expectedValOption2 ]).toContain(received)`
+                 *
+                 * An alternative (that only works with strings) could be:
+                 * `expect(received).toMatch(new RegExp(`(${expectedValOption1}|${expectedValOption2})`))`
+                 */
+                expect([ defaultEventProperties[key], eventInit?.[key] ]).toContain(value);
+            });
+        }
+
+        function testEventFunctions(eventObj) {
+            expect(eventObj.toString()).toEqual('[object Event]');
+
+            const defaultEvent = {
+                type: eventObj.type || 'DefaultEvent',
+                bubbles: eventObj.bubbles || false,
+                cancelable: eventObj.cancelable || false,
+                cancelBubble: eventObj.cancelBubble || false,
+                defaultPrevented: eventObj.defaultPrevented || false,
+            };
+            testEventProperties(eventObj, defaultEvent);
+
+            const changedEvent = {
+                type: 'SomeEvent',
+                bubbles: true,
+                cancelable: true,
+            };
+            eventObj.initEvent(changedEvent.type, changedEvent.bubbles, changedEvent.cancelable);
+            testEventProperties(eventObj, changedEvent);
+
+            eventObj.cancelBubble = false;
+            eventObj.defaultPrevented = false;
+
+            eventObj.preventDefault();
+            testEventProperties(eventObj, { defaultPrevented: true });
+
+            eventObj.stopPropagation();
+            testEventProperties(eventObj, { bubbles: false, cancelBubble: true });
+
+            eventObj.bubbles = true;
+            eventObj.cancelBubble = false;
+            testEventProperties(eventObj, { bubbles: true, cancelBubble: false });
+
+            eventObj.stopImmediatePropagation();
+            testEventProperties(eventObj, { bubbles: false, cancelBubble: true });
+        }
+
+        function testAllEventFields(eventObj, eventInit) {
+            testEventProperties(eventObj, eventInit);
+            testEventFunctions(eventObj);
+        }
+
         beforeEach(() => {
             testPromises = [];
         });
@@ -233,6 +314,37 @@ describe('StaticResponses', () => {
                 expect(lengthComputable).toBe(true);
                 expect(loaded).toEqual(JSON.stringify(mockXhrJsonInternetExplorer.response).length);
                 expect(total).toEqual(JSON.stringify(mockXhrJsonInternetExplorer.response).length);
+            }));
+            await mockXhrJsonInternetExplorer.send();
+
+            await Promise.all(testPromises);
+        });
+
+        it('should work if there are no global Event objects', async () => {
+            MockRequests.configure(mockConfig1);
+
+            // Remove global `Event` object
+            jest.spyOn(global, 'Event').mockImplementation(new Error("`Event.prototype.constructor` doesn't exist"));
+            // Remove fallback `document.createEvent` function
+            jest.spyOn(document, 'createEvent').mockImplementation(new Error("Either `document` or `document.createEvent()` don't exist"));
+
+            const mockXhrJsonInternetExplorer = new XMLHttpRequest();
+            mockXhrJsonInternetExplorer.open('GET', mockUrl2);
+            testPromises.push(testEventListener(mockXhrJsonInternetExplorer, 'readystatechange', () => {
+                expect(mockXhrJsonInternetExplorer.response).toEqual(mockConfig1[mockUrl2]);
+            }));
+            testPromises.push(testEventListener(mockXhrJsonInternetExplorer, 'loadend', progressEvent => {
+                expect(mockXhrJsonInternetExplorer.response).toEqual(mockConfig1[mockUrl2]);
+
+                const { lengthComputable, loaded, total } = progressEvent;
+
+                expect(lengthComputable).toBe(true);
+                expect(loaded).toEqual(JSON.stringify(mockXhrJsonInternetExplorer.response).length);
+                expect(total).toEqual(JSON.stringify(mockXhrJsonInternetExplorer.response).length);
+
+                // Test manually-mocked `Event` object
+                testAllEventFields(progressEvent);
+                testAllEventFields(progressEvent, { type: 'loadend', bubbles: false, cancelable: false });
             }));
             await mockXhrJsonInternetExplorer.send();
 
