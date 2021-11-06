@@ -132,12 +132,11 @@ global.MockEvent = class MockEvent {
     }
 }
 
-jest.spyOn(document, 'createEvent').mockImplementation((...args) => {
-    console.log('CREATE_EVENT:', args);
-    return new MockEvent(...args);
-});
+// Modern browsers
 jest.spyOn(global, 'Event').mockImplementation((...args) => new MockEvent(...args));
-
+// IE >= 9
+jest.spyOn(document, 'createEvent').mockImplementation((...args) => new MockEvent(...args));
+// Browsers and NodeJS
 jest.spyOn(global, 'dispatchEvent').mockImplementation(jest.fn((xhrObj, event) => {
     MockEvent.runAllEventListeners({
         elemId: xhrObj.url,
