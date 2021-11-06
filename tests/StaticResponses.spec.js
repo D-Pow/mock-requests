@@ -218,7 +218,7 @@ describe('StaticResponses', () => {
 
             // Make `new Event()` fail to mimic IE >= 9
             // Forces the use of `document.createEvent('Event').initEvent(...)`
-            jest.spyOn(global, 'Event').mockImplementation(new Error('blah'));
+            jest.spyOn(global, 'Event').mockImplementation(new Error("`Event.prototype.constructor` doesn't exist"));
 
             const mockXhrJsonInternetExplorer = new XMLHttpRequest();
             mockXhrJsonInternetExplorer.open('GET', mockUrl2);
