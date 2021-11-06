@@ -85,7 +85,7 @@ describe('StaticResponses', () => {
         expect(mockFetchResponseText).toEqual(mockConfig2[mockUrl4]);
     });
 
-    it('should overwrite the result of XMLHttpRequest for URLs mocked', () => {
+    it('should overwrite the result of XMLHttpRequest for URLs mocked', async () => {
         MockRequests.configure({ ...mockConfig1, ...mockConfig2 });
 
         const mockXhrJson = new XMLHttpRequest();
@@ -102,7 +102,7 @@ describe('StaticResponses', () => {
             expect(loaded).toEqual(JSON.stringify(mockXhrJson.response).length);
             expect(total).toEqual(JSON.stringify(mockXhrJson.response).length);
         };
-        mockXhrJson.send();
+        await mockXhrJson.send();
 
         const mockXhrText = new XMLHttpRequest();
         const expectedManuallyChangedStatus = 302; // HTTP code for redirect
@@ -123,7 +123,7 @@ describe('StaticResponses', () => {
             expect(loaded).toEqual(mockXhrText.responseText.length);
             expect(total).toEqual(mockXhrText.responseText.length);
         };
-        mockXhrText.send();
+        await mockXhrText.send();
     });
 
     it('should call fetch for URLs not mocked', async () => {
@@ -142,7 +142,7 @@ describe('StaticResponses', () => {
         const mockXHR = new XMLHttpRequest();
         mockXHR.open('GET', notMockedUrl);
         mockXHR.onreadystatechange = jest.fn();
-        mockXHR.send();
+        await mockXHR.send();
         expect(mockXHR.onreadystatechange).not.toHaveBeenCalled();
     });
 
@@ -192,7 +192,7 @@ describe('StaticResponses', () => {
                 expect(loaded).toEqual(JSON.stringify(mockXhrJson.response).length);
                 expect(total).toEqual(JSON.stringify(mockXhrJson.response).length);
             }));
-            mockXhrJson.send();
+            await mockXhrJson.send();
 
             const mockXhrText = new XMLHttpRequest();
             mockXhrText.open('GET', mockUrl4);
@@ -208,7 +208,7 @@ describe('StaticResponses', () => {
                 expect(loaded).toEqual(mockXhrText.responseText.length);
                 expect(total).toEqual(mockXhrText.responseText.length);
             }));
-            mockXhrText.send();
+            await mockXhrText.send();
 
             await Promise.all(testPromises);
         });
@@ -234,7 +234,7 @@ describe('StaticResponses', () => {
                 expect(loaded).toEqual(JSON.stringify(mockXhrJsonInternetExplorer.response).length);
                 expect(total).toEqual(JSON.stringify(mockXhrJsonInternetExplorer.response).length);
             }));
-            mockXhrJsonInternetExplorer.send();
+            await mockXhrJsonInternetExplorer.send();
 
             await Promise.all(testPromises);
         });
