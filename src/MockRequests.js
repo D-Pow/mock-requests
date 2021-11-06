@@ -490,7 +490,7 @@ const MockRequests = (function MockRequestsFactory() {
                             eventType: 'loadend',
                             // `ProgressEvent` properties: https://developer.mozilla.org/en-US/docs/Web/API/ProgressEvent/ProgressEvent
                             properties: {
-                                lengthComputable: false,
+                                lengthComputable: true,
                                 loaded: xhr.responseText.length,
                                 total: xhr.responseText.length,
                             }

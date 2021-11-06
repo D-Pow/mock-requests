@@ -98,7 +98,7 @@ describe('StaticResponses', () => {
 
             const { lengthComputable, loaded, total } = progressEvent;
 
-            expect(lengthComputable).toBe(false);
+            expect(lengthComputable).toBe(true);
             expect(loaded).toEqual(JSON.stringify(mockXhrJson.response).length);
             expect(total).toEqual(JSON.stringify(mockXhrJson.response).length);
         };
@@ -119,7 +119,7 @@ describe('StaticResponses', () => {
 
             const { lengthComputable, loaded, total } = progressEvent;
 
-            expect(lengthComputable).toBe(false);
+            expect(lengthComputable).toBe(true);
             expect(loaded).toEqual(mockXhrText.responseText.length);
             expect(total).toEqual(mockXhrText.responseText.length);
         };
@@ -188,7 +188,7 @@ describe('StaticResponses', () => {
 
                 const { lengthComputable, loaded, total } = progressEvent;
 
-                expect(lengthComputable).toBe(false);
+                expect(lengthComputable).toBe(true);
                 expect(loaded).toEqual(JSON.stringify(mockXhrJson.response).length);
                 expect(total).toEqual(JSON.stringify(mockXhrJson.response).length);
             }));
@@ -204,7 +204,7 @@ describe('StaticResponses', () => {
 
                 const { lengthComputable, loaded, total } = progressEvent;
 
-                expect(lengthComputable).toBe(false);
+                expect(lengthComputable).toBe(true);
                 expect(loaded).toEqual(mockXhrText.responseText.length);
                 expect(total).toEqual(mockXhrText.responseText.length);
             }));
@@ -230,7 +230,7 @@ describe('StaticResponses', () => {
 
                 const { lengthComputable, loaded, total } = progressEvent;
 
-                expect(lengthComputable).toBe(false);
+                expect(lengthComputable).toBe(true);
                 expect(loaded).toEqual(JSON.stringify(mockXhrJsonInternetExplorer.response).length);
                 expect(total).toEqual(JSON.stringify(mockXhrJsonInternetExplorer.response).length);
             }));
