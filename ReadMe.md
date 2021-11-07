@@ -33,7 +33,7 @@ never have to change your source code to use mocks ever again.
         + [Plugin options](#plugin-options)
     - [Further customization](#further-customization)
 * [MockRequests API](#mockrequests-api)
-* [Final notes](#final-notes)
+* [Implementation notes](#implementation-notes)
 * [License](#license)
 
 
@@ -555,7 +555,7 @@ cases where the browser doesn't support them).
 
 
 
-## Final notes
+## Implementation notes
 
 1. This mocks the usage of `XMLHttpRequest` and `fetch` such that the response is always valid.
 This means that the instance attributes below are always set. If you want to change any of these, feel free to do
