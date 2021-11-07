@@ -17,19 +17,26 @@ never have to change your source code to use mocks ever again.
 * [Installation](#installation)
 * [Usage](#usage)
 * [Examples](#examples)
-    - [Static responses](#example-static)
-    - [Dynamic responses](#example-dynamic)
-    - [Login mock selections](#example-logins)
-* [Separating mocks from source](#separate-from-source)
+    - [Static responses](#static-responses)
+        + [Basic configuration](#basic-configuration)
+        + [Mixing mocks with actual API calls](#mixing-mocks-with-actual-api-calls)
+    - [Dynamic responses](#dynamic-responses)
+        + [Modifying responses by payload](#modifying-responses-by-payload)
+        + [Modifying responses by query parameters](#modifying-responses-by-query-parameters)
+        + [Delaying resolution time](#delaying-resolution-time)
+    - [Mocks based on different logins](#mocks-based-on-different-logins)
+    - [Other utility functions](#other-utility-functions)
+* [Separating mocks from source code](#separating-mocks-from-source-code)
     - [Bare-bones instructions](#bare-bones-instructions)
-    - [Webpack Plugin/Activating via CLI](#plugin-instructions)
-        + [Options](#options)
-    - [Custom instructions](#custom-instructions)
-* [MockRequests API](#api)
+    - [Webpack Plugin/Activating via CLI](#webpack-pluginactivating-via-cli)
+        + [Plugin options](#plugin-options)
+    - [Further customization](#further-customization)
+* [MockRequests API](#mockrequests-api)
 * [Final notes](#final-notes)
 * [License](#license)
 
-<a name="features"></a>
+
+
 ## Features
 
 This library was made for the purpose of allowing developers to be able to continue to write code
@@ -69,7 +76,8 @@ so you don't have to repetitively use e.g. `fetch = jest.fn()`.
 * Compatible with **all JavaScript environments**, including back-end Node scripts, as long as either `fetch` or
 `XMLHttpRequest` are defined and used in that environment (natively or by polyfill).
 
-<a name="installation"></a>
+
+
 ## Installation
 
 * Using npm (see the [npm package](https://www.npmjs.com/package/mock-requests)):
@@ -90,7 +98,8 @@ so you don't have to repetitively use e.g. `fetch = jest.fn()`.
 
         `"mock-requests": "file:<pathToCloneLocation>/MockRequests`
 
-<a name="usage"></a>
+
+
 ## Usage
 
 API docs can be viewed in the [JSDoc](https://d-pow.github.io/MockRequests/MockRequests.html) along with
@@ -106,16 +115,17 @@ that make network requests to the configured URLs will receive the mock response
 even without importing `MockRequests`. This makes it very easy to work on the front-end even if
 some APIs are down, haven't been developed yet, or if you have no internet access at all.
 
-<a name="examples"></a>
+
+
 ## Examples
 
 Note how in the below examples, the **production-bound code doesn't change** between
 mocking and using network calls.
 
-<a name="example-static"></a>
+
 ### Static responses
 
-#### Standard configuration
+#### Basic configuration
 
 To configure global app usage of `MockRequests`, simply call `configure()` with an object containing URL-responseObject
 mappings.
@@ -159,6 +169,7 @@ MockRequests.setMockUrlResponse(myApiUrl, myApiMockResponse);
 MockRequests.setMockUrlResponse(anotherUrl, anotherUrlMockResponse);
 ```
 
+
 #### Mixing mocks with actual API calls
 
 In the event that some APIs are not functioning correctly but others are, you can configure
@@ -181,10 +192,10 @@ useResponseContent(mockedResponse);
 useResponseContent(realApiResponse);
 ```
 
-<a name="example-dynamic"></a>
+
 ### Dynamic responses
 
-#### Dynamically modifying subsequent responses
+#### Modifying responses by payload
 
 This library also supports dynamically updating your mocked APIs' responses, so as to mimic actual
 back-end systems. To utilize this feature, you'll need to call the dynamic counterparts of
@@ -241,7 +252,8 @@ console.log(myDynamicallyModifiedResponse)
 */
 ```
 
-#### Mocking families of URLs using query parameters
+
+#### Modifying responses by query parameters
 
 Additionally, the `dynamicResponseModFn` will receive an object containing query parameters from the request URL,
 which means you also have the option to generate dynamic responses based on those.
@@ -278,7 +290,8 @@ console.log(response);
 */
 ```
 
-#### Delaying mock response resolutions
+
+#### Delaying resolution time
 
 There is also a `delay` option you can use if you want to mimic network delays:
 
@@ -291,10 +304,10 @@ MockRequests.setDynamicMockUrlResponse(myApiUrl, {
 });
 ```
 
-<a name="example-logins"></a>
-### Sample usage with different logins
 
-Finally, because the configure/setMockUrlResponse functions take in a simple URL-response mapping,
+### Mocks based on different logins
+
+Finally, because the `configure`/`setMockUrlResponse` functions take in a simple URL-response mapping,
 using different mocks at different times becomes incredibly user-friendly. For example,
 if your data changes based on which user is logged in, then the `MockRequests` API is
 particularly easy to work with. In this case, after defining each user's mock responses,
@@ -320,7 +333,8 @@ MockRequests.configure(loginMocks.alice);
 MockRequests.configure(loginMocks.bob);
 ```
 
-#### Other utility functions
+
+### Other utility functions
 
 For convenience, a `mapStaticConfigToDynamic()` function has been included to make converting the above
 static version of `loginMocks` to the dynamic counterpart easier:
@@ -359,10 +373,10 @@ const staticDynamicMerged = Object.keys(loginMocks).reduce((dynamicConfigs, user
 MockRequests.configureDynamicResponses(staticDynamicMerged.bob);
 ```
 
-<a name="separate-from-source"></a>
+
+
 ## Separating mocks from source code
 
-<a name="bare-bones-instructions"></a>
 ### Bare-bones instructions
 
 In the simplest, bare-bones example, you could just import `MockRequests` into one of your entry JavaScript files
@@ -426,7 +440,7 @@ import '../mocks/MockConfig';
 ReactDOM.render(<App />, document.getElementById('root'));
 ```
 
-<a name="plugin-instructions"></a>
+
 ### Webpack Plugin/Activating via CLI
 
 To avoid having to change your source code to activate/deactivate mocks (e.g. src/index.js above), `MockRequests` comes with a built-in plugin for projects using [webpack](https://webpack.js.org/). As such, assuming you have a separate directory of mocks and a single mock entry file (see above example), you can simply import the `MockRequestsWebpackPlugin` and use via:
@@ -456,7 +470,8 @@ Use of this plugin will automatically transpile your code (according to your web
 
 If the boolean condition resolves to `false`, then nothing will be added to your build output, keeping mock files out of the final production code. In this example, our toggle is via CLI env variable, but it can be anything else of your choosing.
 
-#### Options
+
+#### Plugin options
 
 The webpack plugin comes with a few configuration options to accommodate all types of webpack configurations:
 
@@ -476,8 +491,8 @@ If you prefer using absolute paths instead of relative, then change both the `mo
 
 If you prefer to nest your `mocks/` directory inside `src/` or other directory that's already configured to be transpiled, then set `transpileMocksDir: false` for added simplicity in webpack processing.
 
-<a name="custom-instructions"></a>
-### Custom instructions
+
+### Further customization
 
 If your project doesn't use webpack or if you prefer to have more control over the file-processing, then you could instead use the `resolve-mocks.js` script to generate the paths to the mock directory/entry-file manually.
 
@@ -512,7 +527,8 @@ and run using `MOCK=true npm start`.
 
 Doing so will result in the same outcome of the webpack plugin: transpilation of the `mocks/` directory so you can write your mocks with the latest JS features, as well as adding the mock entry file to your build/run output dynamically -- all while still being toggled by the CLI. Like the plugin, the mocks won't be added to your build output unless the boolean condition resolves to `true`.
 
-<a name="api"></a>
+
+
 ## MockRequests API
 
 In order to make mocking your network calls simpler, config functions have been added to allow for
@@ -535,7 +551,8 @@ regardless of if you've set the mock URL responses in `MockRequests.configure()`
 It will also use `XMLHttpRequest` and `fetch` regardless of if the browser supports them or not (will be `undefined` in
 cases where the browser doesn't support them).
 
-<a name="final-notes"></a>
+
+
 ## Final notes
 
 1. This mocks the usage of `XMLHttpRequest` and `fetch` such that the response is always valid.
@@ -582,7 +599,8 @@ mocked appropriately. For example:
     // ... use fetch and MockRequests as normal
     ```
 
-<a name="license"></a>
+
+
 ## License
 
 MIT
