@@ -460,7 +460,10 @@ const MockRequests = (function MockRequestsFactory() {
 
         // There are no built-in `Event` functions to add custom event properties,
         // so they must be attached to the event object directly
-        Object.entries(properties).forEach(([ key, value ]) => {
+        // TODO Convert to Object.entries() after Babel upgrade
+        Object.keys(properties).forEach(key => {
+            const value = properties[key];
+
             Object.defineProperty(event, key, {
                 configurable: false,
                 writable: false,
