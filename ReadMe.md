@@ -533,19 +533,20 @@ Doing so will result in the same outcome of the webpack plugin: transpilation of
 ## MockRequests API
 
 In order to make mocking your network calls simpler, config functions have been added to allow for
-setting, getting, and deleting mock responses for your network calls. These are described at length
-in the [JSDoc](https://d-pow.github.io/MockRequests/MockRequests.html).
+setting, getting, and deleting mock responses for your network calls.
 
-##### configure(staticUrlResponseConfigObject, overwritePreviousConfig = true)
-##### configureDynamicResponses(dynamicUrlResponseConfigObject, overwritePreviousConfig = true)
-##### setMockUrlResponse(url, staticMockResponseObject)
-##### setDynamicMockUrlResponse(url, dynamicMockResponseObject)
-##### getResponse(url)
-##### deleteMockUrlResponse(urlNotMeantToBeMocked)
-##### clearAllMocks()
-##### mapStaticConfigToDynamic(staticConfig)
-##### OriginalXHR()
-##### originalFetch()
+These are described at length in the [JSDoc](https://d-pow.github.io/MockRequests/MockRequests.html).
+
+* **configure(staticUrlResponseConfigObject, overwritePreviousConfig = true)**
+* **configureDynamicResponses(dynamicUrlResponseConfigObject, overwritePreviousConfig = true)**
+* **setMockUrlResponse(url, staticMockResponseObject)**
+* **setDynamicMockUrlResponse(url, dynamicMockResponseObject)**
+* **getResponse(url)**
+* **deleteMockUrlResponse(urlNotMeantToBeMocked)**
+* **clearAllMocks()**
+* **mapStaticConfigToDynamic(staticConfig)**
+* **OriginalXHR()**
+* **originalFetch()**
 
 Note that `OriginalXHR` and `originalFetch` will use the original `XMLHttpRequest` and `fetch` respectively,
 regardless of if you've set the mock URL responses in `MockRequests.configure()` or `MockRequests.setMockUrlResponse(...)`.
