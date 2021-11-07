@@ -603,4 +603,4 @@ mocked appropriately. For example:
 
 ## License
 
-MIT
+[MIT](./LICENSE.md)
