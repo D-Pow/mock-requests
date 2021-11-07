@@ -506,7 +506,8 @@ const MockRequests = (function MockRequestsFactory() {
                     responseUrl: xhr.url,
                     status: 200,
                     statusText: 'OK',
-                    timeout: 0
+                    timeout: 0,
+                    headers: { status: '200' },
                 };
                 const properties = Object.keys(mockedValues).reduce((definedProperties, key) => {
                     definedProperties[key] = {
