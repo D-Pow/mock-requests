@@ -17,6 +17,7 @@ never have to change your source code to use mocks ever again.
 * [Features](#features)
 * [Installation](#installation)
 * [Usage](#usage)
+    - [Quick note about usage in back-end or NodeJS scripts](#quick-note-about-usage-in-back-end-or-nodejs-scripts)
 * [Examples](#examples)
     - [Static responses](#static-responses)
         + [Basic configuration](#basic-configuration)
@@ -115,6 +116,74 @@ experiences the effects. This means you could configure it in one file and then 
 that make network requests to the configured URLs will receive the mock responses instead,
 even without importing `MockRequests`. This makes it very easy to work on the front-end even if
 some APIs are down, haven't been developed yet, or if you have no internet access at all.
+
+
+### Quick note about usage in back-end or NodeJS scripts
+
+TL;DR: **It is highly recommended to use [isomorphic-fetch](https://www.npmjs.com/package/isomorphic-fetch)** for any back-end/NodeJS scripts since it "just works" throughout your entire app just like MockRequests does.
+
+<details>
+    <summary>Details</summary>
+
+MockRequests generally works with any third-party library because it doesn't alter the library itself, it only changes how `fetch`/`XMLHttpRequest` work. As such, `jest`, `axios`, etc. aren't affected since they only provide wrappers around the above without changing how they work.
+
+However, MockRequests relies on those network functions being defined globally **before being imported**. So, if using a library that modifies those functions/objects, like [`node-fetch`](https://www.npmjs.com/package/node-fetch) does, you must *heed their warnings* to [add `fetch`, `Headers`, etc. as global variables](https://github.com/node-fetch/node-fetch/blob/37ac459cfd0eafdf5bbb3d083aa82f0f2a3c9b75/README.md#providing-global-access) **before** importing/`require`-ing MockRequests.
+
+In other words, this is the easiest way to make (and mock) network requests:
+
+```javascript
+// [any].mjs
+import 'isomorphic-fetch'; // Automatically mocks `fetch()` globally for all files!
+import MockRequests from 'mock-requests';
+
+MockRequests.configureDynamicResponses({
+    [apiUrl]: {
+        response: { myKey: 'myVal' },
+        dynamicResponseModFn(request, response) {
+            return { ...response, ...request };
+        },
+    },
+});
+
+fetch(apiUrl); // Mocked easily and automatically!
+```
+
+as opposed to being forced to call `global.fetch()` instead of `fetch()`:
+
+```javascript
+// app.[mc]js
+import fetch, { Headers } from 'node-fetch';
+
+global.fetch = fetch;
+global.Headers = Headers;
+
+// Force `global[field] = field` to be set before importing MockRequests
+const MockRequests = (await import('mock-requests')).default;
+global.fetch(apiUrl); // Mocked, but cumbersome to use. Same regardless of MJS or CJS.
+```
+
+or, alternatively, being forced to extract the polyfills to a separate file:
+
+```javascript
+// NetworkPolyfill.mjs
+import fetch, { Headers } from 'node-fetch';
+
+global.fetch = fetch;
+global.Headers = Headers;
+
+
+// app.mjs
+import './NetworkPolyfill.js'; // Must be imported before MockRequests
+import MockRequests from 'mock-requests';
+
+MockRequests.configureDynamicResponses(...);
+
+fetch(apiUrl); // Mocked, but requires splitting of network-setup logic to a separate file.
+```
+
+Furthermore, there is a [bug in `xmlhttprequest`](https://github.com/D-Pow/MockRequests/issues/15#issuecomment-891205355) so please don't use that package as their XHR polyfill doesn't follow the [correct standard](https://xhr.spec.whatwg.org).
+
+</details>
 
 
 
