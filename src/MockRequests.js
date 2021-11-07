@@ -485,6 +485,13 @@ const MockRequests = (function MockRequestsFactory() {
      * e.g. status = 200 and statusText = 'OK'
      */
     function overwriteXmlHttpRequestObject() {
+        const globalXhrExists = !!(globalScope.XMLHttpRequest);
+        const localXhrExists = typeof XMLHttpRequest !== typeof undefined;
+
+        if (!globalXhrExists && !localXhrExists) {
+            return;
+        }
+
         OriginalXHR = XMLHttpRequest;
 
         XMLHttpRequest = function() {
@@ -568,6 +575,13 @@ const MockRequests = (function MockRequestsFactory() {
      * the response value after the configured delay has passed.
      */
     function overwriteFetch() {
+        const globalFetchExists = !!(globalScope.fetch);
+        const localFetchExists = typeof fetch !== typeof undefined;
+
+        if (!globalFetchExists && !localFetchExists) {
+            return;
+        }
+
         originalFetch = globalScope.fetch.bind(globalScope);
 
         globalScope.fetch = function(resource, init) {
@@ -605,13 +619,8 @@ const MockRequests = (function MockRequestsFactory() {
         }
     }
 
-    if (globalScope.XMLHttpRequest) {
-        overwriteXmlHttpRequestObject();
-    }
-
-    if (globalScope.fetch) {
-        overwriteFetch();
-    }
+    overwriteXmlHttpRequestObject();
+    overwriteFetch();
 
     return {
         configure,
