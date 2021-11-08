@@ -313,22 +313,134 @@ const MockRequests = (function MockRequestsFactory() {
     }
 
     /**
-     * Parse payload content from fetch/XHR such that if it's a stringified object,
-     * the object is returned. Otherwise, return the content as-is.
+     * Types for the resolved `XHR.responseType` field.
      *
-     * @param {*} content
-     * @returns {(JsonPrimitive|*)} - Object if the content is a stringified object, otherwise the passed content
+     * @type {Object<string, string>} - Response type for the resolved XHR response.
+     * @see [MDN `XHR.responseType` docs]{@link https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/responseType}
      */
-    function attemptParseJson(content) {
-        let parsedContent;
+    const XhrResponseTypes = {
+        DEFAULT: '',
+        TEXT: 'text', // Generally, this isn't used; the default response type is used for text responses
+        JSON: 'json',
+        XML: 'document',
+        BLOB: 'blob',
+        ARRAY_BUFFER: 'arraybuffer',
+        getTypeFromObj(responseObj) {
+            const objectType = Object.prototype.toString.call(responseObj)
+                // '[object ClassName]' => 'ClassName]' => 'Classname'
+                .split(' ')[1].replace(/\]$/, '')
+                // if 'ClassName' === 'Object', make it 'json'
+                .replace(/Object/i, 'json')
+                // if 'ClassName' === 'String', make it 'text'
+                .replace(/String/i, '');
 
-        try {
-            parsedContent = JSON.parse(content);
-        } catch (e) {
-            parsedContent = content;
+            for (const key in XhrResponseTypes) {
+                const type = XhrResponseTypes[key];
+                // Remove underscores
+                const normalizedKey = key.toLowerCase().replace(/[^a-zA-Z]/g, '');
+
+                if (objectType.match(new RegExp(type, 'i'))) {
+                    return {
+                        parsedResponse: responseObj,
+                        type,
+                    };
+                }
+            }
+
+            return XhrResponseTypes.DEFAULT;
+        }
+    };
+
+    /**
+     * Parse payload content from fetch/XHR such that if it's a stringified JSON object, XML string, ArrayBuffer, or
+     * Blob, then the string is converted to the correct type and returned.
+     * Otherwise, return the content as-is since it's already an object.
+     *
+     * @param {(string|JsonPrimitive|Document|ArrayBuffer|Blob)} content - Content to attempt to parse to an Object.
+     * @returns {(JsonPrimitive|Document|ArrayBuffer|Blob|string)} - Parsed object if the content is a string, otherwise the original argument upon failure to parse.
+     */
+    async function attemptParseObjFromString(content) {
+        const isString = val => typeof val === typeof '';
+        const isObject = val => typeof val === typeof {};
+
+        if (isObject(content)) {
+            return content;
         }
 
-        return parsedContent;
+        if (isString(content)) {
+            try {
+                return JSON.parse(content);
+            } catch (e) {}
+
+            if (/^<[?!]?(xml|doctype|\w+)[^\n]*\/?>[\s\n]*</.test(content)) {
+                try {
+                    return new DOMParser().parseFromString(content, 'application/xml');
+                } catch (domParserNotDefinedOrNotXmlString) {
+                    return content;
+                }
+            }
+
+            // TODO Figure out when (not) to convert strings to Blobs
+            // try {
+            //     const blob = new Blob([ content ]);
+            //     const { data: text } = await extractDataFromResource(blob);
+            //
+            //     if (/[\x00-\x1F]/.test(text)) {
+            //         return await blob.arrayBuffer();
+            //     }
+            //
+            //     return text;
+            // } catch (e) {}
+
+            // TODO ArrayBuffer
+        }
+
+        return content;
+    }
+
+    /**
+     * Converts a `Blob` resource to Base64 and extracts the MIME type/data.
+     *
+     * A Blob could be any set of binary data, including JSON primitives, `File` instances, `ArrayBuffer` instances, etc.
+     *
+     * @param {Blob} blob - Blob (or any class that extends it) from which to extract relevant data.
+     * @returns {Promise<{ mimeType: string, data: string }>} - The MIME type and data content from the Blob - Base64 decoding will be attempted, but the original string will be returned upon failure.
+     * @see [`FileReader`]{@link https://developer.mozilla.org/en-US/docs/Web/API/FileReader}
+     */
+    async function extractDataFromResource(blob) {
+        try {
+            const dataUrl = await new Promise((res, rej) => {
+                const reader = new FileReader();
+
+                reader.onload = () => {
+                    res(reader.result);
+                };
+                reader.onerror = e => {
+                    rej(e);
+                };
+
+                reader.readAsDataURL(blob);
+            });
+
+            const [ fullStr, mimeType, base64Str ] = dataUrl.match(/data:([^;]+);base64,(.+)$/);
+            let data = base64Str;
+
+            try {
+                data = atob(base64Str);
+            } catch (malformedBase64String) {
+                // just leave the return string as Base64-encoded
+            }
+
+            return {
+                mimeType,
+                data,
+            };
+        } catch (couldNotReadFromFileReader) {
+            return {
+                mimeType: undefined,
+                data: await blob.text(),
+            };
+        }
     }
 
     /**
@@ -346,7 +458,7 @@ const MockRequests = (function MockRequestsFactory() {
             const { queryParamMap } = getPathnameAndQueryParams(url);
             const newResponse = deepCopyObject(
                 await mockResponseConfig.dynamicResponseModFn(
-                    attemptParseJson(requestPayload),
+                    await attemptParseObjFromString(requestPayload),
                     mockResponseConfig.response,
                     queryParamMap
                 )
@@ -501,9 +613,10 @@ const MockRequests = (function MockRequestsFactory() {
                 const mockedResponse = await getResponseAndDynamicallyUpdate(xhr.url, requestPayload);
                 const mockedValues = {
                     readyState: 4,
-                    response: mockedResponse,
+                    response: mockedResponse, // TODO This might need to be a string, there are `response(Json|Xml)` fields for those specific types
                     responseText: castToString(mockedResponse),
                     responseUrl: xhr.url,
+                    responseType: XhrResponseTypes.getTypeFromObj(mockedResponse),
                     status: 200,
                     statusText: 'OK',
                     timeout: 0,
@@ -592,9 +705,9 @@ const MockRequests = (function MockRequestsFactory() {
             if (urlIsMocked(url)) {
                 return (async () => {
                     const requestPayload = isUsingRequestObject
-                        ? attemptParseJson(await resource.text())
+                        ? await attemptParseObjFromString(await resource.text())
                         : (init && init.hasOwnProperty('body') && init.body)
-                            ? attemptParseJson(init.body)
+                            ? await attemptParseObjFromString(init.body)
                             : undefined;
                     const responseBody = await getResponseAndDynamicallyUpdate(url, requestPayload);
                     const response = {
