@@ -511,8 +511,10 @@ const MockRequests = (function MockRequestsFactory() {
                 };
                 const properties = Object.keys(mockedValues).reduce((definedProperties, key) => {
                     definedProperties[key] = {
-                        get: () => mockedValues[key],
-                        set: val => mockedValues[key] = val
+                        configurable: true,
+                        enumerable: true,
+                        writable: true,
+                        value: mockedValues[key],
                     };
 
                     return definedProperties;
