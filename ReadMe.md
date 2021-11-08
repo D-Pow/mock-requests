@@ -127,7 +127,7 @@ TL;DR: **It is highly recommended to use [isomorphic-fetch](https://www.npmjs.co
 
 MockRequests generally works with any third-party library because it doesn't alter the library itself, it only changes how `fetch`/`XMLHttpRequest` work. As such, `jest`, `axios`, etc. aren't affected since they only provide wrappers around the above without changing how they work.
 
-However, MockRequests relies on those network functions being defined globally **before being imported**. So, if using a library that modifies those functions/objects, like [`node-fetch`](https://www.npmjs.com/package/node-fetch) does, you must *heed their warnings* to [add `fetch`, `Headers`, etc. as global variables](https://github.com/node-fetch/node-fetch/blob/37ac459cfd0eafdf5bbb3d083aa82f0f2a3c9b75/README.md#providing-global-access) **before** importing/`require`-ing MockRequests.
+However, MockRequests relies on those network functions being defined globally **before being imported**. So, if using a library that modifies those functions/objects, like [`node-fetch`](https://www.npmjs.com/package/node-fetch) does, you must *heed their warnings* to [add `fetch`, `Headers`, etc. as global variables](https://github.com/node-fetch/node-fetch/blob/37ac459cfd0eafdf5bbb3d083aa82f0f2a3c9b75/README.md#providing-global-access) **before** importing/`require`-ing MockRequests. In fact, this is exactly what `isomorphic-fetch` does - it imports `node-fetch` and then sets all the global variables for you (just like `node-fetch` itself recommends) so you don't have to.
 
 In other words, this is the easiest way to make (and mock) network requests:
 
@@ -658,7 +658,7 @@ so you can alternatively use an instance of the `Request` class in your `fetch()
 `import MockRequests, { setMockUrlResponse } from 'mock-requests';`
 
 4. This works with any environment that uses either `fetch` or `XMLHttpRequest`, regardless of if said
-environment is a browser, web/service worker, or a Node.js script. As long as `fetch` and/or `XMLHttpRequest` are defined (natively or
+environment is a browser, web/service worker, or a Node.js script. As long as `fetch` and/or `XMLHttpRequest` are defined **globally** (whether natively or
 by polyfill), any network request to a URL configured by `MockRequests` will be
 mocked appropriately. For example:
 
