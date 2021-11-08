@@ -136,13 +136,8 @@ In other words, this is the easiest way to make (and mock) network requests:
 import 'isomorphic-fetch'; // Automatically mocks `fetch()` globally for all files!
 import MockRequests from 'mock-requests';
 
-MockRequests.configureDynamicResponses({
-    [apiUrl]: {
-        response: { myKey: 'myVal' },
-        dynamicResponseModFn(request, response) {
-            return { ...response, ...request };
-        },
-    },
+MockRequests.configure({
+    [apiUrl]: { myKey: 'myVal' },
 });
 
 fetch(apiUrl); // Mocked easily and automatically!
@@ -151,15 +146,38 @@ fetch(apiUrl); // Mocked easily and automatically!
 as opposed to being forced to call `global.fetch()` instead of `fetch()`:
 
 ```javascript
-// app.[mc]js
-import fetch, { Headers } from 'node-fetch';
-
-global.fetch = fetch;
-global.Headers = Headers;
+// app.mjs
+import * as NodeFetch from 'node-fetch';
+// Don't import `fetch`/`Headers` individually to avoid polluting the script's namespace.
+// Otherwise, you'd have to use `global.fetch(url, options)` so `global.fetch` is used
+// rather than the local `fetch` function.
+global.fetch = NodeFetch.default;
+global.Headers = NodeFetch.Headers;
 
 // Force `global[field] = field` to be set before importing MockRequests
 const MockRequests = (await import('mock-requests')).default;
-global.fetch(apiUrl); // Mocked, but cumbersome to use. Same regardless of MJS or CJS.
+
+fetch(apiUrl); // Mocked, but cumbersome to setup. Same regardless of MJS or CJS.
+
+
+
+// app.cjs equivalent
+
+/* node-fetch@>=3 */
+const NodeFetch = await import('node-fetch');
+// Same concept as in MJS: Don't pollute the namespace to use `global.fetch` by default
+global.fetch = NodeFetch.default;
+global.Headers = NodeFetch.Headers;
+
+const MockRequests = require('mock-requests');
+// ... mock configuration/network calls
+
+/* node-fetch@<=2 */
+global.fetch = require('node-fetch');
+global.Headers = fetch.Headers;
+
+const MockRequests = require('mock-requests');
+// ... mock configuration/network calls
 ```
 
 or, alternatively, being forced to extract the polyfills to a separate file:
