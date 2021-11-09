@@ -123,7 +123,7 @@ some APIs are down, haven't been developed yet, or if you have no internet acces
 TL;DR: **It is highly recommended to use [isomorphic-fetch](https://www.npmjs.com/package/isomorphic-fetch)** for any back-end/NodeJS scripts since it "just works" throughout your entire app just like MockRequests does.
 
 <details>
-    <summary>Details</summary>
+    <summary>Network requests in general</summary>
 
 MockRequests generally works with any third-party library because it doesn't alter the library itself, it only changes how `fetch`/`XMLHttpRequest` work. As such, `jest`, `axios`, etc. aren't affected since they only provide wrappers around the above without changing how they work.
 
@@ -199,7 +199,34 @@ MockRequests.configureDynamicResponses(...);
 fetch(apiUrl); // Mocked, but requires splitting of network-setup logic to a separate file.
 ```
 
-Furthermore, there is a [bug in `xmlhttprequest`](https://github.com/D-Pow/MockRequests/issues/15#issuecomment-891205355) so please don't use that package as their XHR polyfill doesn't follow the [correct standard](https://xhr.spec.whatwg.org).
+</details>
+
+<details>
+    <summary>Network requests using Axios in NodeJS</summary>
+
+Currently, MockRequests only mocks `fetch` and `XMLHttpRequest`. When used in NodeJS scripts, Axios attempts using XHR first and falls back to using the NodeJS `http`/`https` modules if it doesn't exist ([source code ref](https://github.com/axios/axios/blob/master/lib/defaults.js#L17-L27)). Thus, an XHR polyfill must be added to use Axios in the live NodeJS code (but not Jest tests, as described in [Features](#features)).
+
+Furthermore, there is a [bug in the NodeJS `xmlhttprequest` package](https://github.com/D-Pow/MockRequests/issues/15#issuecomment-891205355) caused by them not following the [correct WHATWG standard](https://xhr.spec.whatwg.org). Until MockRequests adds native support for the NodeJS `http`/`https` modules, an XHR polyfill library (like the one mentioned here) will have to be used in order to use `Axios` in back-end source code. In order to do so, write your code in a similar fashion to that described above:
+
+```javascript
+/* app.mjs */
+// Don't pollute namespace by using dynamic imports
+global.XMLHttpRequest = (await import('xmlhttprequest')).XMLHttpRequest;
+// Force global fields to be defined before defining MockRequests and Axios
+const MockRequests = (await import('mock-requests')).default;
+const axios = (await import('axios')).default;
+// ... your logic
+
+
+/* app.js */
+// First, the polyfill
+global.XMLHttpRequest = require('xmlhttprequest').XMLHttpRequest;
+// Next, MockRequests
+const MockRequests = require('mock-requests');
+// Finally, Axios
+const axios = require('axios');
+// ... your logic
+```
 
 </details>
 
