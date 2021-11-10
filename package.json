@@ -13,6 +13,7 @@
     "type": "git",
     "url": "https://github.com/D-Pow/MockRequests.git"
   },
+  "homepage": "https://d-pow.github.io/MockRequests",
   "scripts": {
     "test": "jest --coverage tests",
     "clean": "npx shx rm -rf dist docs coverage",
