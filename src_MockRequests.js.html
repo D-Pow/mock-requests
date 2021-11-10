@@ -415,7 +415,7 @@ const MockRequests = (function MockRequestsFactory() {
      * @param {function} func - Function to wrap
      * @returns {function} - Original function if no delay or same function to be called after a delay
      */
-    function withOptionalDelay(delay, func) {
+    function withOptionalDelay(delay, func = () => {}) {
         if (delay) {
             return (...args) => {
                 setTimeout(() => {
@@ -428,6 +428,150 @@ const MockRequests = (function MockRequestsFactory() {
     }
 
     /**
+     * Creates an event with the desired properties.
+     *
+     * Supported on:
+     *  - Modern browsers.
+     *  - IE >= 9 (`Event` constructor and `CustomEvent` aren't polyfilled by Babel).
+     *  - NodeJS (with polyfills).
+     *
+     * @param {string} eventType - Event to create.
+     * @param {Object} [options]
+     * @param {HTMLElement} [options.element=self] - Target element on which to dispatch the event.
+     * @param {boolean} [options.bubbles=false] - If the event bubbles.
+     * @param {boolean} [options.cancelable=false] - If the event is cancellable.
+     * @param {boolean} [options.composed=false] - If the event can trigger listeners outside of a shadow DOM.
+     * @param {Object} [options.properties] - Custom fields to add to the event object.
+     * @returns {function} - Function to dispatch the event when desired.
+     * @see {@link https://developer.mozilla.org/en-US/docs/Web/Events/Creating_and_triggering_events}
+     */
+    function createEvent(
+        eventType,
+        {
+            element = globalScope,
+            bubbles = false,
+            cancelable = false,
+            composed = false,
+            properties = {},
+        } = {}
+    ) {
+        /**
+         * Event to dispatch for event listeners added via `addEventListener()` to receive.
+         *
+         * @type {Event}
+         * @see [MDN Event docs]{@link https://developer.mozilla.org/en-US/docs/Web/API/Event}
+         */
+        let event;
+
+        try {
+            // Only supported in NodeJS >= 15 and modern browsers
+            event = new Event(eventType, { bubbles, cancelable, composed });
+        } catch (eventConstructorNotSupported) {
+            try {
+                // Deprecated, but required to support IE >= 9
+                event = document.createEvent('Event');
+
+                event.initEvent(eventType, bubbles, cancelable);
+            } catch (documentNotInGlobalScope) {
+                event = {
+                    type: eventType,
+                    bubbles,
+                    cancelable,
+                    composed,
+                    target: element,
+                    currentTarget: element,
+                    isTrusted: false,
+                    defaultPrevented: false,
+                    eventPhase: 0,
+                    path: [], // Path from root to element
+                    cancelBubble: false, // Deprecated
+                    returnValue: true, // Deprecated
+                    srcElement: element, // Deprecated
+                    timeStamp: 1234,
+                    toString: () => '[object Event]',
+                    initEvent(type, bubbles = false, cancelable = false) {
+                        this.type = type;
+                        this.bubbles = bubbles;
+                        this.cancelable = cancelable;
+                    },
+                    preventDefault() {
+                        this.defaultPrevented = true;
+                    },
+                    stopPropagation() {
+                        this.bubbles = false;
+                        this.cancelBubble = true;
+                    },
+                    stopImmediatePropagation() {
+                        this.stopPropagation();
+                    },
+                };
+            }
+        }
+
+        // There are no built-in `Event` functions to add custom event properties,
+        // so they must be attached to the event object directly
+        // TODO Convert to Object.entries() after Babel upgrade
+        Object.keys(properties).forEach(key => {
+            const value = properties[key];
+
+            Object.defineProperty(event, key, {
+                configurable: false,
+                writable: false,
+                enumerable: true,
+                value,
+            });
+        });
+
+        return () => element &amp;&amp; element.dispatchEvent &amp;&amp; element.dispatchEvent(event);
+    }
+
+    /**
+     * Axios only uses `XMLHttpRequest` (by default) or a fallback of the NodeJS modules [`http`]{@link https://nodejs.org/docs/latest-v16.x/api/http.html} and [`https`]{@link https://nodejs.org/docs/latest-v16.x/api/https.html}
+     * when it makes network requests. As such, `fetch` polyfills don't affect back-end/NodeJS scripts that use Axios.
+     *
+     * Since one of the few XHR polyfill libraries, [`xmlhttprequest`]{@link https://www.npmjs.com/package/xmlhttprequest}
+     * has a bug in it where they use a global `headers` object instead of the real/true XHR's headers, MockRequests will break
+     * when these two are combined.
+     *
+     * Thus, add this shim function *only if* an XHR polyfill is being used.
+     *
+     * TODO Replace this with mocks for NodeJS `http` and `https` modules.
+     *
+     * @param {XMLHttpRequest} xhr - MockRequests' wrapper around whatever globally-available XHR object exists.
+     * @see [Description of the bug in `node-XMLHttpRequest` with associated PR to fix it]{@link https://github.com/D-Pow/MockRequests/issues/15#issuecomment-891205355}
+     * @see [Axios defaults to `http(s)` modules in NodeJS scripts]{@link https://github.com/axios/axios/blob/master/lib/defaults.js#L24}
+     */
+    function addShimForAxiosWhenUsingNode_xmlhttprequest_polyfill(xhr) {
+        const userIsUsingXhrPolyfill = (
+            OriginalXHR.name !== 'XMLHttpRequest'
+            || OriginalXHR.prototype.constructor.name !== 'XMLHttpRequest'
+        );
+
+        if (!userIsUsingXhrPolyfill) {
+            return;
+        }
+
+        function getResponseHeader(headerKey) {
+            const headerVal = this.headers[headerKey];
+
+            if (headerVal != null) {
+                return headerVal;
+            }
+
+            return null;
+        }
+
+        function getAllResponseHeaders() {
+            return Object.keys(this.headers)
+                .map(headerKey => `${headerKey}: ${this.headers[headerKey]}`)
+                .join('\r\n');
+        }
+
+        xhr.getResponseHeader = getResponseHeader.bind(xhr);
+        xhr.getAllResponseHeaders = getAllResponseHeaders.bind(xhr);
+    }
+
+    /**
      * Overwrites the XMLHttpRequest function with a wrapper that
      * mocks the readyState, status, statusText, and various other
      * fields that depend on the status of the request, and applies
@@ -437,6 +581,13 @@ const MockRequests = (function MockRequestsFactory() {
      * e.g. status = 200 and statusText = 'OK'
      */
     function overwriteXmlHttpRequestObject() {
+        const globalXhrExists = !!(globalScope.XMLHttpRequest);
+        const localXhrExists = typeof XMLHttpRequest !== typeof undefined;
+
+        if (!globalXhrExists &amp;&amp; !localXhrExists) {
+            return;
+        }
+
         OriginalXHR = XMLHttpRequest;
 
         XMLHttpRequest = function() {
@@ -451,18 +602,23 @@ const MockRequests = (function MockRequestsFactory() {
                     responseUrl: xhr.url,
                     status: 200,
                     statusText: 'OK',
-                    timeout: 0
+                    timeout: 0,
+                    headers: { status: '200' },
                 };
                 const properties = Object.keys(mockedValues).reduce((definedProperties, key) => {
                     definedProperties[key] = {
-                        get: () => mockedValues[key],
-                        set: val => mockedValues[key] = val
+                        configurable: true,
+                        enumerable: true,
+                        writable: true,
+                        value: mockedValues[key],
                     };
 
                     return definedProperties;
                 }, {});
 
                 Object.defineProperties(xhr, properties);
+
+                addShimForAxiosWhenUsingNode_xmlhttprequest_polyfill(xhr);
             }
 
             xhr.originalOpen = xhr.open;
@@ -475,8 +631,46 @@ const MockRequests = (function MockRequestsFactory() {
             xhr.send = async function(requestPayload) {
                 if (urlIsMocked(xhr.url)) {
                     await mockXhrRequest(requestPayload);
-                    const resolveAfterDelay = withOptionalDelay(getConfig(xhr.url).delay, xhr.onreadystatechange || (() => {}));
-                    resolveAfterDelay();
+
+                    const resolveEvents = [
+                        {
+                            eventType: 'readystatechange',
+                        },
+                        {
+                            eventType: 'load',
+                            // `ProgressEvent` properties: https://developer.mozilla.org/en-US/docs/Web/API/ProgressEvent/ProgressEvent
+                            properties: {
+                                lengthComputable: true,
+                                loaded: xhr.responseText.length,
+                                total: xhr.responseText.length,
+                            }
+                        },
+                        {
+                            // Used by Axios
+                            eventType: 'loadend',
+                            properties: {
+                                lengthComputable: true,
+                                loaded: xhr.responseText.length,
+                                total: xhr.responseText.length,
+                            }
+                        },
+                    ];
+
+                    resolveEvents.forEach(({ eventType, properties }) => {
+                        const resolveRequest = () => {
+                            const resolveOnHandler = xhr[`on${eventType}`] || (() => {});
+                            const resolveEvent = createEvent(eventType, {
+                                element: xhr,
+                                properties,
+                            });
+
+                            resolveOnHandler(properties);
+                            resolveEvent();
+                        };
+                        const resolveAfterDelay = withOptionalDelay(getConfig(xhr.url).delay, resolveRequest);
+
+                        resolveAfterDelay();
+                    });
                 } else {
                     xhr.originalSend(requestPayload);
                 }
@@ -491,6 +685,13 @@ const MockRequests = (function MockRequestsFactory() {
      * the response value after the configured delay has passed.
      */
     function overwriteFetch() {
+        const globalFetchExists = !!(globalScope.fetch);
+        const localFetchExists = typeof fetch !== typeof undefined;
+
+        if (!globalFetchExists &amp;&amp; !localFetchExists) {
+            return;
+        }
+
         originalFetch = globalScope.fetch.bind(globalScope);
 
         globalScope.fetch = function(resource, init) {
@@ -500,7 +701,7 @@ const MockRequests = (function MockRequestsFactory() {
             if (urlIsMocked(url)) {
                 return (async () => {
                     const requestPayload = isUsingRequestObject
-                        ? await attemptParseJson(resource.text())
+                        ? attemptParseJson(await resource.text())
                         : (init &amp;&amp; init.hasOwnProperty('body') &amp;&amp; init.body)
                             ? attemptParseJson(init.body)
                             : undefined;
@@ -528,13 +729,8 @@ const MockRequests = (function MockRequestsFactory() {
         }
     }
 
-    if (globalScope.XMLHttpRequest) {
-        overwriteXmlHttpRequestObject();
-    }
-
-    if (globalScope.fetch) {
-        overwriteFetch();
-    }
+    overwriteXmlHttpRequestObject();
+    overwriteFetch();
 
     return {
         configure,

@@ -196,7 +196,8 @@ class MockRequestsWebpackPlugin {
             return false;
         }
 
-        configEntryList.push(mockEntryAbsPath);
+        // Make mock entry file the first in the `entry` list so it's loaded in the app first
+        configEntryList.splice(0, 0, mockEntryAbsPath);
 
         return true;
     }

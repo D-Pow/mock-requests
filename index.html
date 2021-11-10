@@ -72,35 +72,51 @@ never have to change your source code to use mocks ever again.</p>
 <h4>Backed and Used by:</h4>
 <ul>
 <li><a href="https://us.etrade.com"><img src="https://cdn2.etrade.net/1/17092613100.0/aempros/content/dam/etrade/retail/en_US/images/global/logos/etrade-logo-rgb-144x22.svg" alt="E-Trade" style="background: white; padding: 5px" /></a></li>
+<li><a href="https://nextdoor.com"><img src="https://d19rpgkrjeba2z.cloudfront.net/static/gen/fe6b9b01b5aca5e163e08ecc131c3446.svg" alt="Nextdoor" style="background: white; padding: 5px" /></a></li>
 </ul>
 <h2>Contents</h2>
 <ul>
 <li><a href="#features">Features</a></li>
 <li><a href="#installation">Installation</a></li>
-<li><a href="#usage">Usage</a></li>
+<li><a href="#usage">Usage</a>
+<ul>
+<li><a href="#quick-note-about-usage-in-back-end-or-nodejs-scripts">Quick note about usage in back-end or NodeJS scripts</a></li>
+</ul>
+</li>
 <li><a href="#examples">Examples</a>
 <ul>
-<li><a href="#example-static">Static responses</a></li>
-<li><a href="#example-dynamic">Dynamic responses</a></li>
-<li><a href="#example-logins">Login mock selections</a></li>
+<li><a href="#static-responses">Static responses</a>
+<ul>
+<li><a href="#basic-configuration">Basic configuration</a></li>
+<li><a href="#mixing-mocks-with-actual-api-calls">Mixing mocks with actual API calls</a></li>
 </ul>
 </li>
-<li><a href="#separate-from-source">Separating mocks from source</a>
+<li><a href="#dynamic-responses">Dynamic responses</a>
+<ul>
+<li><a href="#modifying-responses-by-payload">Modifying responses by payload</a></li>
+<li><a href="#modifying-responses-by-query-parameters">Modifying responses by query parameters</a></li>
+<li><a href="#delaying-resolution-time">Delaying resolution time</a></li>
+</ul>
+</li>
+<li><a href="#mocks-based-on-different-logins">Mocks based on different logins</a></li>
+<li><a href="#other-utility-functions">Other utility functions</a></li>
+</ul>
+</li>
+<li><a href="#separating-mocks-from-source-code">Separating mocks from source code</a>
 <ul>
 <li><a href="#bare-bones-instructions">Bare-bones instructions</a></li>
-<li><a href="#plugin-instructions">Webpack Plugin/Activating via CLI</a>
+<li><a href="#webpack-pluginactivating-via-cli">Webpack Plugin/Activating via CLI</a>
 <ul>
-<li><a href="#options">Options</a></li>
+<li><a href="#plugin-options">Plugin options</a></li>
 </ul>
 </li>
-<li><a href="#custom-instructions">Custom instructions</a></li>
+<li><a href="#further-customization">Further customization</a></li>
 </ul>
 </li>
-<li><a href="#api">MockRequests API</a></li>
-<li><a href="#final-notes">Final notes</a></li>
+<li><a href="#mockrequests-api">MockRequests API</a></li>
+<li><a href="#implementation-notes">Implementation notes</a></li>
 <li><a href="#license">License</a></li>
 </ul>
-<p><a name="features"></a></p>
 <h2>Features</h2>
 <p>This library was made for the purpose of allowing developers to be able to continue to write code
 as normal even when their APIs are down, haven't been developed by back-end teams yet, or don't have
@@ -133,11 +149,10 @@ order to mimic back-end alterations of data.</li>
 This becomes extremely useful if you want to <strong>switch app-wide mocks between different logins</strong> when developing.</li>
 <li><strong>Greatly simplify API testing</strong>. Just define <code>fetch</code> and/or <code>XMLHttpRequest</code> in a test setup file and configure
 <code>MockRequests</code> with the responses you expect. It will handle all the heavy-lifting of mocking network responses for you
-so you don't have to repetitively use e.g. <code>fetch = jest.fn()</code>.</li>
+so you don't have to repetitively use e.g. <code>fetch = jest.fn()</code>. See an example of the one-and-done <a href="https://github.com/D-Pow/MockRequests/blob/master/demo/package.json#L55">configuration</a> and <a href="https://github.com/D-Pow/MockRequests/blob/master/demo/tests/services/Kitsu.spec.js">testing</a> in the <a href="./demo">demo</a>.</li>
 <li>Compatible with <strong>all JavaScript environments</strong>, including back-end Node scripts, as long as either <code>fetch</code> or
 <code>XMLHttpRequest</code> are defined and used in that environment (natively or by polyfill).</li>
 </ul>
-<p><a name="installation"></a></p>
 <h2>Installation</h2>
 <ul>
 <li>
@@ -160,7 +175,6 @@ so you don't have to repetitively use e.g. <code>fetch = jest.fn()</code>.</li>
 </ul>
 </li>
 </ul>
-<p><a name="usage"></a></p>
 <h2>Usage</h2>
 <p>API docs can be viewed in the <a href="https://d-pow.github.io/MockRequests/MockRequests.html">JSDoc</a> along with
 a <a href="https://d-pow.github.io/MockRequests/demo/">live demo</a>.</p>
@@ -172,13 +186,102 @@ experiences the effects. This means you could configure it in one file and then 
 that make network requests to the configured URLs will receive the mock responses instead,
 even without importing <code>MockRequests</code>. This makes it very easy to work on the front-end even if
 some APIs are down, haven't been developed yet, or if you have no internet access at all.</p>
-<p><a name="examples"></a></p>
+<h3>Quick note about usage in back-end or NodeJS scripts</h3>
+<p>TL;DR: <strong>It is highly recommended to use <a href="https://www.npmjs.com/package/isomorphic-fetch">isomorphic-fetch</a></strong> for any back-end/NodeJS scripts since it &quot;just works&quot; throughout your entire app just like MockRequests does.</p>
+<details>
+    <summary>Network requests in general</summary>
+<p>MockRequests generally works with any third-party library because it doesn't alter the library itself, it only changes how <code>fetch</code>/<code>XMLHttpRequest</code> work. As such, <code>jest</code>, <code>axios</code>, etc. aren't affected since they only provide wrappers around the above without changing how they work.</p>
+<p>However, MockRequests relies on those network functions being defined globally <strong>before being imported</strong>. So, if using a library that modifies those functions/objects, like <a href="https://www.npmjs.com/package/node-fetch"><code>node-fetch</code></a> does, you must <em>heed their warnings</em> to <a href="https://github.com/node-fetch/node-fetch/blob/37ac459cfd0eafdf5bbb3d083aa82f0f2a3c9b75/README.md#providing-global-access">add <code>fetch</code>, <code>Headers</code>, etc. as global variables</a> <strong>before</strong> importing/<code>require</code>-ing MockRequests. In fact, this is exactly what <code>isomorphic-fetch</code> does - it imports <code>node-fetch</code> and then sets all the global variables for you (just like <code>node-fetch</code> itself recommends) so you don't have to.</p>
+<p>In other words, this is the easiest way to make (and mock) network requests:</p>
+<pre class="prettyprint source lang-javascript"><code>// [any].mjs
+import 'isomorphic-fetch'; // Automatically mocks `fetch()` globally for all files!
+import MockRequests from 'mock-requests';
+
+MockRequests.configure({
+    [apiUrl]: { myKey: 'myVal' },
+});
+
+fetch(apiUrl); // Mocked easily and automatically!
+</code></pre>
+<p>as opposed to being forced to call <code>global.fetch()</code> instead of <code>fetch()</code>:</p>
+<pre class="prettyprint source lang-javascript"><code>// app.mjs
+import * as NodeFetch from 'node-fetch';
+// Don't import `fetch`/`Headers` individually to avoid polluting the script's namespace.
+// Otherwise, you'd have to use `global.fetch(url, options)` so `global.fetch` is used
+// rather than the local `fetch` function.
+global.fetch = NodeFetch.default;
+global.Headers = NodeFetch.Headers;
+
+// Force `global[field] = field` to be set before importing MockRequests
+const MockRequests = (await import('mock-requests')).default;
+
+fetch(apiUrl); // Mocked, but cumbersome to setup. Same regardless of MJS or CJS.
+
+
+
+// app.cjs equivalent
+
+/* node-fetch@>=3 */
+const NodeFetch = await import('node-fetch');
+// Same concept as in MJS: Don't pollute the namespace to use `global.fetch` by default
+global.fetch = NodeFetch.default;
+global.Headers = NodeFetch.Headers;
+
+const MockRequests = require('mock-requests');
+// ... mock configuration/network calls
+
+/* node-fetch@&lt;=2 */
+global.fetch = require('node-fetch');
+global.Headers = fetch.Headers;
+
+const MockRequests = require('mock-requests');
+// ... mock configuration/network calls
+</code></pre>
+<p>or, alternatively, being forced to extract the polyfills to a separate file:</p>
+<pre class="prettyprint source lang-javascript"><code>// NetworkPolyfill.mjs
+import fetch, { Headers } from 'node-fetch';
+
+global.fetch = fetch;
+global.Headers = Headers;
+
+
+// app.mjs
+import './NetworkPolyfill.js'; // Must be imported before MockRequests
+import MockRequests from 'mock-requests';
+
+MockRequests.configureDynamicResponses(...);
+
+fetch(apiUrl); // Mocked, but requires splitting of network-setup logic to a separate file.
+</code></pre>
+</details>
+<details>
+    <summary>Network requests using Axios in NodeJS</summary>
+<p>Currently, MockRequests only mocks <code>fetch</code> and <code>XMLHttpRequest</code>. When used in NodeJS scripts, Axios attempts using XHR first and falls back to using the NodeJS <code>http</code>/<code>https</code> modules if it doesn't exist (<a href="https://github.com/axios/axios/blob/master/lib/defaults.js#L17-L27">source code ref</a>). Thus, an XHR polyfill must be added to use Axios in the live NodeJS code (but not Jest tests, as described in <a href="#features">Features</a>).</p>
+<p>Furthermore, there is a <a href="https://github.com/D-Pow/MockRequests/issues/15#issuecomment-891205355">bug in the NodeJS <code>xmlhttprequest</code> package</a> caused by them not following the <a href="https://xhr.spec.whatwg.org">correct WHATWG standard</a>. Until MockRequests adds native support for the NodeJS <code>http</code>/<code>https</code> modules, an XHR polyfill library (like the one mentioned here) will have to be used in order to use <code>Axios</code> in back-end source code. In order to do so, write your code in a similar fashion to that described above:</p>
+<pre class="prettyprint source lang-javascript"><code>/* app.mjs */
+// Don't pollute namespace by using dynamic imports
+global.XMLHttpRequest = (await import('xmlhttprequest')).XMLHttpRequest;
+// Force global fields to be defined before defining MockRequests and Axios
+const MockRequests = (await import('mock-requests')).default;
+const axios = (await import('axios')).default;
+// ... your logic
+
+
+/* app.js */
+// First, the polyfill
+global.XMLHttpRequest = require('xmlhttprequest').XMLHttpRequest;
+// Next, MockRequests
+const MockRequests = require('mock-requests');
+// Finally, Axios
+const axios = require('axios');
+// ... your logic
+</code></pre>
+</details>
 <h2>Examples</h2>
 <p>Note how in the below examples, the <strong>production-bound code doesn't change</strong> between
 mocking and using network calls.</p>
-<p><a name="example-static"></a></p>
 <h3>Static responses</h3>
-<h4>Standard configuration</h4>
+<h4>Basic configuration</h4>
 <p>To configure global app usage of <code>MockRequests</code>, simply call <code>configure()</code> with an object containing URL-responseObject
 mappings.</p>
 <pre class="prettyprint source lang-javascript"><code>// This is the only code you need to add to use this library
@@ -233,9 +336,8 @@ const realApiResponse = await fetch(functionalApi).then(res => res.json());
 useResponseContent(mockedResponse);
 useResponseContent(realApiResponse);
 </code></pre>
-<p><a name="example-dynamic"></a></p>
 <h3>Dynamic responses</h3>
-<h4>Dynamically modifying subsequent responses</h4>
+<h4>Modifying responses by payload</h4>
 <p>This library also supports dynamically updating your mocked APIs' responses, so as to mimic actual
 back-end systems. To utilize this feature, you'll need to call the dynamic counterparts of
 <code>configure/setMockUrlResponse</code> (<code>configureDynamicResponses/setDynamicMockUrlResponse</code>) along with
@@ -288,7 +390,7 @@ console.log(myDynamicallyModifiedResponse)
 }
 */
 </code></pre>
-<h4>Mocking families of URLs using query parameters</h4>
+<h4>Modifying responses by query parameters</h4>
 <p>Additionally, the <code>dynamicResponseModFn</code> will receive an object containing query parameters from the request URL,
 which means you also have the option to generate dynamic responses based on those.</p>
 <p>If you want to mock all URLs with the same pathname but different query parameters, simply add <code>usePathnameForAllQueries: true</code>
@@ -319,7 +421,7 @@ console.log(response);
 'You searched for weather'
 */
 </code></pre>
-<h4>Delaying mock response resolutions</h4>
+<h4>Delaying resolution time</h4>
 <p>There is also a <code>delay</code> option you can use if you want to mimic network delays:</p>
 <pre class="prettyprint source lang-javascript"><code>// or configureDynamicResponses({ [myApiUrl]: {...} })
 MockRequests.setDynamicMockUrlResponse(myApiUrl, {
@@ -328,9 +430,8 @@ MockRequests.setDynamicMockUrlResponse(myApiUrl, {
     delay: 1500   // will make fetch take 1.5 seconds to resolve myApiUrl
 });
 </code></pre>
-<p><a name="example-logins"></a></p>
-<h3>Sample usage with different logins</h3>
-<p>Finally, because the configure/setMockUrlResponse functions take in a simple URL-response mapping,
+<h3>Mocks based on different logins</h3>
+<p>Finally, because the <code>configure</code>/<code>setMockUrlResponse</code> functions take in a simple URL-response mapping,
 using different mocks at different times becomes incredibly user-friendly. For example,
 if your data changes based on which user is logged in, then the <code>MockRequests</code> API is
 particularly easy to work with. In this case, after defining each user's mock responses,
@@ -353,7 +454,7 @@ MockRequests.configure(loginMocks.alice);
 // no, wait, I'll be Bob instead
 MockRequests.configure(loginMocks.bob);
 </code></pre>
-<h4>Other utility functions</h4>
+<h3>Other utility functions</h3>
 <p>For convenience, a <code>mapStaticConfigToDynamic()</code> function has been included to make converting the above
 static version of <code>loginMocks</code> to the dynamic counterpart easier:</p>
 <pre class="prettyprint source lang-javascript"><code>// Example 1
@@ -388,9 +489,7 @@ const staticDynamicMerged = Object.keys(loginMocks).reduce((dynamicConfigs, user
 }, {});
 MockRequests.configureDynamicResponses(staticDynamicMerged.bob);
 </code></pre>
-<p><a name="separate-from-source"></a></p>
 <h2>Separating mocks from source code</h2>
-<p><a name="bare-bones-instructions"></a></p>
 <h3>Bare-bones instructions</h3>
 <p>In the simplest, bare-bones example, you could just import <code>MockRequests</code> into one of your entry JavaScript files
 (src/index.js, src/App.js, or similar) and configure your mocks there. As long as MockRequests was installed as a
@@ -441,7 +540,6 @@ import '../mocks/MockConfig';
 
 ReactDOM.render(&lt;App />, document.getElementById('root'));
 </code></pre>
-<p><a name="plugin-instructions"></a></p>
 <h3>Webpack Plugin/Activating via CLI</h3>
 <p>To avoid having to change your source code to activate/deactivate mocks (e.g. src/index.js above), <code>MockRequests</code> comes with a built-in plugin for projects using <a href="https://webpack.js.org/">webpack</a>. As such, assuming you have a separate directory of mocks and a single mock entry file (see above example), you can simply import the <code>MockRequestsWebpackPlugin</code> and use via:</p>
 <pre class="prettyprint source lang-javascript"><code>// webpack.config.js
@@ -464,7 +562,7 @@ module.exports = {
 <p>and run using <code>MOCK=true npm start</code>.</p>
 <p>Use of this plugin will automatically transpile your code (according to your webpack config's JS/TS rules) and activate mocks based on the boolean of whether or not mocks should be activated. This means you never have to change anything in <code>src/</code> or in webpack.config.js outside of this plugin.</p>
 <p>If the boolean condition resolves to <code>false</code>, then nothing will be added to your build output, keeping mock files out of the final production code. In this example, our toggle is via CLI env variable, but it can be anything else of your choosing.</p>
-<h4>Options</h4>
+<h4>Plugin options</h4>
 <p>The webpack plugin comes with a few configuration options to accommodate all types of webpack configurations:</p>
 <pre class="prettyprint source lang-javascript"><code>new MockRequestsWebpackPlugin(
     'mocks',
@@ -478,8 +576,7 @@ module.exports = {
 </code></pre>
 <p>If you prefer using absolute paths instead of relative, then change both the <code>mocksDir</code> and <code>mockEntryFile</code> arguments to be absolute, and set <code>pathsAreAbsolute: true</code>.</p>
 <p>If you prefer to nest your <code>mocks/</code> directory inside <code>src/</code> or other directory that's already configured to be transpiled, then set <code>transpileMocksDir: false</code> for added simplicity in webpack processing.</p>
-<p><a name="custom-instructions"></a></p>
-<h3>Custom instructions</h3>
+<h3>Further customization</h3>
 <p>If your project doesn't use webpack or if you prefer to have more control over the file-processing, then you could instead use the <code>resolve-mocks.js</code> script to generate the paths to the mock directory/entry-file manually.</p>
 <p>All you have to do is pass in the same fields from the <code>MockRequestsWebpackPlugin</code> into the <code>resolveMocks()</code> function, and spread the resulting <code>entry</code>/<code>include</code> arrays where you want them processed. For example:</p>
 <pre class="prettyprint source lang-javascript"><code>// webpack.config.js
@@ -507,27 +604,27 @@ module.exports = {
 </code></pre>
 <p>and run using <code>MOCK=true npm start</code>.</p>
 <p>Doing so will result in the same outcome of the webpack plugin: transpilation of the <code>mocks/</code> directory so you can write your mocks with the latest JS features, as well as adding the mock entry file to your build/run output dynamically -- all while still being toggled by the CLI. Like the plugin, the mocks won't be added to your build output unless the boolean condition resolves to <code>true</code>.</p>
-<p><a name="api"></a></p>
 <h2>MockRequests API</h2>
 <p>In order to make mocking your network calls simpler, config functions have been added to allow for
-setting, getting, and deleting mock responses for your network calls. These are described at length
-in the <a href="https://d-pow.github.io/MockRequests/MockRequests.html">JSDoc</a>.</p>
-<h5>configure(staticUrlResponseConfigObject, overwritePreviousConfig = true)</h5>
-<h5>configureDynamicResponses(dynamicUrlResponseConfigObject, overwritePreviousConfig = true)</h5>
-<h5>setMockUrlResponse(url, staticMockResponseObject)</h5>
-<h5>setDynamicMockUrlResponse(url, dynamicMockResponseObject)</h5>
-<h5>getResponse(url)</h5>
-<h5>deleteMockUrlResponse(urlNotMeantToBeMocked)</h5>
-<h5>clearAllMocks()</h5>
-<h5>mapStaticConfigToDynamic(staticConfig)</h5>
-<h5>OriginalXHR()</h5>
-<h5>originalFetch()</h5>
+setting, getting, and deleting mock responses for your network calls.</p>
+<p>These are described at length in the <a href="https://d-pow.github.io/MockRequests/MockRequests.html">JSDoc</a>.</p>
+<ul>
+<li><strong>configure(staticUrlResponseConfigObject, overwritePreviousConfig = true)</strong></li>
+<li><strong>configureDynamicResponses(dynamicUrlResponseConfigObject, overwritePreviousConfig = true)</strong></li>
+<li><strong>setMockUrlResponse(url, staticMockResponseObject)</strong></li>
+<li><strong>setDynamicMockUrlResponse(url, dynamicMockResponseObject)</strong></li>
+<li><strong>getResponse(url)</strong></li>
+<li><strong>deleteMockUrlResponse(urlNotMeantToBeMocked)</strong></li>
+<li><strong>clearAllMocks()</strong></li>
+<li><strong>mapStaticConfigToDynamic(staticConfig)</strong></li>
+<li><strong>OriginalXHR()</strong></li>
+<li><strong>originalFetch()</strong></li>
+</ul>
 <p>Note that <code>OriginalXHR</code> and <code>originalFetch</code> will use the original <code>XMLHttpRequest</code> and <code>fetch</code> respectively,
 regardless of if you've set the mock URL responses in <code>MockRequests.configure()</code> or <code>MockRequests.setMockUrlResponse(...)</code>.
 It will also use <code>XMLHttpRequest</code> and <code>fetch</code> regardless of if the browser supports them or not (will be <code>undefined</code> in
 cases where the browser doesn't support them).</p>
-<p><a name="final-notes"></a></p>
-<h2>Final notes</h2>
+<h2>Implementation notes</h2>
 <ol>
 <li>
 <p>This mocks the usage of <code>XMLHttpRequest</code> and <code>fetch</code> such that the response is always valid.
@@ -561,7 +658,7 @@ so you can alternatively use an instance of the <code>Request</code> class in yo
 </li>
 <li>
 <p>This works with any environment that uses either <code>fetch</code> or <code>XMLHttpRequest</code>, regardless of if said
-environment is a browser, web/service worker, or a Node.js script. As long as <code>fetch</code> and/or <code>XMLHttpRequest</code> are defined (natively or
+environment is a browser, web/service worker, or a NodeJS script. As long as <code>fetch</code> and/or <code>XMLHttpRequest</code> are defined <strong>globally</strong> (whether natively or
 by polyfill), any network request to a URL configured by <code>MockRequests</code> will be
 mocked appropriately. For example:</p>
 <pre class="prettyprint source lang-javascript"><code>// my-script.js - called via `node my-script.js`
@@ -572,9 +669,8 @@ const MockRequests = require('mock-requests');
 </code></pre>
 </li>
 </ol>
-<p><a name="license"></a></p>
 <h2>License</h2>
-<p>MIT</p></article>
+<p><a href="./LICENSE.md">MIT</a></p></article>
     </section>
 
 
