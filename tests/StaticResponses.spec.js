@@ -85,7 +85,7 @@ describe('StaticResponses', () => {
         expect(mockFetchResponseText).toEqual(mockConfig2[mockUrl4]);
     });
 
-    it('should overwrite the result of XMLHttpRequest for URLs mocked', () => {
+    it('should overwrite the result of XMLHttpRequest for URLs mocked', async () => {
         MockRequests.configure({ ...mockConfig1, ...mockConfig2 });
 
         const mockXhrJson = new XMLHttpRequest();
@@ -93,7 +93,16 @@ describe('StaticResponses', () => {
         mockXhrJson.onreadystatechange = () => {
             expect(mockXhrJson.response).toEqual(mockConfig1[mockUrl2]);
         };
-        mockXhrJson.send();
+        mockXhrJson.onloadend = (progressEvent) => {
+            expect(mockXhrJson.response).toEqual(mockConfig1[mockUrl2]);
+
+            const { lengthComputable, loaded, total } = progressEvent;
+
+            expect(lengthComputable).toBe(true);
+            expect(loaded).toEqual(JSON.stringify(mockXhrJson.response).length);
+            expect(total).toEqual(JSON.stringify(mockXhrJson.response).length);
+        };
+        await mockXhrJson.send();
 
         const mockXhrText = new XMLHttpRequest();
         const expectedManuallyChangedStatus = 302; // HTTP code for redirect
@@ -104,7 +113,17 @@ describe('StaticResponses', () => {
             expect(mockXhrText.responseText).toEqual(mockConfig2[mockUrl4]);
             expect(mockXhrText.status).toEqual(expectedManuallyChangedStatus);
         };
-        mockXhrText.send();
+        mockXhrText.onloadend = (progressEvent) => {
+            expect(mockXhrText.responseText).toEqual(mockConfig2[mockUrl4]);
+            expect(mockXhrText.status).toEqual(expectedManuallyChangedStatus);
+
+            const { lengthComputable, loaded, total } = progressEvent;
+
+            expect(lengthComputable).toBe(true);
+            expect(loaded).toEqual(mockXhrText.responseText.length);
+            expect(total).toEqual(mockXhrText.responseText.length);
+        };
+        await mockXhrText.send();
     });
 
     it('should call fetch for URLs not mocked', async () => {
@@ -123,7 +142,7 @@ describe('StaticResponses', () => {
         const mockXHR = new XMLHttpRequest();
         mockXHR.open('GET', notMockedUrl);
         mockXHR.onreadystatechange = jest.fn();
-        mockXHR.send();
+        await mockXHR.send();
         expect(mockXHR.onreadystatechange).not.toHaveBeenCalled();
     });
 
@@ -139,5 +158,197 @@ describe('StaticResponses', () => {
 
         clearAllMocks();
         expect(getResponse(mockUrl1)).toBe(undefined);
+    });
+
+    describe('Event listeners', () => {
+        let testPromises = [];
+
+        async function testEventListener(xhr, eventType, testFunc) {
+            return await new Promise(res => {
+                xhr.addEventListener(eventType, (...args) => {
+                    res(testFunc(...args));
+                });
+            })
+        }
+
+        function testEventProperties(
+            eventObj,
+            eventInit,
+        ) {
+            const eventType = eventObj.type;
+            const targetElement = eventInit?.target;
+            const defaultEventProperties = {
+                type: eventType,
+                bubbles: false,
+                cancelable: false,
+                composed: false,
+                defaultPrevented: false,
+                cancelBubble: false,
+                target: targetElement,
+                currentTarget: targetElement,
+                isTrusted: false,
+                eventPhase: 0,
+                path: [],
+                returnValue: true,
+                srcElement: targetElement,
+                timeStamp: 1234,
+            };
+
+            // Iterate through the default event properties if no properties specified
+            const eventObjToIterateThrough = eventInit ? eventInit : defaultEventProperties;
+
+            Object.entries(eventObjToIterateThrough).forEach(([ key, value ]) => {
+                /*
+                 * The below is equivalent to `expect(received).toBeOneOf([ val1, val2 ])`
+                 * except the `expected` and `received` are swapped, i.e.
+                 * `expect([ expectedValOption1, expectedValOption2 ]).toContain(received)`
+                 *
+                 * An alternative (that only works with strings) could be:
+                 * `expect(received).toMatch(new RegExp(`(${expectedValOption1}|${expectedValOption2})`))`
+                 */
+                expect([ defaultEventProperties[key], eventInit?.[key] ]).toContain(value);
+            });
+        }
+
+        function testEventFunctions(eventObj) {
+            expect(eventObj.toString()).toEqual('[object Event]');
+
+            const defaultEvent = {
+                type: eventObj.type || 'DefaultEvent',
+                bubbles: eventObj.bubbles || false,
+                cancelable: eventObj.cancelable || false,
+                cancelBubble: eventObj.cancelBubble || false,
+                defaultPrevented: eventObj.defaultPrevented || false,
+            };
+            testEventProperties(eventObj, defaultEvent);
+
+            const changedEvent = {
+                type: 'SomeEvent',
+                bubbles: true,
+                cancelable: true,
+            };
+            eventObj.initEvent(changedEvent.type, changedEvent.bubbles, changedEvent.cancelable);
+            testEventProperties(eventObj, changedEvent);
+
+            eventObj.cancelBubble = false;
+            eventObj.defaultPrevented = false;
+
+            eventObj.preventDefault();
+            testEventProperties(eventObj, { defaultPrevented: true });
+
+            eventObj.stopPropagation();
+            testEventProperties(eventObj, { bubbles: false, cancelBubble: true });
+
+            eventObj.bubbles = true;
+            eventObj.cancelBubble = false;
+            testEventProperties(eventObj, { bubbles: true, cancelBubble: false });
+
+            eventObj.stopImmediatePropagation();
+            testEventProperties(eventObj, { bubbles: false, cancelBubble: true });
+        }
+
+        function testAllEventFields(eventObj, eventInit) {
+            testEventProperties(eventObj, eventInit);
+            testEventFunctions(eventObj);
+        }
+
+        beforeEach(() => {
+            testPromises = [];
+        });
+
+        it('should work with XMLHttpRequest', async () => {
+            MockRequests.configure({ ...mockConfig1, ...mockConfig2 });
+
+            const mockXhrJson = new XMLHttpRequest();
+            mockXhrJson.open('GET', mockUrl2);
+            testPromises.push(testEventListener(mockXhrJson, 'readystatechange', () => {
+                expect(mockXhrJson.response).toEqual(mockConfig1[mockUrl2]);
+            }));
+            testPromises.push(testEventListener(mockXhrJson, 'loadend', progressEvent => {
+                expect(mockXhrJson.response).toEqual(mockConfig1[mockUrl2]);
+
+                const { lengthComputable, loaded, total } = progressEvent;
+
+                expect(lengthComputable).toBe(true);
+                expect(loaded).toEqual(JSON.stringify(mockXhrJson.response).length);
+                expect(total).toEqual(JSON.stringify(mockXhrJson.response).length);
+            }));
+            await mockXhrJson.send();
+
+            const mockXhrText = new XMLHttpRequest();
+            mockXhrText.open('GET', mockUrl4);
+            testPromises.push(testEventListener(mockXhrText, 'readystatechange', () => {
+                expect(mockXhrText.responseText).toEqual(mockConfig2[mockUrl4]);
+            }));
+            testPromises.push(testEventListener(mockXhrText, 'loadend', progressEvent => {
+                expect(mockXhrText.responseText).toEqual(mockConfig2[mockUrl4]);
+
+                const { lengthComputable, loaded, total } = progressEvent;
+
+                expect(lengthComputable).toBe(true);
+                expect(loaded).toEqual(mockXhrText.responseText.length);
+                expect(total).toEqual(mockXhrText.responseText.length);
+            }));
+            await mockXhrText.send();
+
+            await Promise.all(testPromises);
+        });
+
+        it('should work with XMLHttpRequest on Internet Explorer', async () => {
+            MockRequests.configure(mockConfig1);
+
+            // Make `new Event()` fail to mimic IE >= 9
+            // Forces the use of `document.createEvent('Event').initEvent(...)`
+            jest.spyOn(global, 'Event').mockImplementation(new Error("`Event.prototype.constructor` doesn't exist"));
+
+            const mockXhrJsonInternetExplorer = new XMLHttpRequest();
+            mockXhrJsonInternetExplorer.open('GET', mockUrl2);
+            testPromises.push(testEventListener(mockXhrJsonInternetExplorer, 'readystatechange', () => {
+                expect(mockXhrJsonInternetExplorer.response).toEqual(mockConfig1[mockUrl2]);
+            }));
+            testPromises.push(testEventListener(mockXhrJsonInternetExplorer, 'loadend', progressEvent => {
+                expect(mockXhrJsonInternetExplorer.response).toEqual(mockConfig1[mockUrl2]);
+
+                const { lengthComputable, loaded, total } = progressEvent;
+
+                expect(lengthComputable).toBe(true);
+                expect(loaded).toEqual(JSON.stringify(mockXhrJsonInternetExplorer.response).length);
+                expect(total).toEqual(JSON.stringify(mockXhrJsonInternetExplorer.response).length);
+            }));
+            await mockXhrJsonInternetExplorer.send();
+
+            await Promise.all(testPromises);
+        });
+
+        it('should work if there are no global Event objects', async () => {
+            MockRequests.configure(mockConfig1);
+
+            // Remove global `Event` object
+            jest.spyOn(global, 'Event').mockImplementation(new Error("`Event.prototype.constructor` doesn't exist"));
+            // Remove fallback `document.createEvent` function
+            jest.spyOn(document, 'createEvent').mockImplementation(new Error("Either `document` or `document.createEvent()` don't exist"));
+
+            const mockXhrJsonInternetExplorer = new XMLHttpRequest();
+            mockXhrJsonInternetExplorer.open('GET', mockUrl2);
+            testPromises.push(testEventListener(mockXhrJsonInternetExplorer, 'readystatechange', () => {
+                expect(mockXhrJsonInternetExplorer.response).toEqual(mockConfig1[mockUrl2]);
+            }));
+            testPromises.push(testEventListener(mockXhrJsonInternetExplorer, 'loadend', progressEvent => {
+                expect(mockXhrJsonInternetExplorer.response).toEqual(mockConfig1[mockUrl2]);
+
+                const { lengthComputable, loaded, total } = progressEvent;
+
+                expect(lengthComputable).toBe(true);
+                expect(loaded).toEqual(JSON.stringify(mockXhrJsonInternetExplorer.response).length);
+                expect(total).toEqual(JSON.stringify(mockXhrJsonInternetExplorer.response).length);
+
+                // Test manually-mocked `Event` object
+                testAllEventFields(progressEvent);
+                testAllEventFields(progressEvent, { type: 'loadend', bubbles: false, cancelable: false });
+            }));
+            await mockXhrJsonInternetExplorer.send();
+
+            await Promise.all(testPromises);
+        });
     });
 });

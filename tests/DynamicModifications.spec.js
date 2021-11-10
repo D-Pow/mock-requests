@@ -132,15 +132,18 @@ describe('Dynamic response modifications', () => {
         const originalConfig = JSON.parse(JSON.stringify(dynamicConfig2[mockUrl2].response));
 
         const testDynamicXhrResponse = async (payload, expectedResult) => {
-            return new Promise(resolve => {
-                const mockXhr = new XMLHttpRequest();
-                mockXhr.open('POST', mockUrl2);
+            const mockXhr = new XMLHttpRequest();
+            mockXhr.open('POST', mockUrl2);
+
+            const resolutionPromise = new Promise(resolve => {
                 mockXhr.onreadystatechange = () => {
                     expect(mockXhr.response).toEqual(expectedResult);
                     resolve();
                 };
-                mockXhr.send(payload);
             });
+
+            await mockXhr.send(payload);
+            await resolutionPromise;
         };
 
         MockRequests.configureDynamicResponses(dynamicConfig2);
@@ -301,7 +304,7 @@ describe('Dynamic response modifications', () => {
         expect(setTimeout).toHaveBeenCalledWith(expect.anything(), dynamicConfigWithDelay[mockUrl1].delay);
     });
 
-    it('should still function if xhr.onreadystatechange is not defined', () => {
+    it('should still function if xhr.onreadystatechange is not defined', async () => {
         let resolved = false;
 
         MockRequests.setDynamicMockUrlResponse(mockUrl1, {
@@ -312,7 +315,7 @@ describe('Dynamic response modifications', () => {
 
         const mockXhr = new XMLHttpRequest();
         mockXhr.open('GET', mockUrl1);
-        mockXhr.send();
+        await mockXhr.send();
 
         expect(resolved).toBe(true);
     });
@@ -335,15 +338,18 @@ describe('Dynamic response modifications', () => {
         }
 
         await testAsyncDynamicFuncWithNetworkCall(async () => await fetch(mockUrl1));
-        await testAsyncDynamicFuncWithNetworkCall(() => {
-            return new Promise(resolve => {
-                const mockXhr = new XMLHttpRequest();
-                mockXhr.open('GET', mockUrl1);
+        await testAsyncDynamicFuncWithNetworkCall(async () => {
+            const mockXhr = new XMLHttpRequest();
+            mockXhr.open('GET', mockUrl1);
+
+            const resolutionPromise = new Promise(resolve => {
                 mockXhr.onreadystatechange = () => {
                     resolve();
                 };
-                mockXhr.send();
             });
+
+            await mockXhr.send();
+            await resolutionPromise;
         });
     });
 });

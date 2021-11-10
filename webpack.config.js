@@ -1,6 +1,7 @@
 const path = require('path');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 
+/** @type {import('webpack/types').WebpackOptionsNormalized} */
 module.exports = {
     entry: {
         index: './src/index.js'
