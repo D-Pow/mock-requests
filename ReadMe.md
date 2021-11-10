@@ -703,7 +703,7 @@ so you can alternatively use an instance of the `Request` class in your `fetch()
 `import MockRequests, { setMockUrlResponse } from 'mock-requests';`
 
 4. This works with any environment that uses either `fetch` or `XMLHttpRequest`, regardless of if said
-environment is a browser, web/service worker, or a Node.js script. As long as `fetch` and/or `XMLHttpRequest` are defined **globally** (whether natively or
+environment is a browser, web/service worker, or a NodeJS script. As long as `fetch` and/or `XMLHttpRequest` are defined **globally** (whether natively or
 by polyfill), any network request to a URL configured by `MockRequests` will be
 mocked appropriately. For example:
 
