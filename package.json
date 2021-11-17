@@ -1,6 +1,6 @@
 {
   "name": "mock-requests",
-  "version": "1.3.1",
+  "version": "1.3.2",
   "description": "Mocks XMLHttpRequest and fetch requests with the specified response object",
   "author": "Devon Powell",
   "license": "MIT",
@@ -13,6 +13,7 @@
     "type": "git",
     "url": "https://github.com/D-Pow/MockRequests.git"
   },
+  "homepage": "https://d-pow.github.io/MockRequests",
   "scripts": {
     "test": "jest --coverage tests",
     "clean": "npx shx rm -rf dist docs coverage",
@@ -38,6 +39,8 @@
     "@babel/preset-env": "^7.14.1",
     "@babel/preset-typescript": "^7.13.0",
     "@babel/runtime": "^7.7.7",
+    "@types/jest": "^27.0.2",
+    "@types/node": "^16.11.6",
     "@types/webpack": "^5.28.0",
     "babel-loader": "^8.0.6",
     "better-docs": "^2.3.2",

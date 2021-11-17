@@ -105,8 +105,11 @@ module.exports = {
         ]
     },
     entry: {
-        client: [ 'core-js', 'isomorphic-fetch', './src/index.js' ],
-        vendor: ['react', 'react-dom', 'prop-types']
+        client: {
+            import: './src/index.js' ,
+            dependOn: 'polyfills',
+        },
+        polyfills: [ 'core-js', 'isomorphic-fetch' ],
     },
     output: {
         path: path.resolve(__dirname, outputPath),
@@ -158,17 +161,18 @@ module.exports = {
     ],
     optimization: {
         splitChunks: {
+            chunks: 'all',
             cacheGroups: {
-                vendor: {
+                vendor: { // split node_modules (as vendor) from src (as client)
                     test: /[\\/]node_modules[\\/]/,
-                    name: 'vendor-chunk',
-                    chunks: 'all'
-                }
+                    name: 'vendor',
+                    chunks: 'all',
+                },
             },
-            maxSize: 240000,
-            minSize: 100000,
-            chunks: 'all'
-        }
+        },
+        runtimeChunk: {
+            name: 'runtime',
+        },
     },
     performance: {
         hints: false

@@ -588,6 +588,52 @@ const MockRequests = (function MockRequestsFactory() {
     }
 
     /**
+     * Axios only uses `XMLHttpRequest` (by default) or a fallback of the NodeJS modules [`http`]{@link https://nodejs.org/docs/latest-v16.x/api/http.html} and [`https`]{@link https://nodejs.org/docs/latest-v16.x/api/https.html}
+     * when it makes network requests. As such, `fetch` polyfills don't affect back-end/NodeJS scripts that use Axios.
+     *
+     * Since one of the few XHR polyfill libraries, [`xmlhttprequest`]{@link https://www.npmjs.com/package/xmlhttprequest}
+     * has a bug in it where they use a global `headers` object instead of the real/true XHR's headers, MockRequests will break
+     * when these two are combined.
+     *
+     * Thus, add this shim function *only if* an XHR polyfill is being used.
+     *
+     * TODO Replace this with mocks for NodeJS `http` and `https` modules.
+     *
+     * @param {XMLHttpRequest} xhr - MockRequests' wrapper around whatever globally-available XHR object exists.
+     * @see [Description of the bug in `node-XMLHttpRequest` with associated PR to fix it]{@link https://github.com/D-Pow/MockRequests/issues/15#issuecomment-891205355}
+     * @see [Axios defaults to `http(s)` modules in NodeJS scripts]{@link https://github.com/axios/axios/blob/master/lib/defaults.js#L24}
+     */
+    function addShimForAxiosWhenUsingNode_xmlhttprequest_polyfill(xhr) {
+        const userIsUsingXhrPolyfill = (
+            OriginalXHR.name !== 'XMLHttpRequest'
+            || OriginalXHR.prototype.constructor.name !== 'XMLHttpRequest'
+        );
+
+        if (!userIsUsingXhrPolyfill) {
+            return;
+        }
+
+        function getResponseHeader(headerKey) {
+            const headerVal = this.headers[headerKey];
+
+            if (headerVal != null) {
+                return headerVal;
+            }
+
+            return null;
+        }
+
+        function getAllResponseHeaders() {
+            return Object.keys(this.headers)
+                .map(headerKey => `${headerKey}: ${this.headers[headerKey]}`)
+                .join('\r\n');
+        }
+
+        xhr.getResponseHeader = getResponseHeader.bind(xhr);
+        xhr.getAllResponseHeaders = getAllResponseHeaders.bind(xhr);
+    }
+
+    /**
      * Overwrites the XMLHttpRequest function with a wrapper that
      * mocks the readyState, status, statusText, and various other
      * fields that depend on the status of the request, and applies
@@ -624,14 +670,18 @@ const MockRequests = (function MockRequestsFactory() {
                 };
                 const properties = Object.keys(mockedValues).reduce((definedProperties, key) => {
                     definedProperties[key] = {
-                        get: () => mockedValues[key],
-                        set: val => mockedValues[key] = val
+                        configurable: true,
+                        enumerable: true,
+                        writable: true,
+                        value: mockedValues[key],
                     };
 
                     return definedProperties;
                 }, {});
 
                 Object.defineProperties(xhr, properties);
+
+                addShimForAxiosWhenUsingNode_xmlhttprequest_polyfill(xhr);
             }
 
             xhr.originalOpen = xhr.open;
@@ -650,8 +700,17 @@ const MockRequests = (function MockRequestsFactory() {
                             eventType: 'readystatechange',
                         },
                         {
-                            eventType: 'loadend',
+                            eventType: 'load',
                             // `ProgressEvent` properties: https://developer.mozilla.org/en-US/docs/Web/API/ProgressEvent/ProgressEvent
+                            properties: {
+                                lengthComputable: true,
+                                loaded: xhr.responseText.length,
+                                total: xhr.responseText.length,
+                            }
+                        },
+                        {
+                            // Used by Axios
+                            eventType: 'loadend',
                             properties: {
                                 lengthComputable: true,
                                 loaded: xhr.responseText.length,

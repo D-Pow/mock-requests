@@ -74,7 +74,7 @@ order to mimic back-end alterations of data.
 This becomes extremely useful if you want to **switch app-wide mocks between different logins** when developing.
 * **Greatly simplify API testing**. Just define `fetch` and/or `XMLHttpRequest` in a test setup file and configure
 `MockRequests` with the responses you expect. It will handle all the heavy-lifting of mocking network responses for you
-so you don't have to repetitively use e.g. `fetch = jest.fn()`.
+so you don't have to repetitively use e.g. `fetch = jest.fn()`. See an example of the one-and-done [configuration](https://github.com/D-Pow/MockRequests/blob/master/demo/package.json#L55) and [testing](https://github.com/D-Pow/MockRequests/blob/master/demo/tests/services/Kitsu.spec.js) in the [demo](./demo).
 * Compatible with **all JavaScript environments**, including back-end Node scripts, as long as either `fetch` or
 `XMLHttpRequest` are defined and used in that environment (natively or by polyfill).
 
@@ -123,11 +123,11 @@ some APIs are down, haven't been developed yet, or if you have no internet acces
 TL;DR: **It is highly recommended to use [isomorphic-fetch](https://www.npmjs.com/package/isomorphic-fetch)** for any back-end/NodeJS scripts since it "just works" throughout your entire app just like MockRequests does.
 
 <details>
-    <summary>Details</summary>
+    <summary>Network requests in general</summary>
 
 MockRequests generally works with any third-party library because it doesn't alter the library itself, it only changes how `fetch`/`XMLHttpRequest` work. As such, `jest`, `axios`, etc. aren't affected since they only provide wrappers around the above without changing how they work.
 
-However, MockRequests relies on those network functions being defined globally **before being imported**. So, if using a library that modifies those functions/objects, like [`node-fetch`](https://www.npmjs.com/package/node-fetch) does, you must *heed their warnings* to [add `fetch`, `Headers`, etc. as global variables](https://github.com/node-fetch/node-fetch/blob/37ac459cfd0eafdf5bbb3d083aa82f0f2a3c9b75/README.md#providing-global-access) **before** importing/`require`-ing MockRequests.
+However, MockRequests relies on those network functions being defined globally **before being imported**. So, if using a library that modifies those functions/objects, like [`node-fetch`](https://www.npmjs.com/package/node-fetch) does, you must *heed their warnings* to [add `fetch`, `Headers`, etc. as global variables](https://github.com/node-fetch/node-fetch/blob/37ac459cfd0eafdf5bbb3d083aa82f0f2a3c9b75/README.md#providing-global-access) **before** importing/`require`-ing MockRequests. In fact, this is exactly what `isomorphic-fetch` does - it imports `node-fetch` and then sets all the global variables for you (just like `node-fetch` itself recommends) so you don't have to.
 
 In other words, this is the easiest way to make (and mock) network requests:
 
@@ -136,13 +136,8 @@ In other words, this is the easiest way to make (and mock) network requests:
 import 'isomorphic-fetch'; // Automatically mocks `fetch()` globally for all files!
 import MockRequests from 'mock-requests';
 
-MockRequests.configureDynamicResponses({
-    [apiUrl]: {
-        response: { myKey: 'myVal' },
-        dynamicResponseModFn(request, response) {
-            return { ...response, ...request };
-        },
-    },
+MockRequests.configure({
+    [apiUrl]: { myKey: 'myVal' },
 });
 
 fetch(apiUrl); // Mocked easily and automatically!
@@ -151,15 +146,38 @@ fetch(apiUrl); // Mocked easily and automatically!
 as opposed to being forced to call `global.fetch()` instead of `fetch()`:
 
 ```javascript
-// app.[mc]js
-import fetch, { Headers } from 'node-fetch';
-
-global.fetch = fetch;
-global.Headers = Headers;
+// app.mjs
+import * as NodeFetch from 'node-fetch';
+// Don't import `fetch`/`Headers` individually to avoid polluting the script's namespace.
+// Otherwise, you'd have to use `global.fetch(url, options)` so `global.fetch` is used
+// rather than the local `fetch` function.
+global.fetch = NodeFetch.default;
+global.Headers = NodeFetch.Headers;
 
 // Force `global[field] = field` to be set before importing MockRequests
 const MockRequests = (await import('mock-requests')).default;
-global.fetch(apiUrl); // Mocked, but cumbersome to use. Same regardless of MJS or CJS.
+
+fetch(apiUrl); // Mocked, but cumbersome to setup. Same regardless of MJS or CJS.
+
+
+
+// app.cjs equivalent
+
+/* node-fetch@>=3 */
+const NodeFetch = await import('node-fetch');
+// Same concept as in MJS: Don't pollute the namespace to use `global.fetch` by default
+global.fetch = NodeFetch.default;
+global.Headers = NodeFetch.Headers;
+
+const MockRequests = require('mock-requests');
+// ... mock configuration/network calls
+
+/* node-fetch@<=2 */
+global.fetch = require('node-fetch');
+global.Headers = fetch.Headers;
+
+const MockRequests = require('mock-requests');
+// ... mock configuration/network calls
 ```
 
 or, alternatively, being forced to extract the polyfills to a separate file:
@@ -181,7 +199,34 @@ MockRequests.configureDynamicResponses(...);
 fetch(apiUrl); // Mocked, but requires splitting of network-setup logic to a separate file.
 ```
 
-Furthermore, there is a [bug in `xmlhttprequest`](https://github.com/D-Pow/MockRequests/issues/15#issuecomment-891205355) so please don't use that package as their XHR polyfill doesn't follow the [correct standard](https://xhr.spec.whatwg.org).
+</details>
+
+<details>
+    <summary>Network requests using Axios in NodeJS</summary>
+
+Currently, MockRequests only mocks `fetch` and `XMLHttpRequest`. When used in NodeJS scripts, Axios attempts using XHR first and falls back to using the NodeJS `http`/`https` modules if it doesn't exist ([source code ref](https://github.com/axios/axios/blob/master/lib/defaults.js#L17-L27)). Thus, an XHR polyfill must be added to use Axios in the live NodeJS code (but not Jest tests, as described in [Features](#features)).
+
+Furthermore, there is a [bug in the NodeJS `xmlhttprequest` package](https://github.com/D-Pow/MockRequests/issues/15#issuecomment-891205355) caused by them not following the [correct WHATWG standard](https://xhr.spec.whatwg.org). Until MockRequests adds native support for the NodeJS `http`/`https` modules, an XHR polyfill library (like the one mentioned here) will have to be used in order to use `Axios` in back-end source code. In order to do so, write your code in a similar fashion to that described above:
+
+```javascript
+/* app.mjs */
+// Don't pollute namespace by using dynamic imports
+global.XMLHttpRequest = (await import('xmlhttprequest')).XMLHttpRequest;
+// Force global fields to be defined before defining MockRequests and Axios
+const MockRequests = (await import('mock-requests')).default;
+const axios = (await import('axios')).default;
+// ... your logic
+
+
+/* app.js */
+// First, the polyfill
+global.XMLHttpRequest = require('xmlhttprequest').XMLHttpRequest;
+// Next, MockRequests
+const MockRequests = require('mock-requests');
+// Finally, Axios
+const axios = require('axios');
+// ... your logic
+```
 
 </details>
 
@@ -658,7 +703,7 @@ so you can alternatively use an instance of the `Request` class in your `fetch()
 `import MockRequests, { setMockUrlResponse } from 'mock-requests';`
 
 4. This works with any environment that uses either `fetch` or `XMLHttpRequest`, regardless of if said
-environment is a browser, web/service worker, or a Node.js script. As long as `fetch` and/or `XMLHttpRequest` are defined (natively or
+environment is a browser, web/service worker, or a NodeJS script. As long as `fetch` and/or `XMLHttpRequest` are defined **globally** (whether natively or
 by polyfill), any network request to a URL configured by `MockRequests` will be
 mocked appropriately. For example:
 
