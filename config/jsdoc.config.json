@@ -21,6 +21,9 @@
         "node_modules/better-docs/typescript",
         "node_modules/better-docs/typedef-import"
     ],
+    "markdown": {
+        "idInHeadings": true
+    },
     "docdash": {
         "sort": false,
         "sectionOrder": [
