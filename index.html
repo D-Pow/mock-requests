@@ -540,7 +540,7 @@ import '../mocks/MockConfig';
 
 ReactDOM.render(&lt;App />, document.getElementById('root'));
 </code></pre>
-<p><a name="webpack-pluginactivating-via-cli"></a></p>
+<p><a id="webpack-pluginactivating-via-cli" name="webpack-pluginactivating-via-cli"></a></p>
 <h3 id="webpack-plugin%2Factivating-via-cli">Webpack Plugin/Activating via CLI</h3>
 <p>To avoid having to change your source code to activate/deactivate mocks (e.g. src/index.js above), <code>MockRequests</code> comes with a built-in plugin for projects using <a href="https://webpack.js.org/">webpack</a>. As such, assuming you have a separate directory of mocks and a single mock entry file (see above example), you can simply import the <code>MockRequestsWebpackPlugin</code> and use via:</p>
 <pre class="prettyprint source lang-javascript"><code>// webpack.config.js
