@@ -30,7 +30,7 @@
     "build:demo": "cd demo && npm run build",
     "deploy": "gh-pages -d docs",
     "predeploy": "npm run build",
-    "postdeploy": "echo 'Published! Now run: cd dist && npm publish'"
+    "postdeploy": "echo \"Deployed docs website to '$(node -p \"require('./package.json').homepage\")'\""
   },
   "devDependencies": {
     "@babel/core": "^7.14.0",
