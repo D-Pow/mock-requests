@@ -28,7 +28,14 @@ global.Request = jest.fn((url, options) => ({
 }));
 
 
-
+/**
+ * Util class for mocking creation and dispatching of events.
+ *
+ * TODO See if `EventTarget` exists in JSDom. If it does, maybe use that instead.
+ *  See: [EventTarget polyfill implementation]{@link https://github.com/benlesh/event-target-polyfill/blob/master/index.js}
+ *
+ * @see [MDN docs - EventTarget]{@link https://developer.mozilla.org/en-US/docs/Web/API/EventTarget}
+ */
 global.MockEvent = class MockEvent {
     /** @type {{ [elementId]: { [eventType]: function[] } }} */
     static elemEventListeners = {};
