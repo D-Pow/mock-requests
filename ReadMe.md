@@ -2,7 +2,7 @@
 
 [![build status](https://travis-ci.org/D-Pow/MockRequests.svg?branch=master)](https://travis-ci.org/D-Pow/MockRequests)
 [![coverage status](https://coveralls.io/repos/github/D-Pow/MockRequests/badge.svg?branch=master)](https://coveralls.io/github/D-Pow/MockRequests?branch=master)
-[![install size](https://packagephobia.now.sh/badge?p=mock-requests)](https://packagephobia.now.sh/result?p=mock-requests)
+[![install size](https://badgen.net/bundlephobia/min/mock-requests)](https://bundlephobia.com/package/mock-requests)
 
 Mocks network requests with desired static and dynamic responses automatically so you
 never have to change your source code to use mocks ever again.
