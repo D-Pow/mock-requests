@@ -657,6 +657,9 @@ const MockRequests = (function MockRequestsFactory() {
                             : undefined;
                     const responseBody = await getResponseAndDynamicallyUpdate(url, requestPayload);
                     const response = {
+                        clone() {
+                            return this;
+                        },
                         json: () => Promise.resolve(responseBody),
                         text: () => Promise.resolve(castToString(responseBody)),
                         status: 200,
