@@ -1,3 +1,4 @@
+// TODO Replace JSDoc types with TypeScript types in `jsdoc`/`better-docs`/etc.
 /**
  * Valid JSON primitive types.
  */
