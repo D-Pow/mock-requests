@@ -59,13 +59,7 @@
     "webpack-cli": "^4.9.2"
   },
   "jest": {
-    "setupFilesAfterEnv": [
-      "<rootDir>/config/jest.config.js"
-    ],
-    "modulePathIgnorePatterns": [
-      "<rootDir>/dist",
-      "<rootDir>/demo"
-    ]
+    "preset": "./config/jest.config.mjs"
   },
   "keywords": [
     "network",

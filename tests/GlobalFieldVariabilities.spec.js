@@ -1,6 +1,10 @@
+/**
+ * @jest-environment node
+ */
+
 const origGlobalName = 'window';
 const origGlobalObj = global[origGlobalName];
-const globalNameOptions = [ 'window', 'global', 'self' ];
+const globalNameOptions = [ 'window', 'self' ];
 const OrigXHR = global.XMLHttpRequest;
 const origFetch = global.fetch;
 
@@ -113,7 +117,6 @@ describe('Global field variabilities', () => {
         });
 
         it('should work if global scope is "global"', async () => {
-            global.global = global.window;
             Object.defineProperty(global, 'window', {
                 get() {
                     return undefined;
@@ -127,7 +130,6 @@ describe('Global field variabilities', () => {
         });
 
         it('should work with `require()`', async () => {
-            global.global = global.window;
             Object.defineProperty(global, 'window', {
                 get() {
                     return undefined;

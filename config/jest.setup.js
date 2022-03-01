@@ -1,5 +1,3 @@
-import '@babel/polyfill';
-
 global.XMLHttpRequest = jest.fn(() => {
     return {
         open: () => {},
@@ -177,9 +175,14 @@ function toggleEventObjectMocks(activateMock = true) {
 
     // Modern browsers
     jest.spyOn(global, 'Event').mockImplementation((...args) => new MockEvent(...args));
+
     // IE >= 9
-    jest.spyOn(document, 'createEvent').mockImplementation((...args) => new MockEvent(...args));
+    if (typeof document !== typeof undefined) {
+        jest.spyOn(document, 'createEvent').mockImplementation((...args) => new MockEvent(...args));
+    }
+
     // Browsers and NodeJS
+    global.dispatchEvent = global.dispatchEvent || (() => {});
     jest.spyOn(global, 'dispatchEvent').mockImplementation(jest.fn((xhrObj, event) => {
         MockEvent.runAllEventListeners({
             elemId: xhrObj.url,
