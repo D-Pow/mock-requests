@@ -546,9 +546,9 @@ const MockRequests = (function MockRequestsFactory() {
 
         XMLHttpRequest = function() {
             const xhr = new OriginalXHR();
-            const config = getConfig(xhr.url);
 
             async function mockXhrRequest(requestPayload) {
+                const config = getConfig(xhr.url);
                 const mockedResponse = await getResponseAndDynamicallyUpdate(xhr.url, requestPayload);
                 const mockedValues = {
                     readyState: 4,
@@ -589,6 +589,8 @@ const MockRequests = (function MockRequestsFactory() {
             xhr.originalSend = xhr.send;
             xhr.send = async function(requestPayload) {
                 if (urlIsMocked(xhr.url)) {
+                    const config = getConfig(xhr.url);
+
                     await mockXhrRequest(requestPayload);
 
                     const resolveEvents = [
