@@ -17,7 +17,13 @@ module.exports = {
                 bugfixes: true,
             },
         ],
-        '@babel/preset-typescript',
+        [
+            '@babel/preset-typescript',
+            {
+                allowDeclareFields: true, // sets class fields with only types to `undefined`, e.g. `class X { val: string; }; {...new X()} => { val: undefined }`
+                // onlyRemoveTypeImports: true, // removes all `import/export type {...}` lines. This is done by default in tsconfig, but if issues exist in Babel, uncomment this
+            },
+        ],
     ],
     plugins: [
         '@babel/plugin-transform-runtime',
