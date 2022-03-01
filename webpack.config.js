@@ -9,6 +9,7 @@ module.exports = {
     entry: {
         index: [
             'core-js',
+            'regenerator-runtime/runtime',
             './src/index.js',
         ],
     },
