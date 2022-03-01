@@ -7,11 +7,7 @@ const babelConfig = require('./babel.config');
 /** @type {import('webpack/types').WebpackOptionsNormalized} */
 module.exports = {
     entry: {
-        index: [
-            'core-js',
-            'regenerator-runtime/runtime',
-            './src/index.js',
-        ],
+        index: './src/index.js',
     },
     output: {
         path: path.resolve(__dirname, 'dist'),
