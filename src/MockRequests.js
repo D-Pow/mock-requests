@@ -204,12 +204,19 @@ const MockRequests = (function MockRequestsFactory() {
      * @param {MockResponseConfig} mockResponseConfig - Config object with the fields desired to be configured
      * @returns {MockResponseConfig}
      */
-    function createConfigObj({ response = null, dynamicResponseModFn = null, delay = 0, usePathnameForAllQueries = false } = {}) {
+    function createConfigObj({
+        response = null,
+        dynamicResponseModFn = null,
+        delay = 0,
+        usePathnameForAllQueries = false,
+        responseProperties = {},
+    } = {}) {
         const mockResponseConfig = {
             response: null,
             dynamicResponseModFn: null,
             delay: 0,
-            usePathnameForAllQueries: false
+            usePathnameForAllQueries: false,
+            responseProperties: responseProperties,
         };
 
         mockResponseConfig.response = deepCopyObject(response);
@@ -539,6 +546,7 @@ const MockRequests = (function MockRequestsFactory() {
 
         XMLHttpRequest = function() {
             const xhr = new OriginalXHR();
+            const config = getConfig(xhr.url);
 
             async function mockXhrRequest(requestPayload) {
                 const mockedResponse = await getResponseAndDynamicallyUpdate(xhr.url, requestPayload);
@@ -550,7 +558,11 @@ const MockRequests = (function MockRequestsFactory() {
                     status: 200,
                     statusText: 'OK',
                     timeout: 0,
-                    headers: { status: '200' },
+                    headers: {
+                        status: '200',
+                        ...xhr.headers,
+                        ...config.responseProperties?.headers,
+                    },
                 };
                 const properties = Object.keys(mockedValues).reduce((definedProperties, key) => {
                     definedProperties[key] = {
@@ -614,7 +626,7 @@ const MockRequests = (function MockRequestsFactory() {
                             resolveOnHandler(properties);
                             resolveEvent();
                         };
-                        const resolveAfterDelay = withOptionalDelay(getConfig(xhr.url).delay, resolveRequest);
+                        const resolveAfterDelay = withOptionalDelay(config.delay, resolveRequest);
 
                         resolveAfterDelay();
                     });
@@ -647,6 +659,7 @@ const MockRequests = (function MockRequestsFactory() {
 
             if (urlIsMocked(url)) {
                 return (async () => {
+                    const config = getConfig(url);
                     const requestPayload = isUsingRequestObject
                         ? attemptParseJson(await resource.text())
                         : (init && init.hasOwnProperty('body') && init.body)
@@ -662,14 +675,18 @@ const MockRequests = (function MockRequestsFactory() {
                         status: 200,
                         statusText: '',
                         ok: true,
-                        headers: new Headers({ status: '200' }),
                         redirected: false,
                         type: 'basic',
-                        url
+                        url,
+                        ...config.responseProperties,
+                        headers: new Headers({
+                            status: '200',
+                            ...config.responseProperties?.headers,
+                        }),
                     };
 
                     return await new Promise(resolve => {
-                        const resolveAfterDelay = withOptionalDelay(getConfig(url).delay, resolve);
+                        const resolveAfterDelay = withOptionalDelay(config.delay, resolve);
                         resolveAfterDelay(response);
                     });
                 })();

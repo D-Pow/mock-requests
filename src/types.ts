@@ -45,4 +45,5 @@ export type MockResponseConfig = {
     dynamicResponseModFn?: DynamicResponseModFn;
     delay?: number;
     usePathnameForAllQueries?: boolean;
+    responseProperties?: Record<string, unknown>;
 };
