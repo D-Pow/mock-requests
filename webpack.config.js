@@ -1,10 +1,16 @@
 const path = require('path');
+
 const CopyWebpackPlugin = require('copy-webpack-plugin');
+
+const babelConfig = require('./babel.config');
 
 /** @type {import('webpack/types').WebpackOptionsNormalized} */
 module.exports = {
     entry: {
-        index: './src/index.js'
+        index: [
+            'core-js',
+            './src/index.js',
+        ],
     },
     output: {
         path: path.resolve(__dirname, 'dist'),
@@ -30,7 +36,10 @@ module.exports = {
                 test: /\.js$/,
                 include: /src/,
                 exclude: /node_modules/,
-                use: 'babel-loader'
+                use: {
+                    loader: 'babel-loader',
+                    options: babelConfig,
+                }
             }
         ]
     },
