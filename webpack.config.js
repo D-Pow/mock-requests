@@ -24,7 +24,9 @@ module.exports = {
             destructuring: false,
             dynamicImport: false,
             forOf: false,
-            module: false
+            module: false,
+            optionalChaining: false,
+            templateLiteral: false,
         }
     },
     module: {
