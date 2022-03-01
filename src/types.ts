@@ -39,6 +39,7 @@ export type DynamicResponseModFn = (
  * @property {DynamicResponseModFn} [dynamicResponseModFn=null] - Function to dynamically change the response object based on each request's contents.
  * @property {number} [delay=0] - Optional network mock resolution time.
  * @property {boolean} [usePathnameForAllQueries=false] - Optional flag to treat all URLs with the same pathname identically.
+ * @property {Object} [responseProperties={}] - Custom properties to add to the mock response, e.g. `headers` object.
  */
 export type MockResponseConfig = {
     response?: JsonPrimitive;
