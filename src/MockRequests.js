@@ -558,10 +558,10 @@ const MockRequests = (function MockRequestsFactory() {
                     status: 200,
                     statusText: 'OK',
                     timeout: 0,
+                    ...config.responseProperties,
                     headers: {
                         status: '200',
-                        ...xhr.headers,
-                        ...config.responseProperties?.headers,
+                        ...config.responseProperties.headers,
                     },
                 };
                 const properties = Object.keys(mockedValues).reduce((definedProperties, key) => {
