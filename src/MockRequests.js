@@ -216,7 +216,7 @@ const MockRequests = (function MockRequestsFactory() {
             dynamicResponseModFn: null,
             delay: 0,
             usePathnameForAllQueries: false,
-            responseProperties: responseProperties,
+            responseProperties,
         };
 
         mockResponseConfig.response = deepCopyObject(response);
