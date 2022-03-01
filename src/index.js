@@ -14,7 +14,8 @@
  * user's end offers autocompletion in the IDE from the
  * MockRequests.d.ts module's documentation.
  */
-import * as MockRequestsModule from './MockRequests'
+import 'core-js';
+import * as MockRequestsModule from './MockRequests';
 
 const MockRequests = MockRequestsModule;
 
