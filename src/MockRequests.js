@@ -565,22 +565,28 @@ const MockRequests = (function MockRequestsFactory() {
                     },
                 };
 
-                Object.keys(mockedValues).forEach(key => {
-                    Object.defineProperty(xhr, key, {
-                        configurable: true,
-                        enumerable: true,
-                        // Must use getter/setter because `Object.defineProperty(xhr, ...)` fails if the field only uses
-                        // a getter/unset setter. Properties with `writable`/`value` still work as expected.
-                        get() {
-                            return this[`_${key}`];
+                Object.entries(mockedValues).forEach(([ key, value ]) => {
+                    Object.defineProperties(xhr, {
+                        [key]: {
+                            configurable: true,
+                            enumerable: true,
+                            // Must use getter/setter because `Object.defineProperty(xhr, ...)` fails if the field only uses
+                            // a getter/unset setter. Properties with `writable`/`value` still work as expected.
+                            get() {
+                                return this[`_${key}`];
+                            },
+                            set(newValue) {
+                                this[`_${key}`] = newValue;
+                                return this;
+                            },
                         },
-                        set(value) {
-                            this[`_${key}`] = value;
-                            return this;
+                        [`_${key}`]: {
+                            configurable: true,
+                            enumerable: false,
+                            writable: true,
+                            value: mockedValues[key],
                         },
                     });
-
-                    xhr[key] = mockedValues[key];
                 });
 
                 addShimForAxiosWhenUsingNode_xmlhttprequest_polyfill(xhr);
