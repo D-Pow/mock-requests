@@ -254,12 +254,19 @@ const MockRequests = (function MockRequestsFactory() {
      * @param {MockResponseConfig} mockResponseConfig - Config object with the fields desired to be configured
      * @returns {MockResponseConfig}
      */
-    function createConfigObj({ response = null, dynamicResponseModFn = null, delay = 0, usePathnameForAllQueries = false } = {}) {
+    function createConfigObj({
+        response = null,
+        dynamicResponseModFn = null,
+        delay = 0,
+        usePathnameForAllQueries = false,
+        responseProperties = {},
+    } = {}) {
         const mockResponseConfig = {
             response: null,
             dynamicResponseModFn: null,
             delay: 0,
-            usePathnameForAllQueries: false
+            usePathnameForAllQueries: false,
+            responseProperties,
         };
 
         mockResponseConfig.response = deepCopyObject(response);
@@ -510,10 +517,7 @@ const MockRequests = (function MockRequestsFactory() {
 
         // There are no built-in `Event` functions to add custom event properties,
         // so they must be attached to the event object directly
-        // TODO Convert to Object.entries() after Babel upgrade
-        Object.keys(properties).forEach(key => {
-            const value = properties[key];
-
+        Object.entries(properties).forEach(([ key, value ]) => {
             Object.defineProperty(event, key, {
                 configurable: false,
                 writable: false,
@@ -523,52 +527,6 @@ const MockRequests = (function MockRequestsFactory() {
         });
 
         return () => element &amp;&amp; element.dispatchEvent &amp;&amp; element.dispatchEvent(event);
-    }
-
-    /**
-     * Axios only uses `XMLHttpRequest` (by default) or a fallback of the NodeJS modules [`http`]{@link https://nodejs.org/docs/latest-v16.x/api/http.html} and [`https`]{@link https://nodejs.org/docs/latest-v16.x/api/https.html}
-     * when it makes network requests. As such, `fetch` polyfills don't affect back-end/NodeJS scripts that use Axios.
-     *
-     * Since one of the few XHR polyfill libraries, [`xmlhttprequest`]{@link https://www.npmjs.com/package/xmlhttprequest}
-     * has a bug in it where they use a global `headers` object instead of the real/true XHR's headers, MockRequests will break
-     * when these two are combined.
-     *
-     * Thus, add this shim function *only if* an XHR polyfill is being used.
-     *
-     * TODO Replace this with mocks for NodeJS `http` and `https` modules.
-     *
-     * @param {XMLHttpRequest} xhr - MockRequests' wrapper around whatever globally-available XHR object exists.
-     * @see [Description of the bug in `node-XMLHttpRequest` with associated PR to fix it]{@link https://github.com/D-Pow/MockRequests/issues/15#issuecomment-891205355}
-     * @see [Axios defaults to `http(s)` modules in NodeJS scripts]{@link https://github.com/axios/axios/blob/master/lib/defaults.js#L24}
-     */
-    function addShimForAxiosWhenUsingNode_xmlhttprequest_polyfill(xhr) {
-        const userIsUsingXhrPolyfill = (
-            OriginalXHR.name !== 'XMLHttpRequest'
-            || OriginalXHR.prototype.constructor.name !== 'XMLHttpRequest'
-        );
-
-        if (!userIsUsingXhrPolyfill) {
-            return;
-        }
-
-        function getResponseHeader(headerKey) {
-            const headerVal = this.headers[headerKey];
-
-            if (headerVal != null) {
-                return headerVal;
-            }
-
-            return null;
-        }
-
-        function getAllResponseHeaders() {
-            return Object.keys(this.headers)
-                .map(headerKey => `${headerKey}: ${this.headers[headerKey]}`)
-                .join('\r\n');
-        }
-
-        xhr.getResponseHeader = getResponseHeader.bind(xhr);
-        xhr.getAllResponseHeaders = getAllResponseHeaders.bind(xhr);
     }
 
     /**
@@ -594,6 +552,7 @@ const MockRequests = (function MockRequestsFactory() {
             const xhr = new OriginalXHR();
 
             async function mockXhrRequest(requestPayload) {
+                const config = getConfig(xhr.url);
                 const mockedResponse = await getResponseAndDynamicallyUpdate(xhr.url, requestPayload);
                 const mockedValues = {
                     readyState: 4,
@@ -603,22 +562,55 @@ const MockRequests = (function MockRequestsFactory() {
                     status: 200,
                     statusText: 'OK',
                     timeout: 0,
-                    headers: { status: '200' },
+                    ...config.responseProperties,
+                    headers: {
+                        status: '200',
+                        ...config.responseProperties.headers,
+                    },
                 };
-                const properties = Object.keys(mockedValues).reduce((definedProperties, key) => {
-                    definedProperties[key] = {
-                        configurable: true,
-                        enumerable: true,
-                        writable: true,
-                        value: mockedValues[key],
-                    };
 
-                    return definedProperties;
-                }, {});
+                Object.entries(mockedValues).forEach(([ key, value ]) => {
+                    Object.defineProperties(xhr, {
+                        [key]: {
+                            configurable: true,
+                            enumerable: true,
+                            // Must use getter/setter because `Object.defineProperty(xhr, ...)` fails if the field only uses
+                            // a getter/unset setter. Properties with `writable`/`value` still work as expected.
+                            get() {
+                                return this[`_${key}`];
+                            },
+                            set(newValue) {
+                                this[`_${key}`] = newValue;
+                                return this;
+                            },
+                        },
+                        [`_${key}`]: {
+                            configurable: true,
+                            enumerable: false,
+                            writable: true,
+                            value: mockedValues[key],
+                        },
+                    });
+                });
 
-                Object.defineProperties(xhr, properties);
+                function getResponseHeader(headerKey) {
+                    const headerVal = this.headers[headerKey];
 
-                addShimForAxiosWhenUsingNode_xmlhttprequest_polyfill(xhr);
+                    if (headerVal != null) {
+                        return headerVal;
+                    }
+
+                    return null;
+                }
+
+                function getAllResponseHeaders() {
+                    return Object.entries(this.headers)
+                        .map(([ headerKey, headerVal ]) => `${headerKey}: ${headerVal}`)
+                        .join('\r\n');
+                }
+
+                xhr.getResponseHeader = getResponseHeader.bind(xhr);
+                xhr.getAllResponseHeaders = getAllResponseHeaders.bind(xhr);
             }
 
             xhr.originalOpen = xhr.open;
@@ -630,6 +622,8 @@ const MockRequests = (function MockRequestsFactory() {
             xhr.originalSend = xhr.send;
             xhr.send = async function(requestPayload) {
                 if (urlIsMocked(xhr.url)) {
+                    const config = getConfig(xhr.url);
+
                     await mockXhrRequest(requestPayload);
 
                     const resolveEvents = [
@@ -667,7 +661,7 @@ const MockRequests = (function MockRequestsFactory() {
                             resolveOnHandler(properties);
                             resolveEvent();
                         };
-                        const resolveAfterDelay = withOptionalDelay(getConfig(xhr.url).delay, resolveRequest);
+                        const resolveAfterDelay = withOptionalDelay(config.delay, resolveRequest);
 
                         resolveAfterDelay();
                     });
@@ -700,6 +694,7 @@ const MockRequests = (function MockRequestsFactory() {
 
             if (urlIsMocked(url)) {
                 return (async () => {
+                    const config = getConfig(url);
                     const requestPayload = isUsingRequestObject
                         ? attemptParseJson(await resource.text())
                         : (init &amp;&amp; init.hasOwnProperty('body') &amp;&amp; init.body)
@@ -715,14 +710,18 @@ const MockRequests = (function MockRequestsFactory() {
                         status: 200,
                         statusText: '',
                         ok: true,
-                        headers: new Headers({ status: '200' }),
                         redirected: false,
                         type: 'basic',
-                        url
+                        url,
+                        ...config.responseProperties,
+                        headers: new Headers({
+                            status: '200',
+                            ...config.responseProperties?.headers,
+                        }),
                     };
 
                     return await new Promise(resolve => {
-                        const resolveAfterDelay = withOptionalDelay(getConfig(url).delay, resolve);
+                        const resolveAfterDelay = withOptionalDelay(config.delay, resolve);
                         resolveAfterDelay(response);
                     });
                 })();
@@ -776,7 +775,7 @@ export const {
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.7</a> using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.10</a> using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
 </footer>
 
 <script>prettyPrint();</script>
