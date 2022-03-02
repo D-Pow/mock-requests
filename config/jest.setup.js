@@ -19,11 +19,114 @@ global.fetch = jest.fn(() => Promise.resolve({
     json: () => ({ realFetchResponse: 'realFetchResponse' }),
     text: () => 'realFetchResponse'
 }));
-global.Headers = jest.fn();
 global.Request = jest.fn((url, options) => ({
     url,
     text: () => Promise.resolve(options ? options.body : '')
 }));
+global.Headers = class Headers {
+    constructor(init = {}) {
+        Object.entries(init).forEach(([ key, value ]) => this[key] = value);
+    }
+
+    has(key) {
+        return this.hasOwnProperty(key);
+    }
+
+    get(key) {
+        return this[key];
+    }
+
+    set(key, value) {
+        this[key] = value;
+
+        return this;
+    }
+
+    append(key, value) {
+        if (this[key]) {
+            this[key] += `,${value}`;
+        } else {
+            this[key] = value;
+        }
+
+        return this;
+    }
+
+    delete(key) {
+        delete this[key];
+
+        return this;
+    }
+
+    clear() {
+        this.keys().forEach(key => {
+            delete this[key];
+        });
+
+        return this;
+    }
+
+    get length() {
+        return Object.keys(this).length;
+    }
+
+    keys() {
+        return Object.keys(this);
+    }
+
+    values() {
+        return Object.values(this);
+    }
+
+    entries() {
+        // Native `Headers.prototype.entries` reverses key/value
+        return Object.entries(this).map(([ key, value ]) => [ value, key ]);
+    }
+
+    forEach(func) {
+        this.entries().forEach((keyValueArrayPair, index) => {
+            func(keyValueArrayPair, index, this);
+        });
+
+        return this;
+    }
+
+    map(func) {
+        return this.entries().map((keyValueArrayPair, index) => {
+            return func(keyValueArrayPair, index, this);
+        });
+    }
+
+    reduce(func, initialValue) {
+        return this.entries().reduce((prevValue, keyValueArrayPair, index) => {
+            return func(prevValue, keyValueArrayPair, index, this);
+        }, initialValue);
+    }
+
+    toString() {
+        return this[Symbol.toPrimitive](typeof '');
+    }
+
+    toJSON(key) {
+        if (this.get(key)) {
+            return this.get(key);
+        }
+
+        return this[Symbol.toPrimitive]();
+    }
+
+    [Symbol.toPrimitive](requestedType) {
+        if (requestedType === typeof '') {
+            return `[object ${this.constructor.name}]`;
+        }
+
+        if (requestedType === typeof 0) {
+            return this.length;
+        }
+
+        return JSON.parse(JSON.stringify(this));
+    }
+};
 
 
 /**
