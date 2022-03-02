@@ -352,4 +352,54 @@ describe('Dynamic response modifications', () => {
             await resolutionPromise;
         });
     });
+
+    it('should allow adding custom properties to fetch() and XHR', async () => {
+        const response = {
+            a: 'A',
+            b: 'B',
+        };
+        const customProperties = {
+            customKey: 'customVal',
+            headers: {
+                status: 403,
+                'X-Custom-Header': 'My header',
+            },
+        };
+
+        MockRequests.setDynamicMockUrlResponse(mockUrl1, {
+            response,
+            responseProperties: customProperties,
+        });
+
+        const xhr = new XMLHttpRequest();
+
+        xhr.open('GET', mockUrl1);
+        await xhr.send();
+
+        expect(xhr.response).toEqual(response);
+        expect(xhr.customKey).toEqual(customProperties.customKey);
+        expect(xhr.getAllResponseHeaders()).toEqual(
+            Object.entries(customProperties.headers)
+                .map(([ headerKey, headerVal ]) => `${headerKey}: ${headerVal}`)
+                .join('\r\n')
+        );
+        expect(xhr.getResponseHeader('non-existent-header')).toBe(null);
+
+        Object.keys(customProperties.headers).forEach(headerKey => {
+            expect(xhr.getResponseHeader(headerKey)).toEqual(customProperties.headers[headerKey]);
+        });
+
+
+        const res = await fetch(mockUrl1);
+        const headers = [ ...res.headers.entries() ].reduce((obj, [ headerVal, headerKey ]) => {
+            obj[headerKey] = headerVal;
+
+            return obj;
+        }, {});
+        const body = await res.json();
+
+        expect(body).toEqual(response);
+        expect(headers).toEqual(customProperties.headers);
+        expect(res.customKey).toEqual(customProperties.customKey);
+    });
 });
