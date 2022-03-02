@@ -564,18 +564,24 @@ const MockRequests = (function MockRequestsFactory() {
                         ...config.responseProperties.headers,
                     },
                 };
-                const properties = Object.keys(mockedValues).reduce((definedProperties, key) => {
-                    definedProperties[key] = {
+
+                Object.keys(mockedValues).forEach(key => {
+                    Object.defineProperty(xhr, key, {
                         configurable: true,
                         enumerable: true,
-                        writable: true,
-                        value: mockedValues[key],
-                    };
+                        // Must use getter/setter because `Object.defineProperty(xhr, ...)` fails if the field only uses
+                        // a getter/unset setter. Properties with `writable`/`value` still work as expected.
+                        get() {
+                            return this[`_${key}`];
+                        },
+                        set(value) {
+                            this[`_${key}`] = value;
+                            return this;
+                        },
+                    });
 
-                    return definedProperties;
-                }, {});
-
-                Object.defineProperties(xhr, properties);
+                    xhr[key] = mockedValues[key];
+                });
 
                 addShimForAxiosWhenUsingNode_xmlhttprequest_polyfill(xhr);
             }
