@@ -8,7 +8,7 @@ export type JsonPrimitive = (
     | boolean
     | null
     | JsonPrimitive[]
-    | { [key: string]: JsonPrimitive }
+    | { [key: string]: JsonPrimitive | undefined } // Technically, `undefined` is invalid, but when parsed in JavaScript, it's erased, so this is acceptable
 );
 
 
