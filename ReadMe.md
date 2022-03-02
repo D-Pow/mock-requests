@@ -26,6 +26,7 @@ never have to change your source code to use mocks ever again.
         + [Modifying responses by payload](#modifying-responses-by-payload)
         + [Modifying responses by query parameters](#modifying-responses-by-query-parameters)
         + [Delaying resolution time](#delaying-resolution-time)
+        + [Customizing response properties](#customizing-response-properties)
     - [Mocks based on different logins](#mocks-based-on-different-logins)
     - [Other utility functions](#other-utility-functions)
 * [Separating mocks from source code](#separating-mocks-from-source-code)
@@ -420,6 +421,39 @@ MockRequests.setDynamicMockUrlResponse(myApiUrl, {
 ```
 
 
+#### Customizing response properties
+
+By default, `MockRequests` mocks `XMLHttpRequest` and `fetch` such that the response is always valid, setting the corresponding attributes' values as seen below. If you want to change any of these, use the `responseProperties` field of the `configureDynamicResponses()`/`setDynamicMockUrlResponse()` config objects.
+
+For example, set `responseProperties.headers` to an object of HTTP header key/value pairs to change the response headers for both `XMLHttpRequest` and `fetch`, e.g. to change the status code from 200 to 400.
+
+Note: The `status(Text)` properties are separate from the `status` HTTP header and need to be changed separately.
+
+* For `XMLHttpRequest`:
+
+    ```javascript
+    xhr.readyState = 4;
+    xhr.response = mockedResponse;
+    xhr.responseText = stringVersionOf(mockedResponse); // e.g. JSON.stringify(mockedResponse)
+    xhr.responseUrl = urlPassedInXhrOpenMethod;
+    xhr.status = 200;
+    xhr.statusText = 'OK';
+    xhr.timeout = 0;
+    ```
+
+* For `fetch().then(response => ...)`:
+
+    ```javascript
+    response.status = 200;
+    response.statusText = '';
+    response.ok = true;
+    response.headers = new Headers({ status: '200' });
+    response.redirected = false;
+    response.type = 'basic';
+    ```
+
+
+
 ### Mocks based on different logins
 
 Finally, because the `configure`/`setMockUrlResponse` functions take in a simple URL-response mapping,
@@ -672,38 +706,13 @@ cases where the browser doesn't support them).
 
 ## Implementation notes
 
-1. This mocks the usage of `XMLHttpRequest` and `fetch` such that the response is always valid.
-This means that the instance attributes below are always set. If you want to change any of these, feel free to do
-so within `xhr.onreadystatechange`/`fetch().then(fn)`.
+1. This library also works with other members of the [Fetch API](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API#Fetch_Interfaces),
+so you can alternatively use an instance of the `Request` class in your `fetch()` calls (e.g. `fetch(new Request(url, options))`) or read from the `Headers` instance of `response.headers`.
 
-    For `XMLHttpRequest`:
-    ```javascript
-    xhr.readyState = 4;
-    xhr.response = mockedResponse;
-    xhr.responseText = stringVersionOf(mockedResponse); // either JSON.stringify(mockedResponse) or `${mockedResponse}`
-    xhr.responseUrl = urlPassedInXhrOpenMethod;
-    xhr.status = 200;
-    xhr.statusText = 'OK';
-    xhr.timeout = 0;
-    ```
-
-    For `fetch().then(response => ...)`:
-    ```javascript
-    response.status = 200;
-    response.statusText = '';
-    response.ok = true;
-    response.headers = new Headers({ status: '200' });
-    response.redirected = false;
-    response.type = 'basic';
-    ```
-
-2. This library also works with other members of the [Fetch API](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API#Fetch_Interfaces),
-so you can alternatively use an instance of the `Request` class in your `fetch()` calls, e.g. `fetch(new Request(url, options))`.
-
-3. You may import either the `MockRequests` default export or any of its individual fields, e.g. <br />
+2. You may import either the `MockRequests` default export or any of its individual fields, e.g. <br />
 `import MockRequests, { setMockUrlResponse } from 'mock-requests';`
 
-4. This works with any environment that uses either `fetch` or `XMLHttpRequest`, regardless of if said
+3. This works with any environment that uses either `fetch` or `XMLHttpRequest`, regardless of if said
 environment is a browser, web/service worker, or a NodeJS script. As long as `fetch` and/or `XMLHttpRequest` are defined **globally** (whether natively or
 by polyfill), any network request to a URL configured by `MockRequests` will be
 mocked appropriately. For example:
@@ -711,6 +720,7 @@ mocked appropriately. For example:
     ```javascript
     // my-script.js - called via `node my-script.js`
     require('isomorphic-fetch');
+
     const MockRequests = require('mock-requests');
 
     // ... use fetch and MockRequests as normal
