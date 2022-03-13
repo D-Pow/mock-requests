@@ -31,7 +31,7 @@
     "deploy": "gh-pages -d docs",
     "predeploy": "npm run build",
     "postdeploy": "echo \"Deployed docs website to '$(node -p \"require('./package.json').homepage\")'\"",
-    "prepublish": "npm run deploy",
+    "prepublishOnly": "npm run deploy",
     "publish": "cd dist; npm publish"
   },
   "devDependencies": {
