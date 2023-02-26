@@ -1,7 +1,7 @@
 # MockRequests
 
-[![build status](https://travis-ci.org/D-Pow/MockRequests.svg?branch=master)](https://travis-ci.org/D-Pow/MockRequests)
-[![coverage status](https://coveralls.io/repos/github/D-Pow/MockRequests/badge.svg?branch=master)](https://coveralls.io/github/D-Pow/MockRequests?branch=master)
+[![build status](https://travis-ci.org/D-Pow/mock-requests.svg?branch=master)](https://travis-ci.org/D-Pow/mock-requests)
+[![coverage status](https://coveralls.io/repos/github/D-Pow/mock-requests/badge.svg?branch=master)](https://coveralls.io/github/D-Pow/mock-requests?branch=master)
 [![install size](https://badgen.net/bundlephobia/min/mock-requests)](https://bundlephobia.com/package/mock-requests)
 
 Mocks network requests with desired static and dynamic responses automatically so you
@@ -75,7 +75,7 @@ order to mimic back-end alterations of data.
 This becomes extremely useful if you want to **switch app-wide mocks between different logins** when developing.
 * **Greatly simplify API testing**. Just define `fetch` and/or `XMLHttpRequest` in a test setup file and configure
 `MockRequests` with the responses you expect. It will handle all the heavy-lifting of mocking network responses for you
-so you don't have to repetitively use e.g. `fetch = jest.fn()`. See an example of the one-and-done [configuration](https://github.com/D-Pow/MockRequests/blob/master/demo/package.json#L55) and [testing](https://github.com/D-Pow/MockRequests/blob/master/demo/tests/services/Kitsu.spec.js) in the [demo](./demo).
+so you don't have to repetitively use e.g. `fetch = jest.fn()`. See an example of the one-and-done [configuration](https://github.com/D-Pow/mock-requests/blob/master/demo/package.json#L55) and [testing](https://github.com/D-Pow/mock-requests/blob/master/demo/tests/services/Kitsu.spec.js) in the [demo](./demo).
 * Compatible with **all JavaScript environments**, including back-end Node scripts, as long as either `fetch` or
 `XMLHttpRequest` are defined and used in that environment (natively or by polyfill).
 
@@ -91,22 +91,22 @@ so you don't have to repetitively use e.g. `fetch = jest.fn()`. See an example o
 
     - Via npm:
 
-        `npm install --save-dev https://github.com/D-Pow/MockRequests.git`
+        `npm install --save-dev https://github.com/D-Pow/mock-requests.git`
 
     - With locally installed repo:
 
-        `git clone https://github.com/D-Pow/MockRequests.git`
+        `git clone https://github.com/D-Pow/mock-requests.git`
 
         package.json:
 
-        `"mock-requests": "file:<pathToCloneLocation>/MockRequests`
+        `"mock-requests": "file:<pathToCloneLocation>/mock-requests`
 
 
 
 ## Usage
 
-API docs can be viewed in the [JSDoc](https://d-pow.github.io/MockRequests/MockRequests.html) along with
-a [live demo](https://d-pow.github.io/MockRequests/demo/).
+API docs can be viewed in the [JSDoc](https://d-pow.github.io/mock-requests/MockRequests.html) along with
+a [live demo](https://d-pow.github.io/mock-requests/demo/).
 
 This library wraps `XMLHttpRequest` and `fetch` such that any network request to a configured
 URL will return the specified mock response instead of actually making the network requests.
@@ -207,7 +207,7 @@ fetch(apiUrl); // Mocked, but requires splitting of network-setup logic to a sep
 
 Currently, MockRequests only mocks `fetch` and `XMLHttpRequest`. When used in NodeJS scripts, Axios attempts using XHR first and falls back to using the NodeJS `http`/`https` modules if it doesn't exist ([source code ref](https://github.com/axios/axios/blob/master/lib/defaults.js#L17-L27)). Thus, an XHR polyfill must be added to use Axios in the live NodeJS code (but not Jest tests, as described in [Features](#features)).
 
-Furthermore, there is a [bug in the NodeJS `xmlhttprequest` package](https://github.com/D-Pow/MockRequests/issues/15#issuecomment-891205355) caused by them not following the [correct WHATWG standard](https://xhr.spec.whatwg.org). Until MockRequests adds native support for the NodeJS `http`/`https` modules, an XHR polyfill library (like the one mentioned here) will have to be used in order to use `Axios` in back-end source code. In order to do so, write your code in a similar fashion to that described above:
+Furthermore, there is a [bug in the NodeJS `xmlhttprequest` package](https://github.com/D-Pow/mock-requests/issues/15#issuecomment-891205355) caused by them not following the [correct WHATWG standard](https://xhr.spec.whatwg.org). Until MockRequests adds native support for the NodeJS `http`/`https` modules, an XHR polyfill library (like the one mentioned here) will have to be used in order to use `Axios` in back-end source code. In order to do so, write your code in a similar fashion to that described above:
 
 ```javascript
 /* app.mjs */
@@ -684,7 +684,7 @@ Doing so will result in the same outcome of the webpack plugin: transpilation of
 In order to make mocking your network calls simpler, config functions have been added to allow for
 setting, getting, and deleting mock responses for your network calls.
 
-These are described at length in the [JSDoc](https://d-pow.github.io/MockRequests/MockRequests.html).
+These are described at length in the [JSDoc](https://d-pow.github.io/mock-requests/MockRequests.html).
 
 * **configure(staticUrlResponseConfigObject, overwritePreviousConfig = true)**
 * **configureDynamicResponses(dynamicUrlResponseConfigObject, overwritePreviousConfig = true)**

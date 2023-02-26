@@ -11,9 +11,9 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/D-Pow/MockRequests.git"
+    "url": "https://github.com/D-Pow/mock-requests.git"
   },
-  "homepage": "https://d-pow.github.io/MockRequests",
+  "homepage": "https://d-pow.github.io/mock-requests",
   "scripts": {
     "test": "jest --coverage tests",
     "clean": "npx shx rm -rf dist docs coverage",
