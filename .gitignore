@@ -1,6 +1,7 @@
 node_modules
 dist
 docs
+!.github/docs
 .idea
 coverage
 .DS_Store
