@@ -9,8 +9,8 @@ never have to change your source code to use mocks ever again.
 
 #### Backed and Used by:
 
-* [<img src="./.github/_docs/etrade-logo.svg" alt="E-Trade" style="background: white; padding: 5px" />](https://us.etrade.com)
-* [<img src="./.github/_docs/nextdoor-logo.svg" alt="Nextdoor" style="background: white; padding: 5px" />](https://nextdoor.com)
+* [<img src="./.github/_docs/etrade-logo.svg" alt="E-Trade" />](https://us.etrade.com)
+* [<img src="./.github/_docs/nextdoor-logo.svg" alt="Nextdoor" />](https://nextdoor.com)
 
 ## Contents
 

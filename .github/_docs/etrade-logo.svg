@@ -9,6 +9,11 @@
     xml:space="preserve"
     data-source="https://cdn2.etrade.net/1/17092613100.0/aempros/content/dam/etrade/retail/en_US/images/global/logos/etrade-logo-rgb-144x22.svg"
 >
+    <rect
+        width="100%"
+        height="100%"
+        fill="white"
+    />
     <g>
         <path
             d="M143.864,4.898c0,0.835-0.678,1.513-1.514,1.513c-0.834,0-1.512-0.677-1.512-1.513c0-0.836,0.678-1.513,1.512-1.513
