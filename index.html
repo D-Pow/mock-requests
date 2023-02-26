@@ -33,7 +33,7 @@
 
 <nav >
     
-    <h2><a href="index.html">Home</a></h2><h2><a href="./demo" >Demo</a></h2><h2><a href="https://www.npmjs.com/package/mock-requests" >npm</a></h2><h2><a href="https://github.com/D-Pow/MockRequests" >GitHub</a></h2><h3>Modules</h3><ul><li><a href="module-mock-requests.html">mock-requests</a></li><li><a href="module-mock-requests_bin.html">mock-requests/bin</a></li></ul><h3>Namespaces</h3><ul><li><a href="MockRequests.html">MockRequests</a><ul class='methods'><li data-type='method'><a href="MockRequests.html#.configure">configure</a></li><li data-type='method'><a href="MockRequests.html#.configureDynamicResponses">configureDynamicResponses</a></li><li data-type='method'><a href="MockRequests.html#.setMockUrlResponse">setMockUrlResponse</a></li><li data-type='method'><a href="MockRequests.html#.setDynamicMockUrlResponse">setDynamicMockUrlResponse</a></li><li data-type='method'><a href="MockRequests.html#.getResponse">getResponse</a></li><li data-type='method'><a href="MockRequests.html#.deleteMockUrlResponse">deleteMockUrlResponse</a></li><li data-type='method'><a href="MockRequests.html#.clearAllMocks">clearAllMocks</a></li><li data-type='method'><a href="MockRequests.html#.mapStaticConfigToDynamic">mapStaticConfigToDynamic</a></li></ul></li><li><a href="resolve-mocks.html">resolve-mocks</a><ul class='methods'><li data-type='method'><a href="resolve-mocks.html#.resolveMocks">resolveMocks</a></li></ul></li></ul><h3>Classes</h3><ul><li><a href="MockRequestsWebpackPlugin.html">MockRequestsWebpackPlugin</a></li></ul><h3><a href="global.html">Global</a></h3>
+    <h2><a href="index.html">Home</a></h2><h2><a href="./demo" >Demo</a></h2><h2><a href="https://www.npmjs.com/package/mock-requests" >npm</a></h2><h2><a href="https://github.com/D-Pow/mock-requests" >GitHub</a></h2><h3>Modules</h3><ul><li><a href="module-mock-requests.html">mock-requests</a></li><li><a href="module-mock-requests_bin.html">mock-requests/bin</a></li></ul><h3>Namespaces</h3><ul><li><a href="MockRequests.html">MockRequests</a><ul class='methods'><li data-type='method'><a href="MockRequests.html#.configure">configure</a></li><li data-type='method'><a href="MockRequests.html#.configureDynamicResponses">configureDynamicResponses</a></li><li data-type='method'><a href="MockRequests.html#.setMockUrlResponse">setMockUrlResponse</a></li><li data-type='method'><a href="MockRequests.html#.setDynamicMockUrlResponse">setDynamicMockUrlResponse</a></li><li data-type='method'><a href="MockRequests.html#.getResponse">getResponse</a></li><li data-type='method'><a href="MockRequests.html#.deleteMockUrlResponse">deleteMockUrlResponse</a></li><li data-type='method'><a href="MockRequests.html#.clearAllMocks">clearAllMocks</a></li><li data-type='method'><a href="MockRequests.html#.mapStaticConfigToDynamic">mapStaticConfigToDynamic</a></li></ul></li><li><a href="resolve-mocks.html">resolve-mocks</a><ul class='methods'><li data-type='method'><a href="resolve-mocks.html#.resolveMocks">resolveMocks</a></li></ul></li></ul><h3>Classes</h3><ul><li><a href="MockRequestsWebpackPlugin.html">MockRequestsWebpackPlugin</a></li></ul><h3><a href="global.html">Global</a></h3>
 </nav>
 
 <div id="main">
@@ -64,15 +64,15 @@
 
     <section class="readme usertext">
         <article><h1 id="mockrequests">MockRequests</h1>
-<p><a href="https://travis-ci.org/D-Pow/MockRequests"><img src="https://travis-ci.org/D-Pow/MockRequests.svg?branch=master" alt="build status"></a>
-<a href="https://coveralls.io/github/D-Pow/MockRequests?branch=master"><img src="https://coveralls.io/repos/github/D-Pow/MockRequests/badge.svg?branch=master" alt="coverage status"></a>
+<p><a href="https://travis-ci.org/D-Pow/mock-requests"><img src="https://travis-ci.org/D-Pow/mock-requests.svg?branch=master" alt="build status"></a>
+<a href="https://coveralls.io/github/D-Pow/mock-requests?branch=master"><img src="https://coveralls.io/repos/github/D-Pow/mock-requests/badge.svg?branch=master" alt="coverage status"></a>
 <a href="https://bundlephobia.com/package/mock-requests"><img src="https://badgen.net/bundlephobia/min/mock-requests" alt="install size"></a></p>
 <p>Mocks network requests with desired static and dynamic responses automatically so you
 never have to change your source code to use mocks ever again.</p>
 <h4 id="backed-and-used-by%3A">Backed and Used by:</h4>
 <ul>
-<li><a href="https://us.etrade.com"><img src="https://cdn2.etrade.net/1/17092613100.0/aempros/content/dam/etrade/retail/en_US/images/global/logos/etrade-logo-rgb-144x22.svg" alt="E-Trade" style="background: white; padding: 5px" /></a></li>
-<li><a href="https://nextdoor.com"><img src="https://d19rpgkrjeba2z.cloudfront.net/static/gen/fe6b9b01b5aca5e163e08ecc131c3446.svg" alt="Nextdoor" style="background: white; padding: 5px" /></a></li>
+<li><a href="https://us.etrade.com"><img src="./.github/docs/etrade-logo.svg" alt="E-Trade" /></a></li>
+<li><a href="https://nextdoor.com"><img src="./.github/docs/nextdoor-logo.svg" alt="Nextdoor" /></a></li>
 </ul>
 <h2 id="contents">Contents</h2>
 <ul>
@@ -150,7 +150,7 @@ order to mimic back-end alterations of data.</li>
 This becomes extremely useful if you want to <strong>switch app-wide mocks between different logins</strong> when developing.</li>
 <li><strong>Greatly simplify API testing</strong>. Just define <code>fetch</code> and/or <code>XMLHttpRequest</code> in a test setup file and configure
 <code>MockRequests</code> with the responses you expect. It will handle all the heavy-lifting of mocking network responses for you
-so you don't have to repetitively use e.g. <code>fetch = jest.fn()</code>. See an example of the one-and-done <a href="https://github.com/D-Pow/MockRequests/blob/master/demo/package.json#L55">configuration</a> and <a href="https://github.com/D-Pow/MockRequests/blob/master/demo/tests/services/Kitsu.spec.js">testing</a> in the <a href="./demo">demo</a>.</li>
+so you don't have to repetitively use e.g. <code>fetch = jest.fn()</code>. See an example of the one-and-done <a href="https://github.com/D-Pow/mock-requests/blob/master/demo/package.json#L55">configuration</a> and <a href="https://github.com/D-Pow/mock-requests/blob/master/demo/tests/services/Kitsu.spec.js">testing</a> in the <a href="./demo">demo</a>.</li>
 <li>Compatible with <strong>all JavaScript environments</strong>, including back-end Node scripts, as long as either <code>fetch</code> or
 <code>XMLHttpRequest</code> are defined and used in that environment (natively or by polyfill).</li>
 </ul>
@@ -165,20 +165,20 @@ so you don't have to repetitively use e.g. <code>fetch = jest.fn()</code>. See a
 <ul>
 <li>
 <p>Via npm:</p>
-<p><code>npm install --save-dev https://github.com/D-Pow/MockRequests.git</code></p>
+<p><code>npm install --save-dev https://github.com/D-Pow/mock-requests.git</code></p>
 </li>
 <li>
 <p>With locally installed repo:</p>
-<p><code>git clone https://github.com/D-Pow/MockRequests.git</code></p>
+<p><code>git clone https://github.com/D-Pow/mock-requests.git</code></p>
 <p>package.json:</p>
-<p><code>&quot;mock-requests&quot;: &quot;file:&lt;pathToCloneLocation&gt;/MockRequests</code></p>
+<p><code>&quot;mock-requests&quot;: &quot;file:&lt;pathToCloneLocation&gt;/mock-requests</code></p>
 </li>
 </ul>
 </li>
 </ul>
 <h2 id="usage">Usage</h2>
-<p>API docs can be viewed in the <a href="https://d-pow.github.io/MockRequests/MockRequests.html">JSDoc</a> along with
-a <a href="https://d-pow.github.io/MockRequests/demo/">live demo</a>.</p>
+<p>API docs can be viewed in the <a href="https://d-pow.github.io/mock-requests/MockRequests.html">JSDoc</a> along with
+a <a href="https://d-pow.github.io/mock-requests/demo/">live demo</a>.</p>
 <p>This library wraps <code>XMLHttpRequest</code> and <code>fetch</code> such that any network request to a configured
 URL will return the specified mock response instead of actually making the network requests.
 Otherwise, if a URL hasn't been configured with a mock response, the standard async request is made.</p>
@@ -258,7 +258,7 @@ fetch(apiUrl); // Mocked, but requires splitting of network-setup logic to a sep
 <details>
     <summary>Network requests using Axios in NodeJS</summary>
 <p>Currently, MockRequests only mocks <code>fetch</code> and <code>XMLHttpRequest</code>. When used in NodeJS scripts, Axios attempts using XHR first and falls back to using the NodeJS <code>http</code>/<code>https</code> modules if it doesn't exist (<a href="https://github.com/axios/axios/blob/master/lib/defaults.js#L17-L27">source code ref</a>). Thus, an XHR polyfill must be added to use Axios in the live NodeJS code (but not Jest tests, as described in <a href="#features">Features</a>).</p>
-<p>Furthermore, there is a <a href="https://github.com/D-Pow/MockRequests/issues/15#issuecomment-891205355">bug in the NodeJS <code>xmlhttprequest</code> package</a> caused by them not following the <a href="https://xhr.spec.whatwg.org">correct WHATWG standard</a>. Until MockRequests adds native support for the NodeJS <code>http</code>/<code>https</code> modules, an XHR polyfill library (like the one mentioned here) will have to be used in order to use <code>Axios</code> in back-end source code. In order to do so, write your code in a similar fashion to that described above:</p>
+<p>Furthermore, there is a <a href="https://github.com/D-Pow/mock-requests/issues/15#issuecomment-891205355">bug in the NodeJS <code>xmlhttprequest</code> package</a> caused by them not following the <a href="https://xhr.spec.whatwg.org">correct WHATWG standard</a>. Until MockRequests adds native support for the NodeJS <code>http</code>/<code>https</code> modules, an XHR polyfill library (like the one mentioned here) will have to be used in order to use <code>Axios</code> in back-end source code. In order to do so, write your code in a similar fashion to that described above:</p>
 <pre class="prettyprint source lang-javascript"><code>/* app.mjs */
 // Don't pollute namespace by using dynamic imports
 global.XMLHttpRequest = (await import('xmlhttprequest')).XMLHttpRequest;
@@ -636,7 +636,7 @@ module.exports = {
 <h2 id="mockrequests-api">MockRequests API</h2>
 <p>In order to make mocking your network calls simpler, config functions have been added to allow for
 setting, getting, and deleting mock responses for your network calls.</p>
-<p>These are described at length in the <a href="https://d-pow.github.io/MockRequests/MockRequests.html">JSDoc</a>.</p>
+<p>These are described at length in the <a href="https://d-pow.github.io/mock-requests/MockRequests.html">JSDoc</a>.</p>
 <ul>
 <li><strong>configure(staticUrlResponseConfigObject, overwritePreviousConfig = true)</strong></li>
 <li><strong>configureDynamicResponses(dynamicUrlResponseConfigObject, overwritePreviousConfig = true)</strong></li>
