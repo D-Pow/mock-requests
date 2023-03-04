@@ -61,6 +61,10 @@ runs:
     #     mkdir dist
     #     cp -R ci-workflow-artifact-output/*/* dist
     #     rm -rf ci-workflow-artifact-output
+    - name: Client - Set CI/CD IDs
+      id: client-set-ci-cd-ids
+      uses: ./.github/workflows/actions/cache-name
+
     - name: Client - Download cache
       id: client-verify-download-cache
       uses: actions/cache/restore@v3
