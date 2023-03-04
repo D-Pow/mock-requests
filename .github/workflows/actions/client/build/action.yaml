@@ -57,9 +57,7 @@ runs:
       if: ${{ failure() || steps.client-init-download-cache.outputs.cache-hit != 'true' }}
       shell: bash
       run: |
-        [[ -d demo/node_modules ]] || npm install && npm run build
-        [[ -d node_modules ]] || npm install
-        npm run build
+        [[ -d demo/node_modules ]] || npm install && npm run build && cd demo && npm install && npm run build
 
     - name: Client - Cache build artifacts
       id: client-build-cache
