@@ -68,6 +68,7 @@ runs:
         path: |
           node_modules
           dist
+          coverage
           package.json
           package-lock.json
         key: ${{ env.CLIENT_CACHE_ID }}

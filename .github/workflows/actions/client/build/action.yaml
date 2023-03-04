@@ -82,7 +82,7 @@ runs:
     #   #   GITHUB_TOKEN: ${{ env.GITHUB_TOKEN }}
     #   #   WORKFLOW_RUN_ID: ${{ github.run_id }}
     #   #   clientVersion: ${{ inputs.clientVersion }}
-
+    #
     #   # We need to either cache the build output after the version is incremented, or re-run
     #   # `npm run build` so the version is injected into the code where needed.
     #   #
@@ -98,7 +98,7 @@ runs:
     #   #   ref: refs/pull/7/merge  or  refs/head/<branch-name>
     #   #   ref_name: 7/merge  or  <branch-name>
     #   #   workflow_ref: D-Pow/react-app-boilerplate/.github/workflows/ci.yaml@refs/pull/7/merge
-
+    #
     #   # See:
     #   #   - Conditionals docs: https://docs.github.com/en/actions/learn-github-actions/expressions
     #   #   - Conditionals example: https://stackoverflow.com/questions/59882715/use-environment-variable-in-github-action-if

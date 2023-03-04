@@ -20,6 +20,7 @@
   },
   "scripts": {
     "test": "jest --coverage tests",
+    "verify": "npm run test",
     "clean": "npx shx rm -rf dist docs coverage",
     "build": "webpack --mode production",
     "prebuild": "npm run clean",
