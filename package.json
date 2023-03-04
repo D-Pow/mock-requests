@@ -31,7 +31,6 @@
     "gentypes:src": "tsc -b config/tsconfig.src.json",
     "gentypes:bin": "tsc -b config/tsconfig.bin.json",
     "jsdoc": "jsdoc -c config/jsdoc.config.json",
-    "postjsdoc": "npm run build:demo",
     "build:demo": "( cd demo; ! [[ -d node_modules ]] && npm install; npm run build );",
     "deploy": "gh-pages -d docs",
     "predeploy": "npm run build",
