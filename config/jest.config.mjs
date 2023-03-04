@@ -19,6 +19,7 @@ const jestConfig = {
         '<rootDir>/demo',
         '<rootDir>/coverage',
     ],
+    coverageDirectory: 'coverage',
 };
 
 export default jestConfig;
