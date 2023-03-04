@@ -1,6 +1,6 @@
 # MockRequests
 
-[![build status](https://github.com/D-Pow/mock-requests/actions/workflows/ci.yaml/badge.svg)](https://github.com/D-Pow/mock-requests/actions/workflows/ci.yaml/badge.svg)
+[![build status](https://github.com/D-Pow/anime-atsume/actions/workflows/ci.yaml/badge.svg)](https://github.com/D-Pow/anime-atsume/actions/workflows/ci.yaml/badge.svg)
 [![coverage status](https://coveralls.io/repos/github/D-Pow/mock-requests/badge.svg?branch=master)](https://coveralls.io/github/D-Pow/mock-requests?branch=master)
 [![install size](https://badgen.net/bundlephobia/min/mock-requests)](https://bundlephobia.com/package/mock-requests)
 
