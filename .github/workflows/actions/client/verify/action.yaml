@@ -1,0 +1,92 @@
+name: Client - Verify
+description: Runs verification checks for the front-end
+
+
+runs:
+  using: composite
+  steps:
+    # Native GitHub `actions/download-artifact@v3` doesn't allow sharing between workflows.
+    #   - Issue: https://github.com/actions/toolkit/issues/501
+    # Once it does, we can use:
+    #
+    # - name: Client CD - Download CI output
+    #   id: cd-download-artifacts
+    #   uses: actions/download-artifact@v3
+    #   with:
+    #     name: ci-build-output
+    #     path: |
+    #       dist
+    #
+    # Note that simply adding a `needs`/`uses` block for my-workflow.yaml file doesn't suffice until this is fixed;
+    # adding said block for my-action.yaml would (since it's an action and actions are reusable while workflows aren't
+    # despite what GitHub claims) but only if that action covers all your needs.
+    #
+    # We can work around this via:
+    #
+    # 1. Use a third-party download-artifact action.
+    #    Good example: https://stackoverflow.com/questions/60355925/share-artifacts-between-workflows-github-actions/65049722#65049722
+    # - name: Client CD - Download CI output
+    #   id: cd-download-artifacts
+    #   # needs: [ ci-build-output ]
+    #   # needs: [ ci-build-and-upload-artifacts ]
+    #   uses: dawidd6/action-download-artifact@v2
+    #   with:
+    #     name: ci-build-output-artifacts
+    #     branch: master
+    #     github_token: ${{ secrets.GITHUB_TOKEN }}
+    #     if_no_artifact_found: fail
+    #     workflow_conclusion: success
+    #
+    # 2. Use a CLI action to manually download artifact files, allowing for more customized artifact selection
+    #    without needing to upload files as a release.
+    #    Do so via:
+    #     - Get latest CI workflow ID via:
+    #       gh run list --limit 1 --workflow CI | tail -n +1 | awk '{ print $(NF - 2) }'
+    #     - Download all files from that workflow into an arbitrary dir (`ci-workflow-artifact-output` in this case).
+    #     - Create the dir we actually want to use (`dist` in this case).
+    #     - Copy all nested files/directories from the downloaded dir to the desired dir.
+    #     - Delete the original temp dir.
+    #    Notes:
+    #     - `github.run_id` == Current workflow run ID, not the ID of the run we want (previous workflow run).
+    #     - GitHub CLI docs: https://cli.github.com/manual/gh_help_reference
+    #     - Storing artifacts: https://docs.github.com/en/actions/using-workflows/storing-workflow-data-as-artifacts
+    #     - Using `gh` CLI: https://docs.github.com/en/actions/using-workflows/using-github-cli-in-workflows
+    #     - `github` context vars available: https://docs.github.com/en/actions/learn-github-actions/contexts#github-context
+    # - name: Client CD - Download CI artifacts
+    #   env:
+    #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    #     WORKFLOW_RUN_ID: ${{ github.run_id }}
+    #   run: |
+    #     gh run download --dir ci-workflow-artifact-output --pattern '*' $(gh run list --limit 1 --workflow CI | tail -n +1 | awk '{ print $(NF - 2) }')
+    #     mkdir dist
+    #     cp -R ci-workflow-artifact-output/*/* dist
+    #     rm -rf ci-workflow-artifact-output
+    - name: Client - Set CI/CD IDs
+      id: client-set-ci-cd-ids
+      uses: ./.github/workflows/actions/cache-name
+
+    - name: Client - Download cache
+      id: client-verify-download-cache
+      uses: actions/cache/restore@v3
+      with:
+        path: |
+          node_modules
+          dist
+          coverage
+          package.json
+          package-lock.json
+          demo/node_modules
+          demo/package.json
+        key: ${{ env.CLIENT_CACHE_ID }}
+
+    - name: Client - Re-install if necessary
+      if: ${{ failure() || steps.client-verify-download-cache.outputs.cache-hit != 'true' }}
+      shell: bash
+      run: |
+        npm install
+
+    - name: Client Verify
+      id: client-verify
+      shell: bash
+      run: |
+        npm run verify

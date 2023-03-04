@@ -14,20 +14,24 @@
     "url": "https://github.com/D-Pow/mock-requests.git"
   },
   "homepage": "https://d-pow.github.io/mock-requests",
+  "engines": {
+    "node": ">=16.11.0",
+    "npm": ">=8"
+  },
   "scripts": {
     "test": "jest --coverage tests",
+    "verify": "npm run test",
     "clean": "npx shx rm -rf dist docs coverage",
     "build": "webpack --mode production",
     "prebuild": "npm run clean",
-    "postbuild": "npm run docgen",
+    "postbuild": "npm run build:demo && npm run docgen",
     "docgen": "npm run gentypes",
     "postdocgen": "npm run jsdoc",
     "gentypes": "npm run gentypes:src && npm run gentypes:bin",
     "gentypes:src": "tsc -b config/tsconfig.src.json",
     "gentypes:bin": "tsc -b config/tsconfig.bin.json",
     "jsdoc": "jsdoc -c config/jsdoc.config.json",
-    "postjsdoc": "npm run build:demo",
-    "build:demo": "cd demo && npm run build",
+    "build:demo": "( cd demo; ! [[ -d node_modules ]] && npm install; npm run build );",
     "deploy": "gh-pages -d docs",
     "predeploy": "npm run build",
     "postdeploy": "echo \"Deployed docs website to '$(node -p \"require('./package.json').homepage\")'\"",

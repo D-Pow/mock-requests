@@ -1,0 +1,35 @@
+name: Cache - Initialize names
+description: Initializes the cache names for client and server
+
+
+outputs:
+  CLIENT_CACHE_ID:
+    description: Client cache ID to use for all workflows/actions.
+    value: ${{ steps.client-init-set-cache-id.outputs.CLIENT_CACHE_ID }}
+  REPO_NAME:
+    description: Name of the repository without owner/org or .git injected.
+    value: ${{ steps.set-repo-name.outputs.REPO_NAME }}
+
+
+runs:
+  using: composite
+  steps:
+    - name: Checkout repository branch
+      uses: actions/checkout@v3
+
+    - name: Set repo name
+      id: set-repo-name
+      shell: bash
+      run: |
+        echo "REPO_NAME=$(basename -s .git $(git config remote.origin.url))" >> $GITHUB_ENV
+        echo "REPO_NAME=$(basename -s .git $(git config remote.origin.url))" >> $GITHUB_OUTPUT
+
+    # Can't use `working-directory` here because paths in `hashFiles()` are always relative to root.
+    # See:
+    #   - https://docs.github.com/en/actions/learn-github-actions/expressions#hashfiles
+    - name: Client - Set cache ID
+      id: client-init-set-cache-id
+      shell: bash
+      run: |
+        echo "CLIENT_CACHE_ID=client-cache-${{ runner.os }}-${{ hashFiles('./package.json', './src/**', './tests/**', './config/**') }}" >> $GITHUB_ENV
+        echo "CLIENT_CACHE_ID=${{ env.CLIENT_CACHE_ID }}" >> $GITHUB_OUTPUT

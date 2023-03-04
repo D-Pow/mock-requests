@@ -1,0 +1,77 @@
+name: Client - Initialize
+description: Initializes the front-end
+
+
+# `env` can only be declared in individual steps, not at the root-level
+# nor `runs`-level of a composite action.
+# DRY up config code by setting it as an input variable.
+inputs:
+  client-cache-name-prefix:
+    description: Prefix to use for client cache.
+    required: false
+    default: client-cache
+
+
+outputs:
+  CLIENT_CACHE_ID:
+    description: Client cache ID to use for all workflows/actions.
+    value: ${{ steps.client-init-set-cache-id.outputs.CLIENT_CACHE_ID }}
+
+
+runs:
+  using: composite
+  steps:
+    - name: Client - Set cache ID
+      id: client-init-set-cache-id
+      shell: bash
+      run: |
+        echo "CLIENT_CACHE_ID=${{ inputs.client-cache-name-prefix }}-${{ runner.os }}-${{ hashFiles('./package.json', './src/**', './tests/**', './mocks/**', './config/**', './scripts/**') }}" >> $GITHUB_ENV
+        echo "CLIENT_CACHE_ID=${{ env.CLIENT_CACHE_ID }}" >> $GITHUB_OUTPUT
+
+    # Downloads previous runs' cache of content like node_modules/ for faster re-runs
+    - name: Client init - Download cache
+      id: client-init-download-cache
+      uses: actions/cache/restore@v3
+      continue-on-error: true
+      with:
+        path: |
+          node_modules
+          dist
+          coverage
+          package.json
+          package-lock.json
+          demo/node_modules
+          demo/package.json
+        key: ${{ env.CLIENT_CACHE_ID }}
+
+    # Only run next step if cache-hit failed.
+    # For some reason, the recommended logic from the docs doesn't work:
+    # - if: ${{ steps.client-init-download-cache.outputs.cache-hit != 'true' }}
+    # Instead, use `failure()` as suggested here: http://chamindac.blogspot.com/2020/08/how-to-run-github-actions-step-when.html#:~:text=run%20on%20failure-,if%3A%20%24%7B%7B%20failure()%20%7D%7D,-run%3A%20%7C
+    # See:
+    #   - Cache GitHub Workflow action docs: https://docs.github.com/en/actions/using-workflows/caching-dependencies-to-speed-up-workflows#example-using-the-cache-action
+    #   - Cache-restore between workflows: https://github.com/actions/cache#example-cache-workflow
+    - name: Client init - Install
+      id: client-install
+      if: ${{ failure() || steps.client-init-download-cache.outputs.cache-hit != 'true' }}
+      shell: bash
+      run: |
+        npm install
+
+    - name: Client init - Cache install artifacts
+      id: client-init-cache
+      uses: actions/cache/save@v3
+      with:
+        path: |
+          node_modules
+          dist
+          coverage
+          package.json
+          package-lock.json
+          demo/node_modules
+          demo/package.json
+        key: ${{ env.CLIENT_CACHE_ID }}
+        # Optional cache-restore keys that are more lenient if the hash doesn't match.
+        # restore-keys: |
+        #   ${{ inputs.client-cache-name-prefix }}-${{ runner.os }}-
+        #   ${{ inputs.client-cache-name-prefix }}-
