@@ -76,6 +76,6 @@ runs:
     - name: Generating coverage badges
       uses: jpb06/jest-badges-action@latest
       with:
-        coverage-summary-path: ./coverage/coverage-final.json
+        coverage-summary-path: ./coverage/lcov.info
         output-folder: ./coverage/badges
         branches: master,${{ github.head_ref }}
