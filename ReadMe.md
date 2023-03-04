@@ -13,8 +13,18 @@ never have to change your source code to use mocks ever again.
 
 #### Backed and Used by:
 
-* [<img src="./.github/docs/etrade-logo.svg" alt="E-Trade" />](https://us.etrade.com)
-* [<img src="./.github/docs/nextdoor-logo.svg" alt="Nextdoor" />](https://nextdoor.com)
+<!--
+    We have to add a backup of absolute paths because they work while viewing the GitHub ReadMe file but not
+    while viewing it on npmjs.com.
+
+    Fix this by adding `<object data>` as a backup.
+
+    See:
+        - https://stackoverflow.com/questions/980855/inputting-a-default-image-in-case-the-src-attribute-of-an-html-img-is-not-vali/980910#980910
+        - https://github.com/jsdoc/jsdoc/issues/2042
+-->
+* [<object data="https://raw.githubusercontent.com/D-Pow/mock-requests/master/.github/docs/etrade-logo.svg" type="image/png"><img src="./.github/docs/etrade-logo.svg" alt="E-Trade" /></object>](https://us.etrade.com)
+* [<object data="https://raw.githubusercontent.com/D-Pow/mock-requests/master/.github/docs/nextdoor-logo.svg" type="image/png"><img src="./.github/docs/nextdoor-logo.svg" alt="Nextdoor" /></object>](https://nextdoor.com)
 
 ## Contents
 
