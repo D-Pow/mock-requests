@@ -54,7 +54,6 @@ runs:
       uses: ./.github/workflows/actions/client/init
 
     - name: Client - Build and optionally increment app version
-      if: ${{ failure() || steps.client-set-ci-cd-ids.outputs.cache-hit != 'true' }}
       id: client-build
       shell: bash
       run: |
