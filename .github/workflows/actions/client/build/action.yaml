@@ -74,6 +74,6 @@ runs:
 
     - name: Generating coverage badges
       uses: jpb06/jest-badges-action@latest
-        with:
-          coverage-summary-path: ./coverage/coverage-final.json
-          output-folder: ./coverage/badges
+      with:
+        coverage-summary-path: ./coverage/coverage-final.json
+        output-folder: ./coverage/badges
