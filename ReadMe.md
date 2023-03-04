@@ -1,6 +1,10 @@
 # MockRequests
 
-[![build status](https://github.com/D-Pow/mock-requests/actions/workflows/ci.yaml/badge.svg)](https://github.com/D-Pow/mock-requests/actions/workflows/ci.yaml/badge.svg)
+<!--
+    Specify branch via: ?branch=my-branch
+    See: https://docs.github.com/en/actions/monitoring-and-troubleshooting-workflows/adding-a-workflow-status-badge
+-->
+[![build status](https://github.com/D-Pow/mock-requests/actions/workflows/ci.yaml/badge.svg)](https://github.com/D-Pow/mock-requests/actions/workflows/ci.yaml)
 [![coverage status](https://coveralls.io/repos/github/D-Pow/mock-requests/badge.svg?branch=master)](https://coveralls.io/github/D-Pow/mock-requests?branch=master)
 [![install size](https://badgen.net/bundlephobia/min/mock-requests)](https://bundlephobia.com/package/mock-requests)
 
