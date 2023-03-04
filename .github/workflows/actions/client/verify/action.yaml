@@ -90,3 +90,6 @@ runs:
       shell: bash
       run: |
         npm run verify
+
+    - name: Generate coverage badges
+      uses: coverallsapp/github-action@v1
