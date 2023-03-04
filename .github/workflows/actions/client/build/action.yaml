@@ -18,6 +18,13 @@ runs:
     - name: Checkout repository branch
       uses: actions/checkout@v3
 
+    # See:
+    #   - Cache GitHub Workflow action docs: https://docs.github.com/en/actions/using-workflows/caching-dependencies-to-speed-up-workflows#example-using-the-cache-action
+    #   - Cache-restore between workflows: https://github.com/actions/cache#example-cache-workflow
+    # Only run next step if cache-hit failed.
+    # For some reason, the recommended logic from the docs doesn't work:
+    # - if: ${{ steps.client-cache.outputs.cache-hit != 'true' }}
+    # Instead, use `failure()` as suggested here: http://chamindac.blogspot.com/2020/08/how-to-run-github-actions-step-when.html#:~:text=run%20on%20failure-,if%3A%20%24%7B%7B%20failure()%20%7D%7D,-run%3A%20%7C
     - name: Client - Set CI/CD IDs
       id: client-set-ci-cd-ids
       uses: ./.github/workflows/actions/cache-name
@@ -42,22 +49,11 @@ runs:
           package-lock.json
         key: ${{ env.CLIENT_CACHE_ID }}
 
-    # See:
-    #   - Cache GitHub Workflow action docs: https://docs.github.com/en/actions/using-workflows/caching-dependencies-to-speed-up-workflows#example-using-the-cache-action
-    #   - Cache-restore between workflows: https://github.com/actions/cache#example-cache-workflow
-    # Only run next step if cache-hit failed.
-    # For some reason, the recommended logic from the docs doesn't work:
-    # - if: ${{ steps.client-cache.outputs.cache-hit != 'true' }}
-    # Instead, use `failure()` as suggested here: http://chamindac.blogspot.com/2020/08/how-to-run-github-actions-step-when.html#:~:text=run%20on%20failure-,if%3A%20%24%7B%7B%20failure()%20%7D%7D,-run%3A%20%7C
-    - name: Client - Re-init
-      if: ${{ failure() || steps.client-set-ci-cd-ids.outputs.cache-hit != 'true' }}
-      uses: ./.github/workflows/actions/client/init
-
     - name: Client - Build and optionally increment app version
       id: client-build
       shell: bash
       run: |
-        npm install
+        [[ -d node_modules ]] || npm install
         npm run build
 
     - name: Client - Cache build artifacts
