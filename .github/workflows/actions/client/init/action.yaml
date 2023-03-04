@@ -40,6 +40,8 @@ runs:
           coverage
           package.json
           package-lock.json
+          demo/node_modules
+          demo/package.json
         key: ${{ env.CLIENT_CACHE_ID }}
 
     # Only run next step if cache-hit failed.
@@ -55,6 +57,7 @@ runs:
       shell: bash
       run: |
         npm install
+        ( cd demo; npm install; npm run build; )
 
     - name: Client init - Cache install artifacts
       id: client-init-cache
@@ -66,6 +69,8 @@ runs:
           coverage
           package.json
           package-lock.json
+          demo/node_modules
+          demo/package.json
         key: ${{ env.CLIENT_CACHE_ID }}
         # Optional cache-restore keys that are more lenient if the hash doesn't match.
         # restore-keys: |

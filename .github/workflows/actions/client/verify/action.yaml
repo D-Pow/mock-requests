@@ -71,6 +71,8 @@ runs:
           coverage
           package.json
           package-lock.json
+          demo/node_modules
+          demo/package.json
         key: ${{ env.CLIENT_CACHE_ID }}
 
     - name: Client - Re-init
