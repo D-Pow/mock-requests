@@ -24,6 +24,7 @@ runs:
 
     - name: CI - Output cache ID
       id: ci-export-cache-id
+      shell: bash
       run: |
         echo "CLIENT_CACHE_ID=${{ env.CLIENT_CACHE_ID }}" >> $GITHUB_OUTPUT
 
@@ -52,59 +53,12 @@ runs:
       if: ${{ failure() || steps.client-set-ci-cd-ids.outputs.cache-hit != 'true' }}
       uses: ./.github/workflows/actions/client/init
 
-    # Ensure old cache is deleted so that the build step's cache request isn't ignored
-    #
-    # See:
-    #   - https://stackoverflow.com/questions/63521430/clear-cache-in-github-actions/64819132#64819132
-    - name: Client - Clear caches
+    - name: Client - Build and optionally increment app version
       if: ${{ failure() || steps.client-set-ci-cd-ids.outputs.cache-hit != 'true' }}
+      id: client-build
       shell: bash
-      env:
-        # Would normally be `secrets.GITHUB_TOKEN` but composite actions don't inherit secrets.
-        # See:
-        #   - https://stackoverflow.com/questions/70098241/using-secrets-in-composite-actions-github/70111134#70111134
-        GITHUB_TOKEN: ${{ env.GITHUB_TOKEN }}
-        WORKFLOW_RUN_ID: ${{ github.run_id }}
       run: |
-        CACHES_API_URL="https://api.github.com/repos/$(gh repo view --json owner --jq '.owner.login')/$(gh repo view --json name --jq '.name')/actions/caches"
-        cacheIds=($(gh api "${CACHES_API_URL}" --jq ".actions_caches[] | select(.key | contains(\"${{ env.CLIENT_CACHE_ID }}\")) | .id"))
-        echo "Deleting cache IDs: ${cacheIds[@]}..."
-        ( for cacheId in ${cacheIds[@]}; do gh api --method DELETE "${CACHES_API_URL}/$cacheId"; done; )
-
-    # - name: Client - Build and optionally increment app version
-    #   if: ${{ failure() || steps.client-set-ci-cd-ids.outputs.cache-hit != 'true' }}
-    #   id: client-build
-    #   shell: bash
-    #   # env:
-    #   #   # Would normally be `secrets.GITHUB_TOKEN` but composite actions don't inherit secrets.
-    #   #   # See:
-    #   #   #   - https://stackoverflow.com/questions/70098241/using-secrets-in-composite-actions-github/70111134#70111134
-    #   #   GITHUB_TOKEN: ${{ env.GITHUB_TOKEN }}
-    #   #   WORKFLOW_RUN_ID: ${{ github.run_id }}
-    #   #   clientVersion: ${{ inputs.clientVersion }}
-    #
-    #   # We need to either cache the build output after the version is incremented, or re-run
-    #   # `npm run build` so the version is injected into the code where needed.
-    #   #
-    #   # See: https://docs.github.com/en/actions/learn-github-actions/contexts#github-context
-    #   #   github.base_ref = Merge destination (requires `pull_request` trigger)
-    #   #   github.head_ref = Merge destination (requires `pull_request` trigger)
-    #   #   github.ref = Absolute ref (branch if push, refs/*/*/merge if pull_request)
-    #   #   github.ref_name = Human-readable name
-    #   #   github.workflow_ref = Long name
-    #   # Example:
-    #   #   base_ref: master
-    #   #   head_ref: feature/cicd-add-caching-and-deployments
-    #   #   ref: refs/pull/7/merge  or  refs/head/<branch-name>
-    #   #   ref_name: 7/merge  or  <branch-name>
-    #   #   workflow_ref: D-Pow/react-app-boilerplate/.github/workflows/ci.yaml@refs/pull/7/merge
-    #
-    #   # See:
-    #   #   - Conditionals docs: https://docs.github.com/en/actions/learn-github-actions/expressions
-    #   #   - Conditionals example: https://stackoverflow.com/questions/59882715/use-environment-variable-in-github-action-if
-    #   #   - `npm version` docs: https://docs.npmjs.com/cli/v8/commands/npm-version#description
-    #   run: |
-    #     npm run build
+        npm run build
 
     - name: Client - Cache build artifacts
       id: client-build-cache
