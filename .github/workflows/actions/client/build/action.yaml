@@ -1,0 +1,125 @@
+name: Client - Build
+description: Builds the front-end
+
+
+inputs:
+  GITHUB_TOKEN:
+    description: GitHub token required for pushing code with incremented app version.
+    required: true
+  clientVersion:
+    description: "Sets (or increments if 'true') client app version"
+    required: false
+    default: ""
+
+
+runs:
+  using: composite
+  steps:
+    - name: Checkout repository branch
+      uses: actions/checkout@v3
+
+    - name: Client - Set CI/CD IDs
+      id: client-set-ci-cd-ids
+      uses: ./.github/workflows/actions/cache-name
+
+    - name: CI - Output cache ID
+      id: ci-export-cache-id
+      run: |
+        echo "CLIENT_CACHE_ID=${{ env.CLIENT_CACHE_ID }}" >> $GITHUB_OUTPUT
+
+    # Downloads previous runs' cache of content like node_modules/ for faster re-runs
+    - name: Client - Download cache
+      id: client-build-download-cache
+      uses: actions/cache/restore@v3
+      continue-on-error: true
+      with:
+        path: |
+          node_modules
+          dist
+          coverage
+          package.json
+          package-lock.json
+          coverage/coverage-final.json
+        key: ${{ env.CLIENT_CACHE_ID }}
+
+    # See:
+    #   - Cache GitHub Workflow action docs: https://docs.github.com/en/actions/using-workflows/caching-dependencies-to-speed-up-workflows#example-using-the-cache-action
+    #   - Cache-restore between workflows: https://github.com/actions/cache#example-cache-workflow
+    # Only run next step if cache-hit failed.
+    # For some reason, the recommended logic from the docs doesn't work:
+    # - if: ${{ steps.client-cache.outputs.cache-hit != 'true' }}
+    # Instead, use `failure()` as suggested here: http://chamindac.blogspot.com/2020/08/how-to-run-github-actions-step-when.html#:~:text=run%20on%20failure-,if%3A%20%24%7B%7B%20failure()%20%7D%7D,-run%3A%20%7C
+    - name: Client - Re-init
+      if: ${{ failure() || steps.client-build-download-cache.outputs.cache-hit != 'true' }}
+      uses: ./.github/workflows/actions/client/init
+
+    # Ensure old cache is deleted so that the build step's cache request isn't ignored
+    #
+    # See:
+    #   - https://stackoverflow.com/questions/63521430/clear-cache-in-github-actions/64819132#64819132
+    - name: Client - Clear caches
+      shell: bash
+      env:
+        # Would normally be `secrets.GITHUB_TOKEN` but composite actions don't inherit secrets.
+        # See:
+        #   - https://stackoverflow.com/questions/70098241/using-secrets-in-composite-actions-github/70111134#70111134
+        GITHUB_TOKEN: ${{ env.GITHUB_TOKEN }}
+        WORKFLOW_RUN_ID: ${{ github.run_id }}
+      run: |
+        CACHES_API_URL="https://api.github.com/repos/$(gh repo view --json owner --jq '.owner.login')/$(gh repo view --json name --jq '.name')/actions/caches"
+        cacheIds=($(gh api "${CACHES_API_URL}" --jq ".actions_caches[] | select(.key | contains(\"${{ env.CLIENT_CACHE_ID }}\")) | .id"))
+        echo "Deleting cache IDs: ${cacheIds[@]}..."
+        ( for cacheId in ${cacheIds[@]}; do gh api --method DELETE "${CACHES_API_URL}/$cacheId"; done; )
+
+    - name: Client - Build and optionally increment app version
+      id: client-build
+      shell: bash
+      # env:
+      #   # Would normally be `secrets.GITHUB_TOKEN` but composite actions don't inherit secrets.
+      #   # See:
+      #   #   - https://stackoverflow.com/questions/70098241/using-secrets-in-composite-actions-github/70111134#70111134
+      #   GITHUB_TOKEN: ${{ env.GITHUB_TOKEN }}
+      #   WORKFLOW_RUN_ID: ${{ github.run_id }}
+      #   clientVersion: ${{ inputs.clientVersion }}
+
+      # We need to either cache the build output after the version is incremented, or re-run
+      # `npm run build` so the version is injected into the code where needed.
+      #
+      # See: https://docs.github.com/en/actions/learn-github-actions/contexts#github-context
+      #   github.base_ref = Merge destination (requires `pull_request` trigger)
+      #   github.head_ref = Merge destination (requires `pull_request` trigger)
+      #   github.ref = Absolute ref (branch if push, refs/*/*/merge if pull_request)
+      #   github.ref_name = Human-readable name
+      #   github.workflow_ref = Long name
+      # Example:
+      #   base_ref: master
+      #   head_ref: feature/cicd-add-caching-and-deployments
+      #   ref: refs/pull/7/merge  or  refs/head/<branch-name>
+      #   ref_name: 7/merge  or  <branch-name>
+      #   workflow_ref: D-Pow/react-app-boilerplate/.github/workflows/ci.yaml@refs/pull/7/merge
+
+      # See:
+      #   - Conditionals docs: https://docs.github.com/en/actions/learn-github-actions/expressions
+      #   - Conditionals example: https://stackoverflow.com/questions/59882715/use-environment-variable-in-github-action-if
+      #   - `npm version` docs: https://docs.npmjs.com/cli/v8/commands/npm-version#description
+      run: |
+        npm run build
+
+    - name: Client - Cache build artifacts
+      id: client-build-cache
+      uses: actions/cache/save@v3
+      with:
+        path: |
+          node_modules
+          dist
+          coverage
+          package.json
+          package-lock.json
+          coverage/coverage-final.json
+        key: ${{ env.CLIENT_CACHE_ID }}
+
+    - name: Generating coverage badges
+      uses: jpb06/jest-badges-action@latest
+        with:
+          coverage-summary-path: ./coverage/coverage-final.json
+          output-folder: ./coverage/badges

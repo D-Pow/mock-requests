@@ -1,0 +1,86 @@
+name: Client - Verify and Build
+description: Installs, tests, and builds the front-end
+
+
+# TODO Once GitHub supports paths in `uses` for reusable workflows instead of
+# URLs, then convert this to a workflow.
+#
+# Make this workflow callable from other workflows.
+# Allows special fields only accessible to workflows/jobs (e.g. `defaults`)
+# to be used while still offering the portability/reusability of actions.
+# See: https://docs.github.com/en/actions/learn-github-actions/reusing-workflows
+#
+# Can accept inputs and provide outputs - useful for e.g. using the build output
+# for a deployment.
+# See: https://docs.github.com/en/actions/learn-github-actions/workflow-syntax-for-github-actions#onworkflow_callinputs
+# on: [ workflow_call ]
+
+
+# Turns out you can't use `inputs` to define values in the YAML file itself.
+# Neither `shell: ${{ inputs.shell }}`, `shell: $INPUT_SHELL`, nor `shell: INPUT_SHELL` work.
+# So, just resort to duplicating code everywhere until GitHub gets their act together.
+#
+# inputs:
+#   directory:
+#     description: Directory in which to run the action
+#     required: false
+#     default: ./client
+#   shell:
+#     description: Shell in which to run step.run commands
+#     required: false
+#     default: bash
+inputs:
+  githubToken:
+    description: GitHub token required for acting on repo within pipelines.
+    required: true
+  clientVersion:
+    description: "Sets (or increments if 'true') client app version"
+    required: false
+    default: ""
+
+
+# Use the below if you want to forward this aggregator composite action's child/nested composite actions' outputs
+# to the parent job as an output rather than relying solely on env vars
+outputs:
+  CLIENT_CACHE_ID:
+    description: Client cache ID to use for all workflows/actions.
+    # Forward nested composite action output through this aggregator composite action's output for the parent jobs
+    value: ${{ steps.client-init.outputs.CLIENT_CACHE_ID }}
+
+
+runs:
+  # Allows the YAML file to be run from other workflows/actions.
+  # See:
+  #   - https://docs.github.com/en/actions/creating-actions/metadata-syntax-for-github-actions#runsusing-1
+  #   - Alternative (reusable workflows): https://docs.github.com/en/actions/using-workflows/reusing-workflows#creating-a-reusable-workflow
+  using: composite
+
+  # Steps represent a sequence of tasks that will be executed as part of the job
+  steps:
+    # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+    - name: Checkout repository branch
+      id: client-git-checkout
+      uses: actions/checkout@v3
+
+    - name: Set NodeJS version
+      id: client-set-nodejs-version
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ env.nodeVersion }}
+
+    - name: Client Init
+      id: client-init
+      uses: ./.github/workflows/actions/client/init
+
+    - name: Client Verify
+      id: client-verify
+      uses: ./.github/workflows/actions/client/verify
+
+    # Separate this step from `verify` to ensure linting, type-checking, etc. pass before
+    # using resources for building the app.
+    - name: Client Build
+      id: client-build
+      uses: ./.github/workflows/actions/client/build
+      # Forward inputs down to sub-action call
+      with:
+        clientVersion: ${{ inputs.clientVersion }}
