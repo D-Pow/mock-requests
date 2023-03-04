@@ -14,6 +14,10 @@
     "url": "https://github.com/D-Pow/mock-requests.git"
   },
   "homepage": "https://d-pow.github.io/mock-requests",
+  "engines": {
+    "node": ">=16.11.0",
+    "npm": ">=8"
+  },
   "scripts": {
     "test": "jest --coverage tests",
     "clean": "npx shx rm -rf dist docs coverage",
