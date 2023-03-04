@@ -66,8 +66,7 @@ runs:
       uses: ./.github/workflows/actions/cache-name
 
     - name: Client - Re-init
-      if: ${{ failure() || steps.client-verify-download-cache.outputs.cache-hit != 'true' }}
-      uses: ./.github/workflows/actions/client/init
+      uses: ./.github/workflows/actions/cache-name
 
     - name: Client - Download cache
       id: client-verify-download-cache
