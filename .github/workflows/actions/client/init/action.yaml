@@ -32,6 +32,7 @@ runs:
     - name: Client init - Download cache
       id: client-init-download-cache
       uses: actions/cache/restore@v3
+      continue-on-error: true
       with:
         path: |
           node_modules
@@ -39,7 +40,6 @@ runs:
           package.json
           package-lock.json
         key: ${{ env.CLIENT_CACHE_ID }}
-      continue-on-error: true
 
     # Only run next step if cache-hit failed.
     # For some reason, the recommended logic from the docs doesn't work:
@@ -57,7 +57,6 @@ runs:
 
     - name: Client init - Cache install artifacts
       id: client-init-cache
-      if: ${{ steps.client-init-download-cache.outputs.cache-hit != 'true' }}
       uses: actions/cache/save@v3
       with:
         path: |
