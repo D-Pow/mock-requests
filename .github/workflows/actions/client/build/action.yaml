@@ -47,13 +47,15 @@ runs:
           coverage
           package.json
           package-lock.json
+          demo/node_modules
+          demo/package.json
         key: ${{ env.CLIENT_CACHE_ID }}
 
     - name: Client - Build and optionally increment app version
       id: client-build
       shell: bash
       run: |
-        [[ -d demo/node_modules ]] || npm install && npm build
+        [[ -d demo/node_modules ]] || npm install && npm run build
         [[ -d node_modules ]] || npm install
         npm run build
 
@@ -67,6 +69,8 @@ runs:
           coverage
           package.json
           package-lock.json
+          demo/node_modules
+          demo/package.json
         key: ${{ env.CLIENT_CACHE_ID }}
 
     - name: Generating coverage badges
