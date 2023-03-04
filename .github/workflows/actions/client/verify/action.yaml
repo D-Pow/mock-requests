@@ -68,6 +68,12 @@ runs:
     - name: Client - Re-init
       uses: ./.github/workflows/actions/cache-name
 
+    - name: Client - Re-install if necessary
+      if: ${{ failure() || steps.client-verify-download-cache.outputs.cache-hit != 'true' }}
+      shell: bash
+      run: |
+        npm install
+
     - name: Client - Download cache
       id: client-verify-download-cache
       uses: actions/cache/restore@v3
