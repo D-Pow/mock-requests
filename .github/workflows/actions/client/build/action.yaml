@@ -53,6 +53,7 @@ runs:
       id: client-build
       shell: bash
       run: |
+        [[ -d demo/node_modules ]] || npm install && npm build
         [[ -d node_modules ]] || npm install
         npm run build
 
