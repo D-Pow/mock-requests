@@ -102,7 +102,10 @@ module.exports = {
         modules: [
             path.resolve(__dirname, process.env.NODE_PATH),
             'node_modules'
-        ]
+        ],
+        alias: {
+            'mock-requests': path.resolve('..', 'dist'),
+        },
     },
     entry: {
         client: {
