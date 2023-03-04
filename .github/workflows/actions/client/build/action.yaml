@@ -78,3 +78,4 @@ runs:
       with:
         coverage-summary-path: ./coverage/coverage-final.json
         output-folder: ./coverage/badges
+        branches: master,${{ github.head_ref }}
