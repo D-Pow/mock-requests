@@ -58,6 +58,7 @@ runs:
       id: client-build
       shell: bash
       run: |
+        npm install
         npm run build
 
     - name: Client - Cache build artifacts
