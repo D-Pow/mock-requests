@@ -139,8 +139,11 @@ jobs:
           path: |
             node_modules
             dist
+            coverage
             package.json
             package-lock.json
+            demo/node_modules
+            demo/package.json
           key: ${{ env.CLIENT_CACHE_ID }}
         continue-on-error: true
 
@@ -183,8 +186,11 @@ jobs:
           path: |
             node_modules
             dist
+            coverage
             package.json
             package-lock.json
+            demo/node_modules
+            demo/package.json
           key: ${{ env.CLIENT_CACHE_ID }}
         continue-on-error: false
 
