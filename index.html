@@ -64,15 +64,29 @@
 
     <section class="readme usertext">
         <article><h1 id="mockrequests">MockRequests</h1>
-<p><a href="https://github.com/D-Pow/mock-requests/actions/workflows/ci.yaml/badge.svg"><img src="https://github.com/D-Pow/mock-requests/actions/workflows/ci.yaml/badge.svg" alt="build status"></a>
+<!--
+    Specify branch via: ?branch=my-branch
+    See: https://docs.github.com/en/actions/monitoring-and-troubleshooting-workflows/adding-a-workflow-status-badge
+-->
+<p><a href="https://github.com/D-Pow/mock-requests/actions/workflows/ci.yaml"><img src="https://github.com/D-Pow/mock-requests/actions/workflows/ci.yaml/badge.svg" alt="build status"></a>
 <a href="https://coveralls.io/github/D-Pow/mock-requests?branch=master"><img src="https://coveralls.io/repos/github/D-Pow/mock-requests/badge.svg?branch=master" alt="coverage status"></a>
 <a href="https://bundlephobia.com/package/mock-requests"><img src="https://badgen.net/bundlephobia/min/mock-requests" alt="install size"></a></p>
 <p>Mocks network requests with desired static and dynamic responses automatically so you
 never have to change your source code to use mocks ever again.</p>
 <h4 id="backed-and-used-by%3A">Backed and Used by:</h4>
+<!--
+    We have to add a backup of absolute paths because they work while viewing the GitHub ReadMe file but not
+    while viewing it on npmjs.com.
+
+    Fix this by adding `<object data>` as a backup.
+
+    See:
+        - https://stackoverflow.com/questions/980855/inputting-a-default-image-in-case-the-src-attribute-of-an-html-img-is-not-vali/980910#980910
+        - https://github.com/jsdoc/jsdoc/issues/2042
+-->
 <ul>
-<li><a href="https://us.etrade.com"><img src="./.github/docs/etrade-logo.svg" alt="E-Trade" /></a></li>
-<li><a href="https://nextdoor.com"><img src="./.github/docs/nextdoor-logo.svg" alt="Nextdoor" /></a></li>
+<li><a href="https://us.etrade.com"><object data="https://raw.githubusercontent.com/D-Pow/mock-requests/master/.github/docs/etrade-logo.svg" type="image/png"><img src="./.github/docs/etrade-logo.svg" alt="E-Trade" /></object></a></li>
+<li><a href="https://nextdoor.com"><object data="https://raw.githubusercontent.com/D-Pow/mock-requests/master/.github/docs/nextdoor-logo.svg" type="image/png"><img src="./.github/docs/nextdoor-logo.svg" alt="Nextdoor" /></object></a></li>
 </ul>
 <h2 id="contents">Contents</h2>
 <ul>
