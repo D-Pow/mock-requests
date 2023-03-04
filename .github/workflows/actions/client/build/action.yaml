@@ -73,9 +73,14 @@ runs:
           demo/package.json
         key: ${{ env.CLIENT_CACHE_ID }}
 
+    # - name: Generating coverage badges
+    #   uses: jpb06/jest-badges-action@latest
+    #   with:
+    #     coverage-summary-path: ./coverage/lcov.info
+    #     output-folder: ./coverage/badges
+    #     branches: master,${{ github.head_ref }}
+
     - name: Generating coverage badges
-      uses: jpb06/jest-badges-action@latest
-      with:
-        coverage-summary-path: ./coverage/lcov.info
-        output-folder: ./coverage/badges
-        branches: master,${{ github.head_ref }}
+      shell: bash
+      run: |
+        npm run test:getCoverage
